@@ -1,0 +1,97 @@
+{
+  "submission_id": "synthetic-submission",
+  "generated_at": "2026-09-13T20:46:39+00:00",
+  "model": "llama3.1:8b",
+  "disclaimer": "This report is a document completeness check only. It records whether required checklist items could be located in the submission. It does not constitute a legal review, an eligibility determination, a score, a ranking, or a recommendation to award or reject any bid. All procurement decisions remain with authorised human officers.",
+  "summary": {
+    "Found": 9,
+    "Not Found": 0,
+    "Requires Human Review": 1
+  },
+  "items": [
+    {
+      "checklist_item_id": "CHK-01",
+      "clause_title": "Certificate of Incorporation or business registration certificate",
+      "status": "Found",
+      "page_number": 2,
+      "extracted_snippet": "Attached as Appendix A is the Certificate of Registration of the Company issued by the Registrar of Companies, registration number SYN-114-2019, dated 08 August 2019, confirming that Kavuma Civil Works Limited is duly incorporated and remains in good standing.",
+      "confidence_score": 1.0
+    },
+    {
+      "checklist_item_id": "CHK-02",
+      "clause_title": "Valid tax clearance certificate from the revenue authority",
+      "status": "Found",
+      "page_number": 3,
+      "extracted_snippet": "The bidder encloses a Tax Clearance Certificate issued by the national revenue authority, reference TCC/2026/00417, valid from 01 January 2026 to 31 December 2026. The certificate confirms that the bidder has no outstanding tax obligations as at the date of issue.",
+      "confidence_score": 1.0
+    },
+    {
+      "checklist_item_id": "CHK-03",
+      "clause_title": "Audited financial statements for the last two financial years",
+      "status": "Found",
+      "page_number": 4,
+      "extracted_snippet": "Appendix C contains the audited accounts of the bidder for the financial years ended 30 June 2024 and 30 June 2025, prepared and signed by an independent firm of certified public accountants. Both sets of accounts carry an unqualified audit opinion.",
+      "confidence_score": 1.0
+    },
+    {
+      "checklist_item_id": "CHK-04",
+      "clause_title": "Bid security in the form and amount stated in the bidding document",
+      "status": "Found",
+      "page_number": 5,
+      "extracted_snippet": "A bid guarantee in the sum of UGX 24,000,000.00 has been issued in favour of the Procuring Entity by Synthetic Commercial Bank Limited, guarantee number BG/2026/0221, valid for one hundred and twenty (120) days from the bid submission deadline, in the form prescribed in the bidding document.",
+      "confidence_score": 1.0
+    },
+    {
+      "checklist_item_id": "CHK-05",
+      "clause_title": "Anti-bribery and anti-corruption declaration signed by the bidder",
+      "status": "Found",
+      "page_number": 7,
+      "extracted_snippet": "Declaration of Interest: The bidder confirms that no director, officer or shareholder of Kavuma Civil Works Limited holds any interest, direct or indirect, in the Procuring Entity, and that no circumstance exists that would place the bidder in a position of conflict in respect of this procurement. Signed by the Managing Director, 12 March 2026.",
+      "confidence_score": 1.0
+    },
+    {
+      "checklist_item_id": "CHK-06",
+      "clause_title": "Statement of similar works or experience record",
+      "status": "Found",
+      "page_number": 6,
+      "extracted_snippet": "The bidder has completed the following comparable contracts:\n  1. Construction of a gravity flow water scheme, 2023, UGX 410,000,000.00\n  2. Rehabilitation of four community boreholes, 2024, UGX 168,500,000.00\n  3. Construction of a district storage reservoir, 2025, UGX 522,000,000.00",
+      "confidence_score": 1.0
+    },
+    {
+      "checklist_item_id": "CHK-07",
+      "clause_title": "Beneficial ownership disclosure form",
+      "status": "Requires Human Review",
+      "page_number": 7,
+      "extracted_snippet": "Declaration of Interest: The bidder confirms that no director, officer or shareholder of Kavuma Civil Works Limited holds any interest, direct or indirect, in the Procuring Entity, and that no circumstance exists that would place the bidder in a position of conflict in respect of this procurement.",
+      "confidence_score": 0.0
+    },
+    {
+      "checklist_item_id": "CHK-08",
+      "clause_title": "Signed conflict of interest declaration",
+      "status": "Found",
+      "page_number": 7,
+      "extracted_snippet": "The bidder confirms that no director, officer or shareholder of Kavuma Civil Works Limited holds any interest, direct or indirect, in the Procuring Entity, and that no circumstance exists that would place the bidder in a position of conflict in respect of this procurement. Signed by the Managing Director, 12 March 2026.",
+      "confidence_score": 1.0
+    },
+    {
+      "checklist_item_id": "CHK-09",
+      "clause_title": "Power of attorney authorising the signatory of the bid",
+      "status": "Found",
+      "page_number": 7,
+      "extracted_snippet": "A notarised instrument of authority is enclosed, executed under the common seal of the company on 02 March 2026, appointing Mr. S. Kavuma, Managing Director, as the person authorised to sign, submit and negotiate this bid on behalf of the company.",
+      "confidence_score": 1.0
+    },
+    {
+      "checklist_item_id": "CHK-10",
+      "clause_title": "Certificate of non-blacklisting or non-debarment",
+      "status": "Found",
+      "page_number": 3,
+      "extracted_snippet": "The bidder encloses a Tax Clearance Certificate issued by the national revenue authority, reference TCC/2026/00417, valid from 01 January 2026 to 31 December 2026. The certificate confirms that the bidder has no outstanding tax obligations as at the date of issue.",
+      "confidence_score": 0.95
+    }
+  ],
+  "missing_items": [],
+  "items_requiring_human_review": [
+    "CHK-07"
+  ]
+}
