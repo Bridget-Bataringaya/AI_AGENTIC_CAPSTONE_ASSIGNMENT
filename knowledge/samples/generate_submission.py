@@ -89,9 +89,12 @@ PAGES: List[Tuple[str, str]] = [
 
 
 def build() -> Path:
-    import fitz  # PyMuPDF
+    try:
+        import pymupdf
+    except ImportError:  # PyMuPDF older than 1.24 only exposes `fitz`
+        import fitz as pymupdf
 
-    document = fitz.open()
+    document = pymupdf.open()
     for heading, body in PAGES:
         page = document.new_page()
         page.insert_text((60, 70), heading, fontname="helv", fontsize=13)

@@ -104,9 +104,12 @@ def _items_from_csv(text: str) -> List[ChecklistItem]:
 
 
 def _text_from_pdf(path: Path) -> str:
-    import fitz  # PyMuPDF
+    try:
+        import pymupdf
+    except ImportError:  # PyMuPDF older than 1.24 only exposes `fitz`
+        import fitz as pymupdf
 
-    with fitz.open(path) as document:
+    with pymupdf.open(path) as document:
         return "\n".join(page.get_text("text") for page in document)
 
 

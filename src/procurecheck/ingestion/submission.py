@@ -68,10 +68,13 @@ class ParsedSubmission:
 
 
 def _read_pdf(path: Path) -> List[ParsedPage]:
-    import fitz  # PyMuPDF
+    try:
+        import pymupdf
+    except ImportError:  # PyMuPDF older than 1.24 only exposes `fitz`
+        import fitz as pymupdf
 
     pages: List[ParsedPage] = []
-    with fitz.open(path) as document:
+    with pymupdf.open(path) as document:
         for index, page in enumerate(document, start=1):
             pages.append(ParsedPage(number=index, text=page.get_text("text")))
     return pages
