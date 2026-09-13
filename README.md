@@ -46,25 +46,25 @@ so the agent runs with no configuration at all.
 Confirm the model backend is reachable:
 
 ```bash
-PYTHONPATH=src python -m procurecheck.cli health
+python run.py health
 ```
 
 Run a completeness check against the synthetic sample:
 
 ```bash
-PYTHONPATH=src python -m procurecheck.cli check --checklist knowledge/samples/checklist.csv --submission knowledge/samples/synthetic-submission.pdf
+python run.py check --checklist knowledge/samples/checklist.csv --submission knowledge/samples/synthetic-submission.pdf
 ```
 
 Export the report instead of printing it:
 
 ```bash
-PYTHONPATH=src python -m procurecheck.cli check --checklist knowledge/samples/checklist.csv --submission knowledge/samples/synthetic-submission.pdf --format csv --out report.csv
+python run.py check --checklist knowledge/samples/checklist.csv --submission knowledge/samples/synthetic-submission.pdf --format csv --out report.csv
 ```
 
 ## Running the API
 
 ```bash
-PYTHONPATH=src python -m uvicorn procurecheck.api:app --reload
+python run.py api --reload
 ```
 
 Interactive documentation is then at `http://localhost:8000/docs`.
@@ -78,7 +78,7 @@ Interactive documentation is then at `http://localhost:8000/docs`.
 ## Tests
 
 ```bash
-python -m pytest tests/ -q
+python run.py test
 ```
 
 The suite runs without a model server: the engine tests use a stubbed client, so the
