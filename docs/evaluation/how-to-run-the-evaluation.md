@@ -117,6 +117,64 @@ Then paste the table into the ClickUp task as a comment. Use bullet points or a
 code block, not a markdown table: ClickUp renders markdown tables as the literal
 word `undefined`.
 
+## Bringing your own documents
+
+Two different jobs, so two different commands.
+
+### Just check a submission and get a readable report
+
+Use this when you have a submission and a checklist and you want to see what
+the assistant makes of them. No expectations needed.
+
+```
+python run.py check --checklist MY-CHECKLIST.csv --submission MY-SUBMISSION.pdf --format pdf --out my-report.pdf
+```
+
+That produces a PDF written for a non-technical reader: what was located, on
+which page, quoting the exact words, what was not located, what needs a person
+to decide, and what to do next. Good for demonstrating the system to someone.
+
+The checklist can be a CSV with `id,description` columns, or a plain text or PDF
+list with one requirement per line. The submission can be PDF, DOCX, TXT or MD.
+
+### Evaluate it, meaning record expected against actual
+
+An evaluation needs to know what the right answer is, otherwise there is nothing
+to compare against. So you also supply an expectations file: a two-column CSV
+saying, for each checklist item, whether it should be `present` or `absent` in
+that submission.
+
+Copy `knowledge/samples/expectations-template.csv` and edit it:
+
+```
+checklist_item_id,expected
+CHK-01,present
+CHK-02,present
+CHK-05,absent
+```
+
+Only list the items you want tested. Anything you leave out is skipped.
+
+```
+python run.py evaluate --checklist MY-CHECKLIST.csv --submission MY-SUBMISSION.pdf --expect MY-EXPECTED.csv
+```
+
+This writes the same four outputs as the built-in run, named after your
+submission, so it cannot overwrite the team's evidence:
+
+- `docs/evaluation/evaluation-MY-SUBMISSION.md`
+- `docs/evaluation/evaluation-MY-SUBMISSION.csv`
+- `docs/evaluation/evaluation-MY-SUBMISSION.pdf`
+- `evidence/traces/evaluation-MY-SUBMISSION-raw.json`
+
+Add `--name something` to choose the base filename yourself.
+
+Expect roughly three to five minutes per item listed in the expectations file.
+
+All three flags must be given together. The command refuses partial input rather
+than guessing at what you meant, and it tells you if an id in your expectations
+file is not in your checklist.
+
 ## Other useful commands
 
 Run a completeness check against the synthetic sample and print a readable report:

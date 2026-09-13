@@ -51,7 +51,11 @@ def _build_parser() -> argparse.ArgumentParser:
     check.add_argument("--submission", required=True, type=Path)
     check.add_argument("--instruction", default=None, help="Optional user instruction")
     check.add_argument(
-        "--format", dest="output_format", choices=("text", "json", "csv"), default="text"
+        "--format",
+        dest="output_format",
+        choices=("text", "json", "csv", "pdf"),
+        default="text",
+        help="pdf produces a readable report for a non-technical reader",
     )
     check.add_argument("--out", type=Path, default=None, help="Write the report to a file")
     check.add_argument(
@@ -113,6 +117,15 @@ def _run_check(args: argparse.Namespace, settings: Settings) -> int:
 
     report = outcome.report
     assert report is not None
+    if args.output_format == "pdf":
+        from .report_pdf import write_check_pdf
+
+        destination = args.out or Path("completeness-report.pdf")
+        write_check_pdf(report, settings.model, parsed.page_count, destination)
+        print(f"Report written to {destination}", file=sys.stderr)
+        print(to_text(report, settings.model))
+        return EXIT_OK
+
     renderers = {"text": to_text, "json": to_json, "csv": to_csv}
     rendered = renderers[args.output_format](report, settings.model)
 

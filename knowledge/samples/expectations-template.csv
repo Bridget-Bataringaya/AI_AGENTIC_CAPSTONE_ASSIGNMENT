@@ -1,0 +1,11 @@
+checklist_item_id,expected
+CHK-01,present
+CHK-02,present
+CHK-03,present
+CHK-04,present
+CHK-05,absent
+CHK-06,present
+CHK-07,absent
+CHK-08,present
+CHK-09,present
+CHK-10,absent

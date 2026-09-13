@@ -301,3 +301,143 @@ def _add_page_numbers(pymupdf, destination: Path) -> None:
         )
     document.saveIncr()
     document.close()
+
+
+# ---------------------------------------------------------------------------
+# Completeness report for one submission, as opposed to the evaluation table.
+#
+# This is what a reviewer gets when they run a check on their own document.
+# Same plain-language principles: say what the report is and is not before
+# showing findings, and never present a count as a score.
+# ---------------------------------------------------------------------------
+
+STATUS_EXPLANATION = {
+    "Found": (
+        "good",
+        "Located in the submission. The quoted words below are copied directly "
+        "from the document, and the page number is where they appear, so you can "
+        "turn to that page and confirm it yourself.",
+    ),
+    "Not Found": (
+        "bad",
+        "The assistant could not locate this item. Treat this as a prompt to "
+        "look yourself, not as a conclusion: the item may be present under "
+        "wording the assistant did not recognise.",
+    ),
+    "Requires Human Review": (
+        "note",
+        "The assistant found something possibly relevant but was not confident "
+        "enough to call it a match. A person must decide.",
+    ),
+}
+
+
+def _check_cover(report, model: str, counts: Dict[str, int], pages: int) -> str:
+    return f"""
+<h1>Document Completeness Report</h1>
+<p class="subtitle">Submission: {_escape(report.submission_id)}</p>
+<p class="meta">Generated {_now()} &nbsp;|&nbsp; Assistant model: {_escape(model)}
+&nbsp;|&nbsp; Submission length: {pages} page(s)</p>
+
+<div class="headline">
+<b>Of {len(report.verified_items)} required items:
+{counts.get('Found', 0)} located,
+{counts.get('Not Found', 0)} not located,
+{counts.get('Requires Human Review', 0)} need a person to decide.</b>
+</div>
+
+<div class="note"><b>What this report is not.</b> This is a completeness check
+only. It records whether required documents could be located in the submission.
+It is not a score, not a ranking, not a legal opinion, not a judgement of
+eligibility, and not a recommendation to accept or reject this bid. The counts
+above are counts of documents located, nothing more. All procurement decisions
+remain with authorised human officers.</div>
+
+<h2>How to use this report</h2>
+<p>Work through the items below. For anything marked as located, the page number
+and the quoted words let you verify it in seconds. For anything not located, or
+flagged for review, check the submission yourself before drawing a conclusion,
+because the assistant can miss an item that is worded unusually.</p>
+"""
+
+
+def _check_items(report) -> str:
+    parts = ["<h2>Item by item</h2>"]
+    for item in report.verified_items:
+        status = item.status.value
+        css, explanation = STATUS_EXPLANATION.get(status, ("note", ""))
+        location = (
+            f"page {item.page_number}" if item.page_number else "no page recorded"
+        )
+        block = [
+            f'<div class="{css}">',
+            f"<b>{_escape(item.checklist_item_id)} &nbsp; {_escape(item.clause_title)}</b><br/>",
+            f"<b>{_escape(status)}</b> &middot; {_escape(location)} &middot; ",
+            f"confidence {item.confidence_score:.2f}<br/>",
+            f"{explanation}",
+        ]
+        if item.extracted_snippet:
+            snippet = item.extracted_snippet.replace("\n", " ")
+            block.append(
+                f'<br/><span class="label">Quoted from the submission:</span><br/>'
+                f'<span class="quote">{_escape(snippet)}</span>'
+            )
+        block.append("</div>")
+        parts.append("".join(block))
+    return "".join(parts)
+
+
+def _check_next_steps(report) -> str:
+    missing = report.missing_items
+    review = report.review_items
+    lines = []
+    if missing:
+        lines.append(
+            f"<li>Check the submission yourself for: "
+            f"{_escape(', '.join(missing))}. The assistant did not locate these.</li>"
+        )
+    if review:
+        lines.append(
+            f"<li>Decide on: {_escape(', '.join(review))}. "
+            f"The assistant was unsure about these.</li>"
+        )
+    if not lines:
+        lines.append(
+            "<li>Every required item was located. Spot-check a sample against the "
+            "page numbers given before relying on this.</li>"
+        )
+    return f"<h2>What to do next</h2><ul>{''.join(lines)}</ul>"
+
+
+def write_check_pdf(report, model: str, page_count: int, destination: Path) -> Path:
+    """Render a single submission's completeness report as a readable PDF."""
+    try:
+        import pymupdf
+    except ImportError:  # PyMuPDF older than 1.24 only exposes `fitz`
+        import fitz as pymupdf
+
+    counts: Dict[str, int] = {}
+    for item in report.verified_items:
+        counts[item.status.value] = counts.get(item.status.value, 0) + 1
+
+    html_body = (
+        _check_cover(report, model, counts, page_count)
+        + _check_items(report)
+        + _check_next_steps(report)
+    )
+
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    story = pymupdf.Story(html=html_body, user_css=CSS)
+    frame = pymupdf.Rect(MARGIN, MARGIN, PAGE_WIDTH - MARGIN, PAGE_HEIGHT - MARGIN)
+    mediabox = pymupdf.Rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT)
+
+    writer = pymupdf.DocumentWriter(str(destination))
+    more = True
+    while more:
+        device = writer.begin_page(mediabox)
+        more, _ = story.place(frame)
+        story.draw(device)
+        writer.end_page()
+    writer.close()
+    _add_page_numbers(pymupdf, destination)
+    return destination

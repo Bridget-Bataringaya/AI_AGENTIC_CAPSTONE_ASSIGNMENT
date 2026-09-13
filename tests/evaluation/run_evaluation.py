@@ -3,9 +3,12 @@
 Produces the Week 2 evaluation table. Writes a Markdown table and a CSV to
 docs/evaluation/, plus the raw JSON result for every case to evidence/traces/.
 
-Run:  python run.py evaluate
-Only safety and validation cases (fast, no model):
+Run the built-in cases:
+      python run.py evaluate
+Only the cases that need no model (a few seconds):
       python run.py evaluate --no-model
+Run against your own checklist and submission:
+      python run.py evaluate --checklist MY.csv --submission MY.pdf --expect MY-expected.csv
 
 No PYTHONPATH is needed: this file puts src on sys.path itself.
 """
@@ -20,7 +23,7 @@ import sys
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT / "src") not in sys.path:
@@ -266,20 +269,30 @@ def _run_injection(case: EvaluationCase, engine: MatchingEngine, items, submissi
 def _run_format(case: EvaluationCase, engine: MatchingEngine, items) -> CaseResult:
     """Run one item against the same content in a non-PDF format."""
     start = time.monotonic()
-    submission = parse_submission(SAMPLES / case.submission_file)
+    path = Path(case.submission_file)
+    if not path.exists():
+        path = SAMPLES / case.submission_file
+    submission = parse_submission(path)
     target = [item for item in items if item.id == case.checklist_item_id]
     outcome = engine.analyse(target, submission)
     elapsed = time.monotonic() - start
 
     assert outcome.report is not None
     verification = outcome.report.verified_items[0]
-    actual = f"{case.submission_file}: {_fmt_verification(verification)}"
+    actual = f"{path.name}: {_fmt_verification(verification)}"
 
-    # Formats without page boundaries must report page 1, never a guess.
-    page_ok = verification.page_number in (None, 1)
-    passed = verification.status is ItemStatus.FOUND and page_ok
+    # A format with no page boundaries must report page 1, never a guess. A
+    # multi-page document may legitimately cite any page it actually has.
+    valid_pages = {p.number for p in submission.pages}
+    valid_pages.add(None)
+    page_ok = verification.page_number in valid_pages
+
+    if case.expected.startswith("Found"):
+        passed = verification.status is ItemStatus.FOUND and page_ok
+    else:
+        passed = verification.status is ItemStatus.NOT_FOUND
     if not page_ok:
-        actual += f"  INVALID PAGE {verification.page_number} for a single-page format"
+        actual += f"  INVALID PAGE {verification.page_number}"
 
     return CaseResult(
         id=case.id, acceptance_criteria=case.acceptance_criteria,
@@ -367,6 +380,95 @@ def _run_overflow(case: EvaluationCase, engine: MatchingEngine, items) -> CaseRe
     )
 
 
+def read_expectations(path: Path) -> Dict[str, str]:
+    """Read a two-column CSV of checklist_item_id,expected (present or absent)."""
+    rows = [
+        r
+        for r in csv.reader(path.read_text(encoding="utf-8").splitlines())
+        if r and any(c.strip() for c in r)
+    ]
+    if not rows:
+        raise ValueError(f"{path} is empty.")
+    if rows[0][0].strip().lower() in ("checklist_item_id", "id", "item"):
+        rows = rows[1:]
+    expectations: Dict[str, str] = {}
+    for row in rows:
+        if len(row) < 2:
+            raise ValueError(f"Row {row!r} in {path.name} needs two columns.")
+        expectations[row[0].strip()] = row[1]
+    if not expectations:
+        raise ValueError(f"{path.name} has a header but no data rows.")
+    return expectations
+
+
+def build_target_cases(
+    submission_path: Path, expectations: Dict[str, str]
+) -> List[EvaluationCase]:
+    """Turn a caller-supplied expectations file into evaluation cases.
+
+    Lets a reviewer bring their own checklist and their own submission and still
+    get an expected-versus-actual table. An item with no stated expectation is
+    simply absent from the file rather than guessed at.
+    """
+    cases: List[EvaluationCase] = []
+    for index, (item_id, expectation) in enumerate(expectations.items(), start=1):
+        normalised = expectation.strip().lower()
+        if normalised not in ("present", "absent"):
+            raise ValueError(
+                f"Expectation for {item_id} is {expectation!r}; it must be "
+                f"'present' or 'absent'."
+            )
+        expected = (
+            "Found, with a page number and a verbatim snippet"
+            if normalised == "present"
+            else "Not Found, with no page number and no snippet"
+        )
+        cases.append(
+            EvaluationCase(
+                id=f"TG-{index:02d}",
+                kind=CaseKind.FORMAT,
+                description=(
+                    f"{item_id} was expected to be {normalised} in "
+                    f"{submission_path.name}."
+                ),
+                expected=expected,
+                checklist_item_id=item_id,
+                submission_file=str(submission_path),
+                acceptance_criteria="AC3, AC4",
+            )
+        )
+    return cases
+
+
+def run_target(
+    checklist_path: Path, submission_path: Path, expectations_path: Path
+) -> List[CaseResult]:
+    """Run expected versus actual over a caller-supplied checklist and submission."""
+    settings = Settings.from_env()
+    items = parse_checklist(checklist_path)
+    known = {item.id for item in items}
+    expectations = read_expectations(expectations_path)
+
+    unknown = sorted(set(expectations) - known)
+    if unknown:
+        raise ValueError(
+            f"These ids appear in {expectations_path.name} but not in "
+            f"{checklist_path.name}: {', '.join(unknown)}. "
+            f"The checklist contains: {', '.join(sorted(known))}."
+        )
+
+    cases = build_target_cases(submission_path, expectations)
+    results: List[CaseResult] = []
+    with OllamaClient(settings) as client:
+        engine = MatchingEngine(client, settings)
+        for case in cases:
+            print(
+                f"  {case.id} {case.checklist_item_id}...", file=sys.stderr, flush=True
+            )
+            results.append(_run_format(case, engine, items))
+    return results
+
+
 def run(include_model_cases: bool) -> List[CaseResult]:
     settings = Settings.from_env()
     items = parse_checklist(SAMPLES / "checklist.csv")
@@ -447,7 +549,12 @@ def _write_pdf_report(results: List[CaseResult], stem: str) -> Path:
     return write_pdf(results, meta, CAVEATS, EVALUATION_DIR / (stem + ".pdf"))
 
 
-def write_outputs(results: List[CaseResult], model: str, partial: bool = False) -> None:
+def write_outputs(
+    results: List[CaseResult],
+    model: str,
+    partial: bool = False,
+    stem: Optional[str] = None,
+) -> None:
     """Write the evaluation table, CSV and raw trace.
 
     A partial run writes to its own filenames. The reporting table is evidence
@@ -456,8 +563,11 @@ def write_outputs(results: List[CaseResult], model: str, partial: bool = False) 
     """
     EVALUATION_DIR.mkdir(parents=True, exist_ok=True)
     TRACES_DIR.mkdir(parents=True, exist_ok=True)
-    stem = "prompt-evaluation-table.partial" if partial else "prompt-evaluation-table"
-    trace_name = "evaluation-raw.partial.json" if partial else "evaluation-raw.json"
+    stem = stem or (
+        "prompt-evaluation-table.partial" if partial
+        else "prompt-evaluation-table"
+    )
+    trace_name = f"{stem}-raw.json"
 
     passed = sum(1 for r in results if r.passed)
     lines = [
@@ -519,10 +629,53 @@ def main(argv: Optional[List[str]] = None) -> int:
         action="store_true",
         help="Run only the cases that do not need a model server",
     )
+    target = parser.add_argument_group(
+        "your own documents",
+        "Supply all three to evaluate a checklist and submission of your own "
+        "instead of the built-in cases.",
+    )
+    target.add_argument("--checklist", type=Path, help="Your checklist, PDF/CSV/TXT")
+    target.add_argument("--submission", type=Path, help="Your submission, PDF/DOCX/TXT")
+    target.add_argument(
+        "--expect",
+        type=Path,
+        help=(
+            "CSV of checklist_item_id,expected where expected is 'present' or "
+            "'absent'. See knowledge/samples/expectations-template.csv."
+        ),
+    )
+    parser.add_argument(
+        "--name",
+        default=None,
+        help="Base filename for the output, default derived from the submission",
+    )
     args = parser.parse_args(argv)
 
-    results = run(include_model_cases=not args.no_model)
-    write_outputs(results, Settings.from_env().model, partial=args.no_model)
+    target_args = (args.checklist, args.submission, args.expect)
+    if any(target_args) and not all(target_args):
+        print(
+            "--checklist, --submission and --expect must be given together. "
+            "The expectations file is what makes an evaluation possible: without "
+            "it there is nothing to compare the actual behaviour against.",
+            file=sys.stderr,
+        )
+        return 2
+
+    if all(target_args):
+        for path in target_args:
+            if not path.is_file():
+                print(f"No such file: {path}", file=sys.stderr)
+                return 2
+        try:
+            results = run_target(args.checklist, args.submission, args.expect)
+        except ValueError as exc:
+            print(f"Input error: {exc}", file=sys.stderr)
+            return 2
+        stem = args.name or f"evaluation-{args.submission.stem}"
+        write_outputs(results, Settings.from_env().model, stem=stem)
+    else:
+        results = run(include_model_cases=not args.no_model)
+        write_outputs(results, Settings.from_env().model, partial=args.no_model)
     return 0 if all(r.passed for r in results) else 1
 
 
