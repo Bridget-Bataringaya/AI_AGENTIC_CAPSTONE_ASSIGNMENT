@@ -27,6 +27,12 @@ from .ingestion import (
 from .llm import ModelUnavailableError, OllamaClient
 from .report import to_csv, to_json, to_text
 
+# Where reports land when the caller does not choose a path. Named after
+# the submission so that checking a second document cannot silently
+# overwrite the first one's report.
+REPORTS_DIR = Path("evidence") / "reports"
+EXTENSIONS = {"text": ".txt", "json": ".json", "csv": ".csv", "pdf": ".pdf"}
+
 EXIT_OK = 0
 EXIT_USER_ERROR = 1
 EXIT_BACKEND_ERROR = 2
@@ -57,7 +63,16 @@ def _build_parser() -> argparse.ArgumentParser:
         default="text",
         help="pdf produces a readable report for a non-technical reader",
     )
-    check.add_argument("--out", type=Path, default=None, help="Write the report to a file")
+    check.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        help=(
+            "Where to write the report. Defaults to "
+            "evidence/reports/<submission>-completeness-report.<ext>; "
+            "text output goes to the terminal unless this is given."
+        ),
+    )
     check.add_argument(
         "--strategy", choices=(STRATEGY_PER_ITEM, STRATEGY_BATCH), default=None
     )
@@ -75,6 +90,17 @@ def _run_health(settings: Settings) -> int:
     print(f"Model   : {info['model']}")
     print(f"Installed: {', '.join(info['available_models'])}")
     return EXIT_OK
+
+
+def _default_report_path(submission: Path, output_format: str) -> Path:
+    """Build evidence/reports/<submission>-completeness-report.<ext>.
+
+    Naming the report after its submission means checking a second document
+    cannot quietly replace the first document's report, which matters when the
+    reports are the evidence for a task.
+    """
+    suffix = EXTENSIONS.get(output_format, ".txt")
+    return REPORTS_DIR / f"{submission.stem}-completeness-report{suffix}"
 
 
 def _run_check(args: argparse.Namespace, settings: Settings) -> int:
@@ -117,22 +143,32 @@ def _run_check(args: argparse.Namespace, settings: Settings) -> int:
 
     report = outcome.report
     assert report is not None
+
     if args.output_format == "pdf":
+        destination = args.out or _default_report_path(args.submission, "pdf")
         from .report_pdf import write_check_pdf
 
-        destination = args.out or Path("completeness-report.pdf")
+        destination.parent.mkdir(parents=True, exist_ok=True)
         write_check_pdf(report, settings.model, parsed.page_count, destination)
         print(f"Report written to {destination}", file=sys.stderr)
+        # Still show the findings in the terminal, so the run is not silent.
         print(to_text(report, settings.model))
         return EXIT_OK
 
     renderers = {"text": to_text, "json": to_json, "csv": to_csv}
     rendered = renderers[args.output_format](report, settings.model)
 
-    if args.out:
-        args.out.parent.mkdir(parents=True, exist_ok=True)
-        args.out.write_text(rendered, encoding="utf-8")
-        print(f"Report written to {args.out}", file=sys.stderr)
+    # Text is the interactive format and goes to the terminal unless a path is
+    # asked for. Machine formats are always written to a file, named after the
+    # submission, because that is what a caller wants to keep.
+    destination = args.out
+    if destination is None and args.output_format != "text":
+        destination = _default_report_path(args.submission, args.output_format)
+
+    if destination:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(rendered, encoding="utf-8")
+        print(f"Report written to {destination}", file=sys.stderr)
     else:
         print(rendered)
     return EXIT_OK

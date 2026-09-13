@@ -127,8 +127,19 @@ Use this when you have a submission and a checklist and you want to see what
 the assistant makes of them. No expectations needed.
 
 ```
-python run.py check --checklist MY-CHECKLIST.csv --submission MY-SUBMISSION.pdf --format pdf --out my-report.pdf
+python run.py check --checklist MY-CHECKLIST.csv --submission MY-SUBMISSION.pdf --format pdf
 ```
+
+The report is named after the submission and lands in `evidence/reports/`, so
+checking a second document never overwrites the first document's report:
+
+```
+evidence/reports/MY-SUBMISSION-completeness-report.pdf
+```
+
+Add `--out somewhere/else.pdf` to choose the path yourself. `--format json` and
+`--format csv` behave the same way. `--format text` prints to the terminal
+instead, since that is the format you read rather than keep.
 
 That produces a PDF written for a non-technical reader: what was located, on
 which page, quoting the exact words, what was not located, what needs a person
