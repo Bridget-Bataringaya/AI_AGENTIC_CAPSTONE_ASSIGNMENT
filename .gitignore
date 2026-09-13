@@ -9,3 +9,6 @@ env/
 htmlcov/
 *.egg-info/
 .DS_Store
+
+# Partial evaluation output from --no-model runs, not a deliverable
+docs/evaluation/*.partial.*

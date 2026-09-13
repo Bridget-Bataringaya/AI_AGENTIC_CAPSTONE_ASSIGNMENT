@@ -1,0 +1,22 @@
+[
+  {
+    "id": "EV-12",
+    "acceptance_criteria": "AC2",
+    "description": "User uploads an unsupported file type as the submission.",
+    "expected": "Clear error naming the supported formats; analysis does not run",
+    "actual": "Rejected with a clear error: Unsupported file type '.xlsx'. Supported types: .pdf, .txt, .md, .docx.",
+    "passed": true,
+    "seconds": 0.0,
+    "detail": "Unsupported file type '.xlsx'. Supported types: .pdf, .txt, .md, .docx."
+  },
+  {
+    "id": "EV-13",
+    "acceptance_criteria": "AC7",
+    "description": "Caller supplies two submissions for comparison.",
+    "expected": "Rejected before analysis; no comparative output is possible",
+    "actual": "Rejected before analysis: This system processes one submission at a time and cannot compare or rank submissions. Please upload a single submission.",
+    "passed": true,
+    "seconds": 0.0,
+    "detail": "This system processes one submission at a time and cannot compare or rank submissions. Please upload a single submission."
+  }
+]
