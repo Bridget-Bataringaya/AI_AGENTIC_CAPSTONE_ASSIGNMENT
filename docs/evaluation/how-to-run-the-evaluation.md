@@ -8,6 +8,16 @@ This is written so the two of you can sit down together, run it once, and walk
 away with the finished table. Bridget then writes the Week 2 report from the
 output.
 
+## Which shell you are using
+
+The commands below are given twice. Use the **PowerShell** version on Windows
+(the blue terminal, prompt starts with `PS D:\...`). Use the **bash** version on
+macOS, Linux, or Git Bash.
+
+The difference that bites: bash writes `PYTHONPATH=src python ...` on one line,
+which PowerShell does not understand. In PowerShell you set the variable once
+per terminal window, then run commands normally.
+
 ## Before you start
 
 Only one person needs to run this, on a machine with Ollama installed. The
@@ -47,10 +57,28 @@ If `llama3.1:8b` is not downloaded yet, in a second terminal:
 ollama pull llama3.1:8b
 ```
 
-Check it is reachable before going further:
+Ollama on Windows usually runs already as a background service. If
+`ollama serve` reports `Only one usage of each socket address`, that means it is
+already running, which is fine. Skip it and carry on.
+
+Set the module path once per terminal window.
+
+PowerShell:
+
+```powershell
+$env:PYTHONPATH = "src"
+```
+
+bash:
 
 ```bash
-PYTHONPATH=src python -m procurecheck.cli health
+export PYTHONPATH=src
+```
+
+Then check the model is reachable:
+
+```bash
+python -m procurecheck.cli health
 ```
 
 You should see the backend address and `llama3.1:8b` listed. If you see an
@@ -62,7 +90,7 @@ This runs only the cases that need no model, so you find out immediately
 whether anything is broken, rather than 20 minutes in.
 
 ```bash
-PYTHONPATH=src python tests/evaluation/run_evaluation.py --no-model
+python tests/evaluation/run_evaluation.py --no-model
 ```
 
 Expect: `2 of 2 cases met expectation.`
@@ -78,7 +106,7 @@ Expect: `43 passed`.
 ## Step 5: the full evaluation (about 20 minutes)
 
 ```bash
-PYTHONPATH=src python tests/evaluation/run_evaluation.py
+python tests/evaluation/run_evaluation.py
 ```
 
 Leave it alone while it runs. It prints each case ID as it starts, so you can
@@ -127,6 +155,34 @@ on.
 The three items omitted from the synthetic submission on purpose are the
 anti-bribery declaration (CHK-05), the beneficial ownership disclosure
 (CHK-07), and the certificate of non-blacklisting (CHK-10).
+
+## What the first baseline run already showed
+
+A 10-item baseline run was completed on 2026-09-13. Expect some cases to FAIL,
+and do not assume you have broken something when they do.
+
+The run classified 9 items Found, 0 Not Found, and 1 Requires Human Review,
+against a ground truth of 7 present and 3 absent. Two of the three deliberately
+omitted documents were reported as present:
+
+- CHK-05, the anti-bribery declaration, was reported Found at confidence 1.00,
+  citing the conflict of interest declaration on page 7. A different document.
+- CHK-10, the non-blacklisting certificate, was reported Found at confidence
+  0.95, citing the tax clearance certificate on page 3. Unrelated.
+- CHK-07, beneficial ownership, was caught only because the model returned
+  confidence 0.00 and the threshold routed it to human review.
+
+The model never once said Not Found.
+
+Why the existing safeguards did not catch it: the snippet-grounding check
+verifies that a quoted passage really exists in the submission, and both false
+positives quoted real verbatim text. Grounding proves a quotation is genuine, not
+that it satisfies the requirement. The 0.85 confidence threshold is also no help
+against a model returning 1.00 on a wrong answer.
+
+This is the single most important finding for the Week 2 report. It is a
+legitimate baseline result and belongs in the report as written, because it is
+precisely what Week 3 needs to fix.
 
 ## If a case fails
 
