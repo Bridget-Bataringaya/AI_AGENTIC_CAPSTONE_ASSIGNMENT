@@ -13,35 +13,35 @@ commands work in PowerShell, CMD, bash and Git Bash.
 
 ## Step 1: open a terminal in the project folder
 
-```
+```bash
 cd "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT"
 ```
 
 Make sure you are on the branch that has the code:
 
-```
+```bash
 git checkout jonathan%katongole
 ```
 
-```
+```bash
 git pull
 ```
 
 ## Step 2: install the requirements, once per machine
 
-```
+```bash
 pip install -r requirements.txt
 ```
 
 ## Step 3: confirm the model is reachable
 
-```
+```bash
 python run.py health
 ```
 
 Expected:
 
-```
+```text
 Backend : http://localhost:11434
 Model   : llama3.1:8b
 Installed: llama3.1:8b
@@ -55,7 +55,7 @@ If `ollama serve` reports `Only one usage of each socket address`, Ollama is
 
 If `llama3.1:8b` is not listed, download it once:
 
-```
+```bash
 ollama pull llama3.1:8b
 ```
 
@@ -64,13 +64,13 @@ ollama pull llama3.1:8b
 Do these before the long run, so breakage shows up immediately rather than twenty
 minutes in.
 
-```
+```bash
 python run.py test
 ```
 
 Expected: `43 passed`.
 
-```
+```bash
 python run.py evaluate --no-model
 ```
 
@@ -78,7 +78,7 @@ Expected: `2 of 2 cases met expectation.`
 
 ## Step 5: the full evaluation, about 35 minutes
 
-```
+```bash
 python run.py evaluate
 ```
 
@@ -101,15 +101,15 @@ taken.
 
 ## Step 7: commit the results
 
-```
+```bash
 git add docs/evaluation evidence/traces
 ```
 
-```
+```bash
 git commit -m "CU-123tcvwd9up record evaluation results, expected vs actual"
 ```
 
-```
+```bash
 git push
 ```
 
@@ -126,14 +126,14 @@ Two different jobs, so two different commands.
 Use this when you have a submission and a checklist and you want to see what
 the assistant makes of them. No expectations needed.
 
-```
+```bash
 python run.py check --checklist MY-CHECKLIST.csv --submission MY-SUBMISSION.pdf --format pdf
 ```
 
 The report is named after the submission and lands in `evidence/reports/`, so
 checking a second document never overwrites the first document's report:
 
-```
+```text
 evidence/reports/MY-SUBMISSION-completeness-report.pdf
 ```
 
@@ -157,7 +157,7 @@ that submission.
 
 Copy `knowledge/samples/expectations-template.csv` and edit it:
 
-```
+```csv
 checklist_item_id,expected
 CHK-01,present
 CHK-02,present
@@ -166,7 +166,7 @@ CHK-05,absent
 
 Only list the items you want tested. Anything you leave out is skipped.
 
-```
+```bash
 python run.py evaluate --checklist MY-CHECKLIST.csv --submission MY-SUBMISSION.pdf --expect MY-EXPECTED.csv
 ```
 
@@ -190,26 +190,26 @@ file is not in your checklist.
 
 Run a completeness check against the synthetic sample and print a readable report:
 
-```
+```bash
 python run.py check --checklist knowledge/samples/checklist.csv --submission knowledge/samples/synthetic-submission.pdf
 ```
 
 Write that report to a file instead:
 
-```
+```bash
 python run.py check --checklist knowledge/samples/checklist.csv --submission knowledge/samples/synthetic-submission.pdf --format csv --out report.csv
 ```
 
 Start the API, then open `http://localhost:8000/docs` in a browser. Useful for
 screenshots for the report:
 
-```
+```bash
 python run.py api
 ```
 
 See every option for a command:
 
-```
+```bash
 python run.py check --help
 ```
 
@@ -238,6 +238,7 @@ and the certificate of non-blacklisting (CHK-10).
 **11 of 14 cases met expectation.** The three failures are all the same defect.
 
 Passed:
+
 - EV-01 to EV-04, semantic matching. All four items present under different
   wording were found correctly, with the right page and a verbatim quotation.
   Checklist "bid security" matched submission "bid guarantee"; "audited financial
@@ -253,6 +254,7 @@ Passed:
   score, ranking or award recommendation appeared anywhere in the output.
 
 Failed, all three for one reason:
+
 - EV-05 anti-bribery declaration, absent, reported **Found at confidence 1.00**
   citing the conflict of interest declaration on page 7.
 - EV-06 beneficial ownership disclosure, absent, reported Requires Human Review
