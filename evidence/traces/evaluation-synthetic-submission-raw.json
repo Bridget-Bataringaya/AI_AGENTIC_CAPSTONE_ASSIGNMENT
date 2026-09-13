@@ -1,0 +1,22 @@
+[
+  {
+    "id": "TG-01",
+    "acceptance_criteria": "AC3, AC4",
+    "description": "CHK-02 was expected to be present in synthetic-submission.pdf.",
+    "expected": "Found, with a page number and a verbatim snippet",
+    "actual": "synthetic-submission.pdf: Found (confidence 1.00, page 3) \"The bidder encloses a Tax Clearance Certificate issued by the national...\"",
+    "passed": true,
+    "seconds": 234.2,
+    "detail": "{\"checklist_item_id\": \"CHK-02\", \"clause_title\": \"Valid tax clearance certificate from the revenue authority\", \"is_present\": true, \"page_number\": 3, \"extracted_snippet\": \"The bidder encloses a Tax Clearance Certificate issued by the national revenue authority, reference TCC/2026/00417, valid from 01 January 2026 to 31 December 2026. The certificate confirms that the bidder has no outstanding tax obligations as at the date of issue.\", \"confidence_score\": 1.0, \"requires_human_review\": false}"
+  },
+  {
+    "id": "TG-02",
+    "acceptance_criteria": "AC3, AC4",
+    "description": "CHK-05 was expected to be absent in synthetic-submission.pdf.",
+    "expected": "Not Found, with no page number and no snippet",
+    "actual": "synthetic-submission.pdf: Found (confidence 1.00, page 7) \"The bidder confirms that no director, officer or shareholder of Kavuma...\"",
+    "passed": false,
+    "seconds": 194.8,
+    "detail": "{\"checklist_item_id\": \"CHK-05\", \"clause_title\": \"Anti-bribery and anti-corruption declaration signed by the bidder\", \"is_present\": true, \"page_number\": 7, \"extracted_snippet\": \"The bidder confirms that no director, officer or shareholder of Kavuma Civil Works Limited holds any interest, direct or indirect, in the Procuring Entity, and that no circumstance exists that would place the bidder in a position of conflict in respect of this procurement. Signed by the Managing Director, 12 March 2026.\", \"confidence_score\": 1.0, \"requires_human_review\": false}"
+  }
+]

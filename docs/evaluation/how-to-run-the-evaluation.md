@@ -74,7 +74,7 @@ Expected: `43 passed`.
 python run.py evaluate --no-model
 ```
 
-Expected: `2 of 2 cases met expectation.`
+Expected: `4 of 4 cases met expectation.`
 
 ## Step 5: the full evaluation, about 35 minutes
 
