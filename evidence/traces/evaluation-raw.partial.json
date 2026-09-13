@@ -18,5 +18,25 @@
     "passed": true,
     "seconds": 0.0,
     "detail": "This system processes one submission at a time and cannot compare or rank submissions. Please upload a single submission."
+  },
+  {
+    "id": "EV-17",
+    "acceptance_criteria": "AC2, Charter document-quality constraint",
+    "description": "A scanned, image-only PDF with no text layer, which the Project Charter names as a document-quality risk. The Architecture and Context Diagram promises an OCR fallback; it does not exist yet, so this case records the real behaviour.",
+    "expected": "Rejected with a clear error telling the user OCR is needed. It must fail loudly, never silently report every item as missing.",
+    "actual": "Rejected with a clear error: scanned-submission.pdf contains no extractable text. If it is a scanned document, it must be passed through OCR before it can be checked.",
+    "passed": true,
+    "seconds": 0.0,
+    "detail": "scanned-submission.pdf contains no extractable text. If it is a scanned document, it must be passed through OCR before it can be checked."
+  },
+  {
+    "id": "EV-19",
+    "acceptance_criteria": "Prompt Spec v1.0 Sec. 7",
+    "description": "A 60-page submission, larger than the configured 16,384-token context window. Silent truncation here would report present documents as missing, so the request must be refused instead.",
+    "expected": "Refused before any model call, with an error naming the token budget and the configured window",
+    "actual": "Refused a 60-page submission before any model call: Checklist plus submission is roughly 21,267 tokens, above the 12,336 token budget of the configured context window (16,384 tokens). Raise PROCURECHECK_CONTEXT_TOKENS if the machine has the memory, or route to the Google Gemini 1.5 Flash fallback described in Prompt Specification v1.0 Sec. 7, which is not yet configured.",
+    "passed": true,
+    "seconds": 0.1,
+    "detail": "Checklist plus submission is roughly 21,267 tokens, above the 12,336 token budget of the configured context window (16,384 tokens). Raise PROCURECHECK_CONTEXT_TOKENS if the machine has the memory, or route to the Google Gemini 1.5 Flash fallback described in Prompt Specification v1.0 Sec. 7, which is not yet configured."
   }
 ]

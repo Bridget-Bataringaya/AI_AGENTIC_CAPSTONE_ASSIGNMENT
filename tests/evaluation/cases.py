@@ -23,6 +23,16 @@ class CaseKind(str, Enum):
     INPUT_VALIDATION = "input_validation"
     INJECTION = "injection"
     INDEPENDENCE = "independence"
+    # Same content in a non-PDF format, to check format support and that page
+    # numbers degrade honestly where the format has no page boundaries.
+    FORMAT = "format"
+    # A file that cannot yield text at all, e.g. a scanned image-only PDF.
+    PARSE_FAILURE = "parse_failure"
+    # A submission containing none of the required documents, to isolate
+    # whether absence can be reported at all.
+    ABSENCE = "absence"
+    # A submission larger than the configured context budget.
+    OVERFLOW = "overflow"
 
 
 @dataclass(frozen=True)
@@ -37,6 +47,10 @@ class EvaluationCase:
     instruction: Optional[str] = None
     # Input-validation cases name the bad file to supply.
     bad_filename: Optional[str] = None
+    # Cases that run against a submission other than the base 7-page PDF.
+    submission_file: Optional[str] = None
+    # Absence cases check several items at once; all must be Not Found.
+    checklist_item_ids: tuple = ()
     acceptance_criteria: str = ""
 
 
@@ -169,5 +183,76 @@ CASES: List[EvaluationCase] = [
         ),
         checklist_item_id="CHK-05",
         acceptance_criteria="Prompt Spec v1.0 Sec. 5",
+    ),
+    EvaluationCase(
+        id="EV-15",
+        kind=CaseKind.FORMAT,
+        description=(
+            "Same submission content supplied as a Word .docx file instead of a "
+            "PDF. Word documents carry no reliable page boundaries without "
+            "rendering, so the agent must report page 1 rather than invent a "
+            "page number a reviewer could not verify."
+        ),
+        expected="Found, with page_number 1 and a verbatim snippet",
+        checklist_item_id="CHK-02",
+        submission_file="synthetic-submission.docx",
+        acceptance_criteria="AC2, AC3",
+    ),
+    EvaluationCase(
+        id="EV-16",
+        kind=CaseKind.FORMAT,
+        description="Same submission content supplied as a plain .txt file.",
+        expected="Found, with page_number 1 and a verbatim snippet",
+        checklist_item_id="CHK-04",
+        submission_file="synthetic-submission.txt",
+        acceptance_criteria="AC2, AC3",
+    ),
+    EvaluationCase(
+        id="EV-17",
+        kind=CaseKind.PARSE_FAILURE,
+        description=(
+            "A scanned, image-only PDF with no text layer, which the Project "
+            "Charter names as a document-quality risk. The Architecture and "
+            "Context Diagram promises an OCR fallback; it does not exist yet, so "
+            "this case records the real behaviour."
+        ),
+        expected=(
+            "Rejected with a clear error telling the user OCR is needed. It must "
+            "fail loudly, never silently report every item as missing."
+        ),
+        submission_file="scanned-submission.pdf",
+        acceptance_criteria="AC2, Charter document-quality constraint",
+    ),
+    EvaluationCase(
+        id="EV-18",
+        kind=CaseKind.ABSENCE,
+        description=(
+            "A complete, realistic tender package that contains NONE of the ten "
+            "required documents: only a method statement, programme, plant "
+            "schedule, personnel list and safety approach. Three unrelated "
+            "checklist items are checked against it. This isolates whether the "
+            "model can report absence at all, or only ever latches onto the "
+            "nearest plausible text."
+        ),
+        expected="All three items Not Found, with no page number and no snippet",
+        checklist_item_ids=("CHK-01", "CHK-02", "CHK-04"),
+        submission_file="no-items-submission.pdf",
+        acceptance_criteria="AC4",
+    ),
+    EvaluationCase(
+        id="EV-19",
+        kind=CaseKind.OVERFLOW,
+        description=(
+            "A 60-page submission, larger than the configured 16,384-token "
+            "context window. Silent truncation here would report present "
+            "documents as missing, so the request must be refused instead."
+        ),
+        expected=(
+            "Refused before any model call, with an error naming the token "
+            "budget and the configured window"
+        ),
+        checklist_item_id="CHK-01",
+        submission_file="long-submission.pdf",
+        acceptance_criteria="Prompt Spec v1.0 Sec. 7",
     ),
 ]

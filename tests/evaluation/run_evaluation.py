@@ -27,15 +27,17 @@ if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from procurecheck.config import Settings  # noqa: E402
-from procurecheck.engine import MatchingEngine  # noqa: E402
+from procurecheck.engine import ContextOverflowError, MatchingEngine  # noqa: E402
 from procurecheck.ingestion import parse_checklist, parse_submission  # noqa: E402
 from procurecheck.ingestion.submission import (  # noqa: E402
+    EmptyDocumentError,
     ParsedPage,
     ParsedSubmission,
     UnsupportedDocumentError,
 )
 from procurecheck.llm import OllamaClient  # noqa: E402
 from procurecheck.models import ItemStatus  # noqa: E402
+from procurecheck.report_pdf import ReportMeta, write_pdf  # noqa: E402
 from procurecheck.safety import (  # noqa: E402
     MultipleSubmissionsError,
     assert_single_submission,
@@ -261,6 +263,110 @@ def _run_injection(case: EvaluationCase, engine: MatchingEngine, items, submissi
     )
 
 
+def _run_format(case: EvaluationCase, engine: MatchingEngine, items) -> CaseResult:
+    """Run one item against the same content in a non-PDF format."""
+    start = time.monotonic()
+    submission = parse_submission(SAMPLES / case.submission_file)
+    target = [item for item in items if item.id == case.checklist_item_id]
+    outcome = engine.analyse(target, submission)
+    elapsed = time.monotonic() - start
+
+    assert outcome.report is not None
+    verification = outcome.report.verified_items[0]
+    actual = f"{case.submission_file}: {_fmt_verification(verification)}"
+
+    # Formats without page boundaries must report page 1, never a guess.
+    page_ok = verification.page_number in (None, 1)
+    passed = verification.status is ItemStatus.FOUND and page_ok
+    if not page_ok:
+        actual += f"  INVALID PAGE {verification.page_number} for a single-page format"
+
+    return CaseResult(
+        id=case.id, acceptance_criteria=case.acceptance_criteria,
+        description=case.description, expected=case.expected, actual=actual,
+        passed=passed, seconds=round(elapsed, 1),
+        detail=json.dumps(verification.model_dump(), ensure_ascii=False),
+    )
+
+
+def _run_parse_failure(case: EvaluationCase) -> CaseResult:
+    """A file that yields no text must fail loudly, not report all items missing."""
+    start = time.monotonic()
+    try:
+        parsed = parse_submission(SAMPLES / case.submission_file)
+        actual = (
+            f"Parsed without error into {parsed.page_count} page(s) and "
+            f"{parsed.character_count} characters. It should have been rejected."
+        )
+        passed = False
+        detail = ""
+    except (EmptyDocumentError, UnsupportedDocumentError) as exc:
+        actual = f"Rejected with a clear error: {exc}"
+        passed = "OCR" in str(exc)
+        detail = str(exc)
+
+    return CaseResult(
+        id=case.id, acceptance_criteria=case.acceptance_criteria,
+        description=case.description, expected=case.expected, actual=actual,
+        passed=passed, seconds=round(time.monotonic() - start, 1), detail=detail,
+    )
+
+
+def _run_absence(case: EvaluationCase, engine: MatchingEngine, items) -> CaseResult:
+    """Check several items against a submission containing none of them."""
+    start = time.monotonic()
+    submission = parse_submission(SAMPLES / case.submission_file)
+    targets = [item for item in items if item.id in case.checklist_item_ids]
+    outcome = engine.analyse(targets, submission)
+    elapsed = time.monotonic() - start
+
+    assert outcome.report is not None
+    verifications = outcome.report.verified_items
+    lines = [
+        f"{v.checklist_item_id}={v.status.value} (conf {v.confidence_score:.2f})"
+        for v in verifications
+    ]
+    not_found = [v for v in verifications if v.status is ItemStatus.NOT_FOUND]
+    actual = f"{len(not_found)} of {len(verifications)} Not Found. " + "; ".join(lines)
+    passed = len(not_found) == len(verifications)
+
+    return CaseResult(
+        id=case.id, acceptance_criteria=case.acceptance_criteria,
+        description=case.description, expected=case.expected, actual=actual,
+        passed=passed, seconds=round(elapsed, 1),
+        detail=json.dumps([v.model_dump() for v in verifications], ensure_ascii=False),
+    )
+
+
+def _run_overflow(case: EvaluationCase, engine: MatchingEngine, items) -> CaseResult:
+    """Oversized input must be refused, never silently truncated."""
+    start = time.monotonic()
+    submission = parse_submission(SAMPLES / case.submission_file)
+    target = [item for item in items if item.id == case.checklist_item_id]
+    try:
+        engine.analyse(target, submission)
+        actual = (
+            f"Accepted a {submission.page_count}-page submission of about "
+            f"{submission.character_count // 4:,} tokens without complaint. "
+            f"It should have been refused."
+        )
+        passed = False
+        detail = ""
+    except ContextOverflowError as exc:
+        actual = (
+            f"Refused a {submission.page_count}-page submission before any model "
+            f"call: {exc}"
+        )
+        passed = True
+        detail = str(exc)
+
+    return CaseResult(
+        id=case.id, acceptance_criteria=case.acceptance_criteria,
+        description=case.description, expected=case.expected, actual=actual,
+        passed=passed, seconds=round(time.monotonic() - start, 1), detail=detail,
+    )
+
+
 def run(include_model_cases: bool) -> List[CaseResult]:
     settings = Settings.from_env()
     items = parse_checklist(SAMPLES / "checklist.csv")
@@ -274,6 +380,8 @@ def run(include_model_cases: bool) -> List[CaseResult]:
                 CaseKind.CLASSIFICATION,
                 CaseKind.SAFETY_REFUSAL,
                 CaseKind.INJECTION,
+                CaseKind.FORMAT,
+                CaseKind.ABSENCE,
             )
             if needs_model and not include_model_cases:
                 continue
@@ -289,11 +397,54 @@ def run(include_model_cases: bool) -> List[CaseResult]:
                 results.append(_run_independence(case))
             elif case.kind is CaseKind.INJECTION:
                 results.append(_run_injection(case, engine, items, submission))
+            elif case.kind is CaseKind.FORMAT:
+                results.append(_run_format(case, engine, items))
+            elif case.kind is CaseKind.PARSE_FAILURE:
+                results.append(_run_parse_failure(case))
+            elif case.kind is CaseKind.ABSENCE:
+                results.append(_run_absence(case, engine, items))
+            elif case.kind is CaseKind.OVERFLOW:
+                results.append(_run_overflow(case, engine, items))
     return results
 
 
 def _escape(text: str) -> str:
     return text.replace("|", "\\|").replace("\n", " ")
+
+
+CAVEATS = [
+    "The machine used for testing has no graphics card, so the model runs on the "
+    "processor alone. Each check takes roughly three to five minutes. Faster "
+    "hardware would not change the verdicts, only the time taken.",
+    "All submissions used are synthetic and short. A real tender pack is longer, "
+    "more often scanned, and less tidily written.",
+    "Only one checklist of ten items was used. A different checklist, or one "
+    "written in different language, may produce different results.",
+    "The optical character recognition step promised in the architecture document "
+    "has not been built, so scanned documents cannot be checked at all yet. The "
+    "system refuses them clearly rather than pretending to read them.",
+    "These results describe one specific model at one specific setting. They are a "
+    "starting point to improve on, not a final measure of what is achievable.",
+]
+
+
+def _write_pdf_report(results: List[CaseResult], stem: str) -> Path:
+    """Render the novice-readable PDF alongside the Markdown and CSV tables."""
+    settings = Settings.from_env()
+    meta = ReportMeta(
+        model=settings.model,
+        prompt_version="v1.0-per-item",
+        strategy="one check per checklist item",
+        context_tokens=settings.context_tokens,
+        threshold=settings.human_review_threshold,
+        submission_note=(
+            "A seven-page synthetic tender submission, the same content again as a "
+            "Word file and as plain text, a scanned image-only version of it, a "
+            "realistic tender package containing none of the required documents, "
+            "and a sixty-page document used to test the size limit."
+        ),
+    )
+    return write_pdf(results, meta, CAVEATS, EVALUATION_DIR / (stem + ".pdf"))
 
 
 def write_outputs(results: List[CaseResult], model: str, partial: bool = False) -> None:
@@ -348,9 +499,15 @@ def write_outputs(results: List[CaseResult], model: str, partial: bool = False) 
         json.dumps([asdict(r) for r in results], indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
+    try:
+        pdf_path = _write_pdf_report(results, stem)
+        pdf_note = f"\nWrote {pdf_path}"
+    except Exception as exc:  # a PDF failure must never lose the results
+        pdf_note = f"\nPDF report could not be generated: {exc}"
+
     print(
         f"\n{passed} of {len(results)} cases met expectation.\n"
-        f"Wrote {EVALUATION_DIR / (stem + '.md')}",
+        f"Wrote {EVALUATION_DIR / (stem + '.md')}{pdf_note}",
         file=sys.stderr,
     )
 

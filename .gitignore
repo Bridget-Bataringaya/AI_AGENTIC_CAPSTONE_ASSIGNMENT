@@ -12,3 +12,6 @@ htmlcov/
 
 # Partial evaluation output from --no-model runs, not a deliverable
 docs/evaluation/*.partial.*
+
+# Large generated fixtures are rebuilt by the generator scripts
+evidence/traces/*.log
