@@ -22,6 +22,7 @@ import re
 import sys
 import time
 from dataclasses import asdict, dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -549,34 +550,75 @@ def _write_pdf_report(results: List[CaseResult], stem: str) -> Path:
     return write_pdf(results, meta, CAVEATS, EVALUATION_DIR / (stem + ".pdf"))
 
 
+def _write_guarded(destination: Path, write, label: str) -> Optional[Path]:
+    """Write one output, falling back to a timestamped name if the path is locked.
+
+    A file open in Excel or a PDF viewer raises PermissionError on Windows.
+    Losing an hour of model time to that is unacceptable, so each output is
+    attempted independently and a blocked path is written beside the original.
+    """
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        write(destination)
+        return destination
+    except PermissionError:
+        stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        fallback = destination.with_name(
+            f"{destination.stem}.{stamp}{destination.suffix}"
+        )
+        try:
+            write(fallback)
+            print(
+                f"  {destination.name} is locked, probably open in another "
+                f"program. Wrote {fallback.name} instead.",
+                file=sys.stderr,
+            )
+            return fallback
+        except OSError as exc:
+            print(f"  Could not write {label}: {exc}", file=sys.stderr)
+            return None
+    except OSError as exc:
+        print(f"  Could not write {label}: {exc}", file=sys.stderr)
+        return None
+
+
 def write_outputs(
     results: List[CaseResult],
     model: str,
     partial: bool = False,
     stem: Optional[str] = None,
 ) -> None:
-    """Write the evaluation table, CSV and raw trace.
+    """Write the raw trace, then the tables, then the PDF.
 
-    A partial run writes to its own filenames. The reporting table is evidence
-    for the Week 2 deliverable, and a quick --no-model sanity check must never
-    silently replace a completed full run with a two-row file.
+    Order matters: the JSON trace is the complete record and is written first,
+    so a later failure can never leave a run with nothing to show. Each output
+    is independent, so one locked file cannot take the others down with it.
     """
-    EVALUATION_DIR.mkdir(parents=True, exist_ok=True)
-    TRACES_DIR.mkdir(parents=True, exist_ok=True)
     stem = stem or (
         "prompt-evaluation-table.partial" if partial
         else "prompt-evaluation-table"
     )
     trace_name = f"{stem}-raw.json"
-
     passed = sum(1 for r in results if r.passed)
+
+    # 1. The raw trace first. Everything else can be rebuilt from it.
+    _write_guarded(
+        TRACES_DIR / trace_name,
+        lambda p: p.write_text(
+            json.dumps([asdict(r) for r in results], indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        ),
+        "raw trace",
+    )
+
+    # 2. The Markdown table.
     lines = [
         "# Prompt Evaluation Table",
         "",
         "Public Procurement Document-Completeness Agent, Week 2 baseline.",
         "",
         f"Model: `{model}`  ",
-        f"Prompt version: `v1.0-per-item`  ",
+        "Prompt version: `v1.0-per-item`  ",
         f"Cases run: {len(results)}  ",
         f"Cases meeting expectation: {passed} of {len(results)}",
         "",
@@ -589,35 +631,43 @@ def write_outputs(
             f"| {r.id} | {_escape(r.acceptance_criteria)} | {_escape(r.description)} "
             f"| {_escape(r.expected)} | {_escape(r.actual)} | {verdict} | {r.seconds} |"
         )
-    (EVALUATION_DIR / f"{stem}.md").write_text(
-        "\n".join(lines) + "\n", encoding="utf-8"
+    md_path = _write_guarded(
+        EVALUATION_DIR / f"{stem}.md",
+        lambda p: p.write_text("\n".join(lines) + "\n", encoding="utf-8"),
+        "markdown table",
     )
 
-    with (EVALUATION_DIR / f"{stem}.csv").open(
-        "w", newline="", encoding="utf-8"
-    ) as handle:
-        writer = csv.DictWriter(
-            handle,
-            fieldnames=["id", "acceptance_criteria", "description", "expected",
-                        "actual", "passed", "seconds", "detail"],
-        )
-        writer.writeheader()
-        for r in results:
-            writer.writerow(asdict(r))
+    # 3. The CSV.
+    def _write_csv(path: Path) -> None:
+        with path.open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(
+                handle,
+                fieldnames=["id", "acceptance_criteria", "description", "expected",
+                            "actual", "passed", "seconds", "detail"],
+            )
+            writer.writeheader()
+            for r in results:
+                writer.writerow(asdict(r))
 
-    (TRACES_DIR / trace_name).write_text(
-        json.dumps([asdict(r) for r in results], indent=2, ensure_ascii=False),
-        encoding="utf-8",
-    )
+    _write_guarded(EVALUATION_DIR / f"{stem}.csv", _write_csv, "csv table")
+
+    # 4. The PDF, last because it is the most likely to fail and the easiest to
+    #    regenerate from the trace.
     try:
         pdf_path = _write_pdf_report(results, stem)
         pdf_note = f"\nWrote {pdf_path}"
+    except PermissionError:
+        pdf_note = (
+            f"\n{stem}.pdf is locked, probably open in a PDF viewer. "
+            f"Close it and rerun, or regenerate from the trace."
+        )
     except Exception as exc:  # a PDF failure must never lose the results
         pdf_note = f"\nPDF report could not be generated: {exc}"
 
     print(
-        f"\n{passed} of {len(results)} cases met expectation.\n"
-        f"Wrote {EVALUATION_DIR / (stem + '.md')}{pdf_note}",
+        f"\n{passed} of {len(results)} cases met expectation."
+        + (f"\nWrote {md_path}" if md_path else "")
+        + pdf_note,
         file=sys.stderr,
     )
 
