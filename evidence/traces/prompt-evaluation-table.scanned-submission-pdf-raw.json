@@ -1,0 +1,13 @@
+[
+  {
+    "id": "EV-17",
+    "acceptance_criteria": "AC2, Charter document-quality constraint",
+    "description": "A scanned, image-only PDF with no text layer, which the Project Charter names as a document-quality risk. The Architecture and Context Diagram promises an OCR fallback; it does not exist yet, so this case records the real behaviour.",
+    "expected": "Rejected with a clear error telling the user OCR is needed. It must fail loudly, never silently report every item as missing.",
+    "actual": "Rejected with a clear error: scanned-submission.pdf contains no extractable text. If it is a scanned document, it must be passed through OCR before it can be checked.",
+    "passed": true,
+    "seconds": 0.0,
+    "detail": "scanned-submission.pdf contains no extractable text. If it is a scanned document, it must be passed through OCR before it can be checked.",
+    "submission": "scanned-submission-pdf"
+  }
+]
