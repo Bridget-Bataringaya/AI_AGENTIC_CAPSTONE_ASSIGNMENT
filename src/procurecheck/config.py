@@ -35,7 +35,14 @@ DEFAULT_HUMAN_REVIEW_THRESHOLD: Final[float] = 0.85
 DEFAULT_CONTEXT_TOKENS: Final[int] = 16_384
 
 # Operational defaults, not drawn from the team documents.
-DEFAULT_REQUEST_TIMEOUT_SECONDS: Final[float] = 300.0
+#
+# The timeout has to cover the slowest realistic single call, not the typical
+# one. On the CPU-only development machine a per-item call under prompt v2.0
+# has taken as long as 432 seconds, and the first call of a run also carries
+# model load. A timeout that trips mid-run costs the whole evaluation, so the
+# default is generous: it exists to catch a hung backend, not to bound
+# ordinary slowness. Lower it on hardware with a GPU.
+DEFAULT_REQUEST_TIMEOUT_SECONDS: Final[float] = 1800.0
 DEFAULT_SCHEMA_RETRY_LIMIT: Final[int] = 1
 DEFAULT_SNIPPET_MAX_CHARS: Final[int] = 400
 
@@ -44,6 +51,12 @@ DEFAULT_SNIPPET_MAX_CHARS: Final[int] = 400
 # report in a single call. See docs note in engine.py.
 STRATEGY_PER_ITEM: Final[str] = "per_item"
 STRATEGY_BATCH: Final[str] = "batch"
+
+# The numbered prompt version the run uses. The per-item or batch form is
+# derived from the strategy above, so this names the iteration only. v1.0 is
+# kept selectable so the v1.0 baseline in docs/evaluation/ can be reproduced
+# and compared against. See prompts/prompt-version-history.md.
+DEFAULT_PROMPT_VERSION: Final[str] = "v2.0"
 
 
 def _env_str(name: str, default: str) -> str:
@@ -86,6 +99,7 @@ class Settings:
     schema_retry_limit: int = DEFAULT_SCHEMA_RETRY_LIMIT
     snippet_max_chars: int = DEFAULT_SNIPPET_MAX_CHARS
     strategy: str = STRATEGY_PER_ITEM
+    prompt_version: str = DEFAULT_PROMPT_VERSION
 
     def __post_init__(self) -> None:
         if not 0.0 <= self.temperature <= 2.0:
@@ -101,6 +115,17 @@ class Settings:
         if self.strategy not in (STRATEGY_PER_ITEM, STRATEGY_BATCH):
             raise ValueError(
                 f"strategy must be {STRATEGY_PER_ITEM!r} or {STRATEGY_BATCH!r}"
+            )
+        # Imported here rather than at module level so that the registry stays
+        # the single source of truth for which versions exist, without config
+        # taking a permanent dependency on the prompt text.
+        from .prompts import SELECTABLE_PROMPT_VERSIONS
+
+        if self.prompt_version not in SELECTABLE_PROMPT_VERSIONS:
+            selectable = ", ".join(SELECTABLE_PROMPT_VERSIONS)
+            raise ValueError(
+                f"prompt_version must be one of: {selectable}. "
+                f"Got {self.prompt_version!r}."
             )
 
     @property
@@ -137,4 +162,16 @@ class Settings:
                 "PROCURECHECK_SNIPPET_MAX_CHARS", DEFAULT_SNIPPET_MAX_CHARS
             ),
             strategy=_env_str("PROCURECHECK_STRATEGY", STRATEGY_PER_ITEM),
+            prompt_version=_env_str(
+                "PROCURECHECK_PROMPT_VERSION", DEFAULT_PROMPT_VERSION
+            ),
+        )
+
+    @property
+    def resolved_prompt_version(self) -> str:
+        """The registry id of the prompt this run will actually send."""
+        from .prompts import resolve_prompt_version
+
+        return resolve_prompt_version(
+            self.prompt_version, per_item=self.strategy == STRATEGY_PER_ITEM
         )

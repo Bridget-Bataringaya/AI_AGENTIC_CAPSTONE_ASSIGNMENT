@@ -470,11 +470,24 @@ def run_target(
                 f"  {case.id} {case.checklist_item_id}...", file=sys.stderr, flush=True
             )
             results.append(_run_format(case, engine, items))
-            results[-1].submission = submission_path.stem
+            results[-1].submission = _document_label(submission_path)
     return results
 
 
-BASE_SUBMISSION = "synthetic-submission"
+def _document_label(path: "Path | str") -> str:
+    """Name a document by stem AND format.
+
+    The format has to be part of the label. The same content is tested as PDF,
+    DOCX and TXT, and Path.stem is identical for all three, so per-document
+    output files built from the stem alone silently overwrite one another and
+    only the last format run survives.
+    """
+    candidate = Path(path)
+    suffix = candidate.suffix.lstrip(".").lower()
+    return f"{candidate.stem}-{suffix}" if suffix else candidate.stem
+
+
+BASE_SUBMISSION = _document_label("synthetic-submission.pdf")
 
 
 def _submission_for(case: EvaluationCase) -> str:
@@ -485,7 +498,7 @@ def _submission_for(case: EvaluationCase) -> str:
     an empty string and appear only in the combined table.
     """
     if case.submission_file:
-        return Path(case.submission_file).stem
+        return _document_label(case.submission_file)
     if case.kind is CaseKind.INJECTION:
         return f"{BASE_SUBMISSION}-injected"
     if case.kind in (CaseKind.CLASSIFICATION, CaseKind.SAFETY_REFUSAL):
@@ -573,7 +586,7 @@ def _write_pdf_report(
     settings = Settings.from_env()
     meta = ReportMeta(
         model=settings.model,
-        prompt_version="v1.0-per-item",
+        prompt_version=settings.resolved_prompt_version,
         strategy="one check per checklist item",
         context_tokens=settings.context_tokens,
         threshold=settings.human_review_threshold,
@@ -622,7 +635,7 @@ def _markdown_table(results: List[CaseResult], model: str, heading: str) -> str:
         "Public Procurement Document-Completeness Agent, Week 2 baseline.",
         "",
         f"Model: `{model}`  ",
-        "Prompt version: `v1.0-per-item`  ",
+        f"Prompt version: `{Settings.from_env().resolved_prompt_version}`  ",
         f"Cases run: {len(results)}  ",
         f"Cases meeting expectation: {passed} of {len(results)}",
         "",

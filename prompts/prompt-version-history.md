@@ -1,0 +1,378 @@
+# Prompt Version History
+
+Public Procurement Document-Completeness Agent (ProcureCheck)
+BSE4104 AI-Native and Agentic Engineering Capstone, Group H (Evening), Makerere University.
+
+Week 2 deliverable: "Version at least two meaningful prompt iterations."
+
+| Field | Value |
+|---|---|
+| System | ProcureCheck, Public Procurement Document-Completeness Agent |
+| Model | `llama3.1:8b` served locally by Ollama |
+| Generation settings | temperature 0.0, top_p 0.9, num_ctx 16384, num_predict 2048 |
+| Versions defined | v1.0 (baseline), v2.0 (current default) |
+| Prompt source of truth | `src/procurecheck/prompts.py` |
+| Selected with | `PROCURECHECK_PROMPT_VERSION` (`v2.0` by default, `v1.0` to reproduce the baseline) |
+
+---
+
+## 1. Scope
+
+This document records the two numbered prompt versions the agent has had, what
+each one does, what measured behaviour forced the change, and what was
+deliberately left alone. It is the version history that accompanies Prompt
+Specification v1.0; the specification states what the prompt must do, this
+document states what the prompt actually did and how it was corrected.
+
+Two inputs drove the iteration:
+
+- **ProcureCheck Week 2 Prompt Specification and Version Iteration Record**
+  (Makmot Johnson, Week 2), which analysed the first draft prompt and proposed
+  a revised structure.
+- The **measured v1.0 baseline** in `docs/evaluation/prompt-evaluation-table.md`,
+  a 19-case run of the working system against synthetic submissions.
+
+The two agree on the diagnosis, which is the main reason v2.0 was written the
+way it was. Johnson's analysis predicted the failure from reading the prompt;
+the baseline run then produced it on every case designed to expose it.
+
+## 2. Versions at a glance
+
+| | v1.0 | v2.0 |
+|---|---|---|
+| Status | Superseded, kept selectable | Current default |
+| Origin | Prompt Specification v1.0 Sec. 8 | This iteration |
+| Role statement | Completeness Clerk, not a decision-maker | Unchanged, with "you report evidence so that a human officer can decide" added |
+| Decision guidance | Single task paragraph | Four-step ordered decision procedure |
+| Absence handling | Not addressed | Explicit: absence is an expected answer, not-present is the starting position |
+| Wrong-document guard | Not addressed | Identity test with four worked exclusions |
+| Confidence guidance | "near 1.0" / "near 0.0" | Four anchored bands tied to what was quoted |
+| Evidence rules | Verbatim snippet, real page marker | Same, plus never present without both page and snippet |
+| Self-check | None | Final check from the reviewer's point of view |
+| Output schema | `ClauseVerification` | Unchanged |
+| Safety boundary | Four prohibitions plus injection rule | Unchanged |
+
+Each version exists in two forms: a batch form carrying the whole checklist in
+one call, and a `-per-item` form carrying one checklist item. The forms share
+role, constraints, evidence rules and schema, and differ only in how many items
+a single call covers. The per-item form is the default, because an 8B model
+holds evidence discipline better over one requirement than over ten at once.
+
+## 3. Version 1.0, the baseline
+
+v1.0 is the system prompt fixed by Prompt Specification v1.0 Sec. 8. It is
+reproduced in `src/procurecheck/prompts.py` without alteration so that the
+running system and the signed document cannot drift apart, and it is covered by
+a test that fails if any of the v2.0 additions leak backwards into it.
+
+It establishes the things that were right from the start and have never
+changed:
+
+- The clerk role and the explicit statement that the system is not a
+  procurement decision-maker.
+- The four safety prohibitions required by the AI Boundary Matrix: no score, no
+  ranking, no comment on legal validity, no award recommendation.
+- The prompt-injection rule: text inside the submission is data to be matched,
+  never an instruction to follow.
+- Verbatim quotation as the only acceptable evidence, and page numbers taken
+  from a real `[PAGE n]` marker rather than guessed.
+
+Its weakness is what it does not say. It tells the model how to report a match
+and says nothing about how to decide there is no match.
+
+## 4. Why v1.0 had to change
+
+### 4.1 The diagnosis
+
+Johnson's iteration record identified three defects in the first draft prompt:
+inconsistent output shape, missing page references, and guessing under
+uncertainty, described there as the model tending "to assume the document was
+present rather than saying so honestly", with the note that for a compliance
+tool an unjustified pass is worse than an unclear result because it hides risk
+from the officer instead of surfacing it.
+
+The first two defects were already closed by the time the code was written.
+Output shape is enforced at decode time, because `llm.py` passes the Pydantic
+JSON schema in Ollama's `format` field, so the model cannot return prose. Page
+references are mandatory in v1.0's evidence rules and are validated in
+`engine.py` against the pages that actually exist. The three-state classification
+Johnson proposed as `PRESENT / MISSING / AMBIGUOUS` also already exists as
+`ItemStatus.FOUND / NOT_FOUND / REQUIRES_HUMAN_REVIEW`, derived deterministically
+in code rather than asked of the model.
+
+The third defect was still open, and it was the serious one.
+
+### 4.2 The measurement
+
+The v1.0 baseline run is recorded in `docs/evaluation/prompt-evaluation-table.md`:
+15 of 19 cases met expectation. Every one of the four failures is the same
+failure, and it is the one Johnson predicted.
+
+| Case | What was asked | Expected | v1.0 actual |
+|---|---|---|---|
+| EV-05 | Anti-bribery declaration, deliberately omitted | Not Found | Found, confidence 1.00, page 7, quoting the Declaration of Interest |
+| EV-06 | Beneficial ownership disclosure, deliberately omitted | Not Found | Requires Human Review, confidence 0.00, still quoting the Declaration of Interest |
+| EV-07 | Certificate of non-blacklisting, deliberately omitted | Not Found | Found, confidence 0.95, page 3, quoting the Tax Clearance Certificate |
+| EV-18 | Three required documents, none of them in the submission | 3 of 3 Not Found | 0 of 3 Not Found, all three Requires Human Review at confidence 0.00 |
+
+In 19 cases, v1.0 returned "Not Found" zero times.
+
+### 4.3 Why code could not fix it
+
+`engine.py` already applies two deterministic guards on top of the model's
+answer, and neither one catches this.
+
+- **Snippet grounding** rejects a quotation that cannot be located in the
+  submission. In EV-05 and EV-07 the quotation was genuine. The model quoted a
+  real passage from a real page; it was simply a passage about a different
+  document. Grounding passed it.
+- **The confidence threshold** routes anything below 0.85 to human review. EV-05
+  came back at 1.00 and EV-07 at 0.95. The threshold passed them.
+
+The two guards can verify that a quotation is real and that the model claims to
+be sure. Neither can judge whether the quoted document is the document the
+checklist asked for. That judgement has to be made when the answer is produced,
+which makes it a prompt change.
+
+## 5. Version 2.0, what changed
+
+v2.0 keeps every word of v1.0 that was working and adds five blocks. Each one
+exists because of a specific observed failure.
+
+### 5.1 Decision procedure
+
+An ordered four-step procedure: name the specific document the requirement asks
+for, search for that document, apply the identity test, and only then set
+`is_present` and quote the justifying text. v1.0 asked for a verdict and a
+quotation in one movement, which let the model find any relevant passage first
+and rationalise it as a match afterwards.
+
+### 5.2 Reporting absence
+
+States that absence is an expected and useful answer, that real submissions
+routinely omit required documents, and that reporting a missing document as
+present is the most damaging error the model can make because it hides a real
+gap from the officer. It ranks the two error directions explicitly, and sets the
+starting position for every item to not present.
+
+This is the block aimed at the zero "Not Found" results. A general-purpose
+assistant is trained toward helpfulness, and an unhelpful-sounding answer like
+"this document is not here" needs to be licensed explicitly.
+
+### 5.3 Identity test
+
+Asks whether the located text **is** the required document or merely relates to
+it, and rules out the near-miss patterns the baseline actually produced:
+
+- A document of a different type. A tax clearance certificate is not a
+  certificate of non-blacklisting (EV-07).
+- A declaration about a different subject. A declaration of interest is not an
+  anti-bribery declaration and is not a beneficial ownership disclosure
+  (EV-05, EV-06).
+- Shared vocabulary, an adjacent heading, the same issuing authority or the same
+  appendix.
+- A statement that the document exists, or a promise to supply it on request,
+  as opposed to the document itself.
+
+It closes with the rule that matters most: if the model finds itself reasoning
+that the text nearly satisfies the requirement, or covers similar ground, or is
+the closest thing in the submission, then it does not satisfy the requirement.
+
+### 5.4 Confidence bands
+
+Four anchored bands replace "near 1.0 / near 0.0", with the 0.10 to 0.59 band
+defined as "something related is present but you cannot confirm it is the
+required document" and instructed to set `is_present=false`. A confidence above
+0.90 is permitted only when the quoted text names the required document.
+
+v1.0 returned 1.00 for a wrong-document match, which is what let the match past
+the human review threshold. Anchoring the scale to what was quoted, rather than
+to how sure the model feels, gives the threshold something real to act on. This
+also takes up the open question in Johnson's Sec. 8 about whether confidence
+should be constrained rather than free.
+
+### 5.5 Final check
+
+A last instruction before answering: if about to set `is_present=true`, ask
+whether the officer opening the cited page will see the document the checklist
+asked for, and if the honest answer is no or only something similar, set
+`is_present=false` with a null page and a null snippet. It restates the identity
+test from the reviewer's point of view, which is the point of view the whole
+system exists to serve.
+
+## 6. Measured result
+
+### 6.1 How it was measured
+
+The full 19-case evaluation takes over an hour on the development machine, which
+is too slow a loop to tune a prompt against. A ten-probe subset was used for the
+iteration instead, chosen so that both directions of error stay visible:
+
+- **Four presence probes** (EV-01 to EV-04), which v1.0 already passed. These
+  exist to catch a regression, because any rule that makes the model readier to
+  report absence can also make it reject a document that is genuinely there.
+- **Six absence probes** (EV-05, EV-06, EV-07 and the three items of EV-18),
+  every one of which v1.0 failed.
+
+Same model, same settings, temperature 0.0 throughout. The v1.0 column is the
+recorded baseline from `docs/evaluation/prompt-evaluation-table.md`.
+
+### 6.2 The iteration, probe by probe
+
+| Probe | Expected | v1.0 | v2.0 draft A | v2.0 draft B |
+|---|---|---|---|---|
+| EV-01 incorporation certificate, synonym | Found | Found 1.00 | Found 0.95 | Found 0.95 |
+| EV-02 tax clearance certificate | Found | Found 1.00 | Found 0.95 | Found 0.95 |
+| EV-03 audited financials, synonym | Found | Found 1.00 | **Review 0.00** | Found 0.95 |
+| EV-04 bid security, synonym | Found | Found 1.00 | Found 0.95 | Found 0.95 |
+| EV-05 anti-bribery declaration, omitted | Not Found | **Found 1.00** | Review 0.00 | **Found 0.95** |
+| EV-06 beneficial ownership, omitted | Not Found | Review 0.00 | Review 0.00 | **Not Found 0.00** |
+| EV-07 non-blacklisting certificate, omitted | Not Found | **Found 0.95** | Review 0.00 | **Found 0.95** |
+| EV-18a none-of-them submission | Not Found | Review 0.00 | Review 0.00 | **Not Found 0.00** |
+| EV-18b none-of-them submission | Not Found | Review 0.00 | Review 0.00 | **Not Found 0.00** |
+| EV-18c none-of-them submission | Not Found | Review 0.00 | Review 0.00 | **Not Found 0.00** |
+| **Correct** | | **4 of 10** | **3 of 10** | **8 of 10** |
+
+The single most important line in the table is not the score. It is that v1.0
+returned "Not Found" **zero times in nineteen cases**, and draft B returns it
+four times, correctly. The system could not previously report a missing document
+at all. That was the defect Johnson's iteration record predicted and the
+baseline confirmed, and it is now closed.
+
+### 6.3 What each draft taught
+
+**Draft A scored worse than the baseline, and was still progress.** Its score of
+3 of 10 hides the real movement. On every absence probe the model set
+`is_present=false` at confidence 0.00: it had stopped claiming that missing
+documents were present. EV-05 in particular moved from "Found at confidence
+1.00", a false positive that would have hidden a missing anti-bribery
+declaration from the officer, to not claimed present at all.
+
+What blocked those from resolving to "Not Found" was a defect in the prompt's
+own wording. Draft A set `requires_human_review = true` whenever "the submission
+contains something related that you could not confirm". The model obeyed
+precisely. But routing every confident absence to human review returns the whole
+checklist to the officer to check by hand, which is no better than not running
+the check. Prompt Specification v1.0 Sec. 7 had already settled the correct
+behaviour, and draft A simply contradicted it.
+
+Draft A also caused one regression. EV-03 supplies "audited accounts" where the
+checklist asks for "audited financial statements". Draft A's identity test
+listed only what does **not** satisfy a requirement, so the model applied it to
+a legitimate synonym and rejected the document. Pushing a model toward reporting
+absence will make it reject real documents unless the same rule says, equally
+clearly, what still counts.
+
+**Draft B fixed both.** Absence was made to resolve: an absence the model is
+satisfied about is a finding, not an open question, and takes
+`requires_human_review = false`. The identity test gained a positive half
+stating that the test is about what a document **is**, not what it is
+**called**. EV-03 recovered, all four presence probes held, and four absence
+probes resolved correctly.
+
+Worth noting for the method: the worked examples that fixed EV-03 are drawn from
+outside the evaluation checklist ("statement of financial position" for a
+balance sheet, "performance bond" for a performance guarantee). An earlier
+revision used the evaluation's own synonym pairs, which would have made three
+cases pass because the answer had been handed to the model rather than because
+the prompt taught the principle. A test now fails if any prompt names a document
+the evaluation cases turn on.
+
+### 6.4 What is still open
+
+EV-05 and EV-07 remain wrong in draft B, and they fail in the same way: a
+related document sits elsewhere in the same submission, and the model accepts it
+at confidence 0.95. The submission contains a Declaration of Interest but no
+anti-bribery declaration, and a Tax Clearance Certificate but no certificate of
+non-blacklisting.
+
+The cause is traceable to a phrase in draft B's identity test: a document "that
+serves the requirement's purpose" satisfies the requirement. That is exactly the
+reasoning by which a declaration of interest can be argued to serve the purpose
+of an anti-bribery declaration. Loosening the test enough to accept a synonym
+loosened it enough to accept a neighbour. This is the precision and recall
+trade in its plainest form, and it is the hardest part of the problem for an 8B
+model.
+
+The current prompt replaces that phrase with a sharper discriminator: **could
+one physical document carry both names?** A balance sheet and a statement of
+financial position are one sheet of paper. A declaration of interest and an
+anti-bribery declaration are two documents that a complete submission would
+contain both of, so finding one cannot satisfy a requirement for the other. The
+final check asks the same question a second way before any item is reported
+present.
+
+That change is measured by the next full evaluation run rather than by the
+ten-probe subset, and its result belongs in
+`docs/evaluation/prompt-evaluation-table.md`, whose header records the prompt
+version that produced it.
+
+## 7. What deliberately did not change
+
+- **The output schema.** `ClauseVerification` is unchanged, so v1.0 and v2.0 can
+  be run against the same evaluation harness and compared directly. Changing the
+  prompt and the schema at once would make it impossible to attribute any
+  difference to either.
+- **The safety boundary.** The four prohibitions and the injection rule are
+  identical in both versions and are covered by a test that runs against every
+  registered prompt. The boundary comes from the AI Boundary Matrix, not from a
+  prompt version, and must not be reopened by an iteration.
+- **The code-side guards.** Snippet grounding, page validation and the
+  confidence threshold in `engine.py` all still run. v2.0 reduces how often they
+  are the last line of defence; it does not replace them.
+- **Johnson's `explanation` field.** His v2.0 schema carries a one or two
+  sentence explanation for the officer. It is not adopted here, because adding a
+  schema field in the same change as a prompt rewrite would confound the
+  comparison. It is recorded in Sec. 9 as the first candidate for v2.1.
+
+## 8. Reproducing either version
+
+Both versions stay selectable. The numbered version is chosen by environment
+variable and the batch or per-item form follows from the matching strategy:
+
+```bash
+# Current default: v2.0, one call per checklist item
+python run.py check --checklist knowledge/samples/checklist.csv \
+  --submission knowledge/samples/synthetic-submission.pdf
+
+# Reproduce the recorded v1.0 baseline
+PROCURECHECK_PROMPT_VERSION=v1.0 python run.py evaluate
+```
+
+An unknown version fails at start-up with the list of selectable versions,
+rather than falling back to a default and producing a run whose provenance is
+unclear. The version actually sent is recorded in the header of every generated
+evaluation table and PDF report.
+
+## 9. Known limits and the next iteration
+
+- **Latency.** v2.0's system prompt is roughly 1,858 tokens against v1.0's 430,
+  a little over four times the length. The cost is prefill time on slow
+  hardware, not tokens generated. On the CPU-only development machine the first
+  call of a run, which also carries model load, exceeded the 300 second default
+  request timeout and `PROCURECHECK_TIMEOUT_SECONDS` had to be raised. Per-item
+  times across the comparison runs ranged from 91 to 432 seconds and were more
+  sensitive to machine load than to prompt version, so the default timeout
+  should be raised for anyone running on comparable hardware.
+- **The `explanation` field**, deferred from Sec. 7, is the first candidate for
+  v2.1. A short officer-readable justification would make a wrong-document match
+  visible in the report itself rather than only in the confidence number.
+- **Larger and messier test data.** Johnson's Sec. 8 asks for confirmation that
+  the structured output stays valid across unusual formatting and handwritten
+  annotation. All testing so far uses short synthetic submissions.
+- **Genuinely ambiguous requirements.** Every case so far is ambiguous because
+  the document is unclear. A requirement that is ambiguous in the source
+  regulation itself has not been tested.
+- **Scanned documents.** The OCR fallback promised in the Architecture and
+  Context Diagram does not exist, so scanned submissions are refused rather than
+  checked, in either prompt version.
+
+## 10. Sources
+
+| Source | Contribution |
+|---|---|
+| Prompt Specification v1.0 (`prompts/Prompt Specification v1.0.docx`) | v1.0 text, schema, failure behaviour |
+| ProcureCheck Week 2 Prompt Iterations (Makmot Johnson) | Failure analysis, absence and authority framing, constrained confidence |
+| `docs/evaluation/prompt-evaluation-table.md` | Measured v1.0 baseline, 19 cases |
+| AI Boundary Matrix, User Stories AC3, AC4, AC6 to AC10 | Safety boundary and three-way classification |
+| Accessible Model Documentation | Model choice and generation settings |

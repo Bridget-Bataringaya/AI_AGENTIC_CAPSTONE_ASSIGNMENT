@@ -111,6 +111,7 @@ Regenerate the submission with `python knowledge/samples/generate_submission.py`
 | `PROCURECHECK_CONTEXT_TOKENS` | `16384` | Context window requested from Ollama |
 | `PROCURECHECK_HUMAN_REVIEW_THRESHOLD` | `0.85` | Below this, route to human review |
 | `PROCURECHECK_STRATEGY` | `per_item` | `per_item` or `batch` |
+| `PROCURECHECK_PROMPT_VERSION` | `v2.0` | Prompt iteration to run, `v2.0` or `v1.0` |
 
 ### A note on the context window
 

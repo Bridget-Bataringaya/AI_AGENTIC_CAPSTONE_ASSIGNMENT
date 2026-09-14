@@ -25,8 +25,6 @@ from .ingestion.submission import ParsedSubmission
 from .llm import OllamaClient, StructuredOutputError
 from .models import ChecklistItem, ClauseVerification, CompletenessReport, RefusalResponse
 from .prompts import (
-    PROMPT_VERSION_V1_0,
-    PROMPT_VERSION_V1_0_PER_ITEM,
     build_batch_user_message,
     build_item_user_message,
     get_prompt,
@@ -224,7 +222,7 @@ class MatchingEngine:
         submission: ParsedSubmission,
         haystack: str,
     ) -> List[ClauseVerification]:
-        system_prompt = get_prompt(PROMPT_VERSION_V1_0_PER_ITEM)
+        system_prompt = get_prompt(self._settings.resolved_prompt_version)
         results: List[ClauseVerification] = []
         for item in items:
             user_message = build_item_user_message(
@@ -248,7 +246,7 @@ class MatchingEngine:
         submission: ParsedSubmission,
         haystack: str,
     ) -> List[ClauseVerification]:
-        system_prompt = get_prompt(PROMPT_VERSION_V1_0)
+        system_prompt = get_prompt(self._settings.resolved_prompt_version)
         user_message = build_batch_user_message(
             items, submission_text, self._settings.human_review_threshold
         )
