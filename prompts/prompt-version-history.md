@@ -6,7 +6,7 @@ BSE4104 AI-Native and Agentic Engineering Capstone, Group H (Evening), Makerere 
 Week 2 deliverable: "Version at least two meaningful prompt iterations."
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | System | ProcureCheck, Public Procurement Document-Completeness Agent |
 | Model | `llama3.1:8b` served locally by Ollama |
 | Generation settings | temperature 0.0, top_p 0.9, num_ctx 16384, num_predict 2048 |
@@ -38,8 +38,8 @@ the baseline run then produced it on every case designed to expose it.
 
 ## 2. Versions at a glance
 
-| | v1.0 | v2.0 |
-|---|---|---|
+|  | v1.0 | v2.0 |
+| --- | --- | --- |
 | Status | Superseded, kept selectable | Current default |
 | Origin | Prompt Specification v1.0 Sec. 8 | This iteration |
 | Role statement | Completeness Clerk, not a decision-maker | Unchanged, with "you report evidence so that a human officer can decide" added |
@@ -109,7 +109,7 @@ The v1.0 baseline run is recorded in `docs/evaluation/prompt-evaluation-table.md
 failure, and it is the one Johnson predicted.
 
 | Case | What was asked | Expected | v1.0 actual |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | EV-05 | Anti-bribery declaration, deliberately omitted | Not Found | Found, confidence 1.00, page 7, quoting the Declaration of Interest |
 | EV-06 | Beneficial ownership disclosure, deliberately omitted | Not Found | Requires Human Review, confidence 0.00, still quoting the Declaration of Interest |
 | EV-07 | Certificate of non-blacklisting, deliberately omitted | Not Found | Found, confidence 0.95, page 3, quoting the Tax Clearance Certificate |
@@ -219,25 +219,44 @@ recorded baseline from `docs/evaluation/prompt-evaluation-table.md`.
 
 ### 6.2 The iteration, probe by probe
 
-| Probe | Expected | v1.0 | v2.0 draft A | v2.0 draft B |
-|---|---|---|---|---|
-| EV-01 incorporation certificate, synonym | Found | Found 1.00 | Found 0.95 | Found 0.95 |
-| EV-02 tax clearance certificate | Found | Found 1.00 | Found 0.95 | Found 0.95 |
-| EV-03 audited financials, synonym | Found | Found 1.00 | **Review 0.00** | Found 0.95 |
-| EV-04 bid security, synonym | Found | Found 1.00 | Found 0.95 | Found 0.95 |
-| EV-05 anti-bribery declaration, omitted | Not Found | **Found 1.00** | Review 0.00 | **Found 0.95** |
-| EV-06 beneficial ownership, omitted | Not Found | Review 0.00 | Review 0.00 | **Not Found 0.00** |
-| EV-07 non-blacklisting certificate, omitted | Not Found | **Found 0.95** | Review 0.00 | **Found 0.95** |
-| EV-18a none-of-them submission | Not Found | Review 0.00 | Review 0.00 | **Not Found 0.00** |
-| EV-18b none-of-them submission | Not Found | Review 0.00 | Review 0.00 | **Not Found 0.00** |
-| EV-18c none-of-them submission | Not Found | Review 0.00 | Review 0.00 | **Not Found 0.00** |
-| **Correct** | | **4 of 10** | **3 of 10** | **8 of 10** |
+| Probe | Expected | v1.0 | draft A | draft B | **v2.0 shipped** |
+| --- | --- | --- | --- | --- | --- |
+| EV-01 incorporation certificate, synonym | Found | Found 1.00 | Found 0.95 | Found 0.95 | Found |
+| EV-02 tax clearance certificate | Found | Found 1.00 | Found 0.95 | Found 0.95 | Found |
+| EV-03 audited financials, synonym | Found | Found 1.00 | **Review 0.00** | Found 0.95 | Found |
+| EV-04 bid security, synonym | Found | Found 1.00 | Found 0.95 | Found 0.95 | Found |
+| EV-05 anti-bribery declaration, omitted | Not Found | **Found 1.00** | Review 0.00 | **Found 0.95** | **Found 0.95** |
+| EV-06 beneficial ownership, omitted | Not Found | Review 0.00 | Review 0.00 | Not Found 0.00 | Not Found 0.00 |
+| EV-07 non-blacklisting certificate, omitted | Not Found | **Found 0.95** | Review 0.00 | **Found 0.95** | **Found 0.95** |
+| EV-18a none-of-them submission | Not Found | Review 0.00 | Review 0.00 | Not Found 0.00 | Not Found 0.00 |
+| EV-18b none-of-them submission | Not Found | Review 0.00 | Review 0.00 | Not Found 0.00 | Not Found 0.00 |
+| EV-18c none-of-them submission | Not Found | Review 0.00 | Review 0.00 | Not Found 0.00 | Not Found 0.00 |
+| **Correct** |  | **4 of 10** | **3 of 10** | **8 of 10** | **8 of 10** |
 
-The single most important line in the table is not the score. It is that v1.0
-returned "Not Found" **zero times in nineteen cases**, and draft B returns it
-four times, correctly. The system could not previously report a missing document
-at all. That was the defect Johnson's iteration record predicted and the
-baseline confirmed, and it is now closed.
+The single most important line here is not the score. v1.0 returned "Not Found"
+**zero times in nineteen cases**. v2.0 returns it correctly wherever the
+document is genuinely absent and nothing closely resembling it sits nearby. The
+system previously could not report a missing document at all, which was the
+defect Johnson's iteration record predicted and the baseline confirmed. That is
+now closed.
+
+### 6.2.1 Full evaluation, the authoritative comparison
+
+The shipped prompt was then run against the complete 19-case evaluation, on the
+same harness and settings that produced the v1.0 baseline. The probe table above
+is the tuning loop; this is the result that counts.
+
+| Measure | v1.0 | v2.0 |
+| --- | --- | --- |
+| Cases meeting expectation | 15 of 19 | **17 of 19** |
+| Times a required document was reported absent | never | correctly on 4 of the 6 absent items |
+| EV-18, a submission containing none of the required documents | 0 of 3 Not Found | **3 of 3 Not Found** |
+| Safety boundary, EV-08 to EV-11 and EV-14 | all pass | all pass |
+| Format and validation, EV-12, EV-13, EV-15 to EV-17, EV-19 | all pass | all pass |
+| Remaining failures | EV-05, EV-06, EV-07, EV-18 | EV-05, EV-07 |
+
+Both generated tables name their prompt version in the header, so neither run
+can be mistaken for the other.
 
 ### 6.3 What each draft taught
 
@@ -280,32 +299,51 @@ the evaluation cases turn on.
 
 ### 6.4 What is still open
 
-EV-05 and EV-07 remain wrong in draft B, and they fail in the same way: a
-related document sits elsewhere in the same submission, and the model accepts it
-at confidence 0.95. The submission contains a Declaration of Interest but no
-anti-bribery declaration, and a Tax Clearance Certificate but no certificate of
-non-blacklisting.
+EV-05 and EV-07 fail in v2.0, and they fail the same way. A related document
+sits elsewhere in the same submission and the model accepts it at confidence
+0.95.
 
-The cause is traceable to a phrase in draft B's identity test: a document "that
-serves the requirement's purpose" satisfies the requirement. That is exactly the
-reasoning by which a declaration of interest can be argued to serve the purpose
-of an anti-bribery declaration. Loosening the test enough to accept a synonym
-loosened it enough to accept a neighbour. This is the precision and recall
-trade in its plainest form, and it is the hardest part of the problem for an 8B
-model.
+| Case | Required | Submission actually contains | v2.0 quoted |
+| --- | --- | --- | --- |
+| EV-05 | Anti-bribery declaration | A Declaration of Interest, page 7 | "The bidder confirms that no director, officer or shareholder of Kavuma..." |
+| EV-07 | Certificate of non-blacklisting | A Certificate of Registration, page 2 | "Attached as Appendix A is the Certificate of Registration of the Compa..." |
 
-The current prompt replaces that phrase with a sharper discriminator: **could
-one physical document carry both names?** A balance sheet and a statement of
-financial position are one sheet of paper. A declaration of interest and an
-anti-bribery declaration are two documents that a complete submission would
-contain both of, so finding one cannot satisfy a requirement for the other. The
-final check asks the same question a second way before any item is reported
-present.
+Three prompt formulations were tried against these two cases. Draft B allowed a
+document "that serves the requirement's purpose", which is exactly the reasoning
+that lets a declaration of interest pass as an anti-bribery declaration. The
+shipped version replaced that with a concrete discriminator: could one physical
+document carry both names, and would a complete submission contain both? Neither
+formulation moved EV-05 or EV-07.
 
-That change is measured by the next full evaluation run rather than by the
-ten-probe subset, and its result belongs in
-`docs/evaluation/prompt-evaluation-table.md`, whose header records the prompt
-version that produced it.
+One detail is worth recording because it shows what is really happening. Under
+v1.0 and draft B, EV-07 quoted the Tax Clearance Certificate. Under the shipped
+version it quotes the Certificate of Registration instead. The model is not
+holding a stable wrong belief that it can be argued out of; it is selecting
+whichever passage is nearest to the requirement and presenting it as a match.
+The prompt changes altered which passage it picks, not whether it picks one.
+
+The honest conclusion is that this residual failure is unlikely to be fixed by
+prompt wording alone on an 8B model. Absence is now reportable, which was the
+substantive win, and absence against an empty field is reliable, as EV-18 shows.
+What remains is discriminating between two documents that share vocabulary,
+issuer and subject area, which is a harder judgement than the model can be
+talked into making.
+
+Two routes are open for v2.1, and both are structural rather than rhetorical:
+
+- **Tighten the confidence bands in code.** The model reports 0.95 for these
+  matches, comfortably above the 0.85 threshold. A second, cheaper verification
+  call asking only "is this quoted text the required document, yes or no" would
+  give `engine.py` an independent signal instead of the model's self-assessment.
+- **Adopt Johnson's `explanation` field.** A one-sentence justification would
+  make the faulty reasoning visible in the report itself, where a reviewer would
+  catch it, rather than leaving a bare confidence number the threshold trusts.
+
+Until one of those lands, the system's behaviour on this class of case should be
+stated plainly to any officer using it: a required document that has a close
+cousin elsewhere in the submission may still be reported present. The completeness
+check reduces the reviewer's work; it does not yet replace their reading of the
+near-miss items.
 
 ## 7. What deliberately did not change
 
@@ -370,7 +408,7 @@ evaluation table and PDF report.
 ## 10. Sources
 
 | Source | Contribution |
-|---|---|
+| --- | --- |
 | Prompt Specification v1.0 (`prompts/Prompt Specification v1.0.docx`) | v1.0 text, schema, failure behaviour |
 | ProcureCheck Week 2 Prompt Iterations (Makmot Johnson) | Failure analysis, absence and authority framing, constrained confidence |
 | `docs/evaluation/prompt-evaluation-table.md` | Measured v1.0 baseline, 19 cases |

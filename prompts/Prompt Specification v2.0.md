@@ -4,7 +4,7 @@ Public Procurement Document-Completeness Agent, Matching and Classification Engi
 BSE4104 AI-Native and Agentic Engineering Capstone, Group H (Evening), Makerere University.
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Supersedes | Prompt Specification v1.0 |
 | Status | Current. Implemented in `src/procurecheck/prompts.py` and shipping as the default |
 | Model | `llama3.1:8b` (Llama 3.1 8B Instruct) served locally by Ollama |
@@ -34,7 +34,7 @@ beyond v1.0 it does so to correct measured behaviour, not to change scope.
 ### 1.1 Changes from v1.0 at a glance
 
 | Section | Change |
-|---|---|
+| --- | --- |
 | 2. Role | One sentence added: the model reports evidence so a human officer can decide |
 | 3. Task | Review routing narrowed; a four-step decision procedure added |
 | 4. Context | Unchanged |
@@ -51,7 +51,7 @@ establishes the persona of "an objective Public Procurement Completeness Clerk",
 adopted verbatim, with one sentence added to make the division of labour
 explicit:
 
-```
+```text
 You are an objective Public Procurement Completeness Clerk. You assist a human
 procurement reviewer by checking whether ONE required checklist item is present
 in a tender submission. You are a document-retrieval and classification
@@ -85,7 +85,7 @@ single movement, which permitted the model to find any relevant passage first
 and justify it as a match afterwards. v2.0 separates identifying what is
 required from judging what was found.
 
-```
+```text
 TASK:
 Decide whether the submission contains the single required document given,
 allowing for different wording or headings that express the same requirement.
@@ -131,7 +131,7 @@ Stories AC6 to AC9 are unchanged and are reproduced verbatim from v1.0. A test
 asserts them against every registered prompt version, so no future iteration can
 weaken the boundary by accident:
 
-```
+```text
 CONSTRAINTS:
 - Output ONLY the structured JSON schema provided. No prose, no narrative
   justification, no markdown, no code fences.
@@ -152,7 +152,7 @@ v2.0 adds three constraint blocks. Each corrects a measured failure.
 Addresses the central defect: in nineteen baseline cases v1.0 returned
 "Not Found" zero times.
 
-```
+```text
 REPORTING ABSENCE:
 Absence is an expected and useful answer, not a failure on your part. Real
 tender submissions routinely omit required documents, and finding that an item
@@ -190,7 +190,7 @@ real passage about a different document. The block is deliberately symmetrical,
 because an earlier draft that carried only the exclusions caused the model to
 reject a legitimate synonym.
 
-```
+```text
 IDENTITY TEST (apply before setting is_present=true):
 The checklist asks for one specific document, certificate, declaration or
 statement. Ask what the text you located IS, not what it is called. A
@@ -235,7 +235,7 @@ Addresses why the code-side threshold could not catch the false positives: the
 model returned 1.00 and 0.95 for wrong-document matches, comfortably above the
 0.85 threshold.
 
-```
+```text
 CONFIDENCE BANDS (use these anchors, do not invent your own scale):
 - 0.90 to 1.00: the submission names the required document explicitly and the
   text you quoted is unmistakably that document.
@@ -293,7 +293,7 @@ change as a prompt rewrite would confound the comparison.
 ## 7. Failure Behaviour
 
 | Condition | Behaviour |
-|---|---|
+| --- | --- |
 | Item genuinely absent | `is_present=false`, page and snippet null, confidence at or near 0.00, `requires_human_review=false`. **Mandatory in v2.0**, where v1.0 left it implicit |
 | Believed present, match unconfirmed | `requires_human_review=true`. This is the only case that routes to review |
 | Confidence below 0.85 on a claimed match | Routed to human review by `engine.py`, independently of what the model set |
@@ -318,7 +318,7 @@ evidence blocks assembled in this order: role, task, decision procedure,
 reporting absence, identity test, confidence bands, constraints, evidence rules,
 final check. It closes with:
 
-```
+```text
 FINAL CHECK (perform before you answer):
 If you are about to set is_present=true, ask yourself: when the officer opens
 the page I cited, will they see the document the checklist asked for? If the
@@ -329,7 +329,7 @@ page_number=null, extracted_snippet=null and requires_human_review=false.
 The evidence rules are tightened from v1.0 with one addition, that a claimed
 match requires both a page number and a snippet:
 
-```
+```text
 EVIDENCE RULES:
 - page_number must be taken from the nearest preceding [PAGE n] marker in the
   submission text. Never guess a page number, and never cite a page you did
@@ -370,7 +370,7 @@ configuration decision, and it is now explicit.
 ## 11. Traceability
 
 | Spec Section | Source Evidence | Notes |
-|---|---|---|
+| --- | --- | --- |
 | Role, Task | Accessible Model Documentation Sec. 5; Task 1 Main Flow | Carried forward from v1.0 with scope clarification |
 | Output Format | Accessible Model Documentation Sec. 5 | Unchanged from v1.0, deliberately |
 | Constraints (safety) | User Stories AC6 to AC9; AI Boundary Matrix | Unchanged from v1.0, enforced by test across all versions |

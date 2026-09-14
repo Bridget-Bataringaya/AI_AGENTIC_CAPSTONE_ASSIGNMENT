@@ -17,7 +17,7 @@ AI Boundary Matrix and User Stories AC6 to AC9.
 ## Layout
 
 | Path | Contents |
-|---|---|
+| --- | --- |
 | `src/procurecheck/` | Application code |
 | `docs/requirements/` | Charter, user stories, boundary matrix, use case |
 | `docs/architecture/` | Architecture and context diagram |
@@ -70,7 +70,7 @@ python run.py api --reload
 Interactive documentation is then at `http://localhost:8000/docs`.
 
 | Endpoint | Purpose |
-|---|---|
+| --- | --- |
 | `GET /health` | Confirm the backend and model are reachable |
 | `POST /checklist/parse` | Extract required items so the user can edit them |
 | `POST /check` | Run a completeness check for one submission |
@@ -102,7 +102,7 @@ Regenerate the submission with `python knowledge/samples/generate_submission.py`
 ## Configuration
 
 | Variable | Default | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `PROCURECHECK_MODEL` | `llama3.1:8b` | Model name |
 | `PROCURECHECK_BASE_URL` | `http://localhost:11434` | Ollama endpoint |
 | `PROCURECHECK_TEMPERATURE` | `0.0` | Fixed by the Model Selection Note |

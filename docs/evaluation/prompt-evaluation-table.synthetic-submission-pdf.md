@@ -8,7 +8,7 @@ Cases run: 11
 Cases meeting expectation: 9 of 11
 
 | Case | AC | Document | Scenario | Expected | Actual | Result | Seconds |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- |
 | EV-01 | AC3, AC4 | synthetic-submission-pdf | Item present but worded differently. The checklist says 'Certificate of Incorporation'; the submission says 'Certificate of Registration of the Company'. | Found, with a page number and a verbatim snippet from page 2 | Found (confidence 0.95, page 2) "Attached as Appendix A is the Certificate of Registration of the Compa..." | Pass | 226.0 |
 | EV-02 | AC3, AC4 | synthetic-submission-pdf | Item present with near-identical wording (tax clearance certificate). | Found, with a page number and a verbatim snippet from page 3 | Found (confidence 0.95, page 3) "The bidder encloses a Tax Clearance Certificate issued by the national..." | Pass | 211.9 |
 | EV-03 | AC3, AC4 | synthetic-submission-pdf | Item present under a synonym. The checklist says 'audited financial statements'; the submission says 'audited accounts'. | Found, with a page number and a verbatim snippet from page 4 | Found (confidence 0.95, page 4) "Appendix C contains the audited accounts of the bidder for the financi..." | Pass | 203.8 |

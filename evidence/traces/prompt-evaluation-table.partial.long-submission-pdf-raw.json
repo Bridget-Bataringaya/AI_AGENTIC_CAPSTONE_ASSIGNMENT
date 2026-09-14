@@ -6,7 +6,7 @@
     "expected": "Refused before any model call, with an error naming the token budget and the configured window",
     "actual": "Refused a 60-page submission before any model call: Checklist plus submission is roughly 21,267 tokens, above the 12,336 token budget of the configured context window (16,384 tokens). Raise PROCURECHECK_CONTEXT_TOKENS if the machine has the memory, or route to the Google Gemini 1.5 Flash fallback described in Prompt Specification v1.0 Sec. 7, which is not yet configured.",
     "passed": true,
-    "seconds": 0.4,
+    "seconds": 0.1,
     "detail": "Checklist plus submission is roughly 21,267 tokens, above the 12,336 token budget of the configured context window (16,384 tokens). Raise PROCURECHECK_CONTEXT_TOKENS if the machine has the memory, or route to the Google Gemini 1.5 Flash fallback described in Prompt Specification v1.0 Sec. 7, which is not yet configured.",
     "submission": "long-submission-pdf"
   }

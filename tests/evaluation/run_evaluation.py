@@ -640,7 +640,7 @@ def _markdown_table(results: List[CaseResult], model: str, heading: str) -> str:
         f"Cases meeting expectation: {passed} of {len(results)}",
         "",
         "| Case | AC | Document | Scenario | Expected | Actual | Result | Seconds |",
-        "|---|---|---|---|---|---|---|---|",
+        "| --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for r in results:
         verdict = "Pass" if r.passed else "Fail"
