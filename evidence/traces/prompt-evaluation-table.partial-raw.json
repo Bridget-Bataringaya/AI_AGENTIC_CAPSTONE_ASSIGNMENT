@@ -7,7 +7,8 @@
     "actual": "Rejected with a clear error: Unsupported file type '.xlsx'. Supported types: .pdf, .txt, .md, .docx.",
     "passed": true,
     "seconds": 0.0,
-    "detail": "Unsupported file type '.xlsx'. Supported types: .pdf, .txt, .md, .docx."
+    "detail": "Unsupported file type '.xlsx'. Supported types: .pdf, .txt, .md, .docx.",
+    "submission": ""
   },
   {
     "id": "EV-13",
@@ -17,7 +18,8 @@
     "actual": "Rejected before analysis: This system processes one submission at a time and cannot compare or rank submissions. Please upload a single submission.",
     "passed": true,
     "seconds": 0.0,
-    "detail": "This system processes one submission at a time and cannot compare or rank submissions. Please upload a single submission."
+    "detail": "This system processes one submission at a time and cannot compare or rank submissions. Please upload a single submission.",
+    "submission": ""
   },
   {
     "id": "EV-17",
@@ -27,7 +29,8 @@
     "actual": "Rejected with a clear error: scanned-submission.pdf contains no extractable text. If it is a scanned document, it must be passed through OCR before it can be checked.",
     "passed": true,
     "seconds": 0.0,
-    "detail": "scanned-submission.pdf contains no extractable text. If it is a scanned document, it must be passed through OCR before it can be checked."
+    "detail": "scanned-submission.pdf contains no extractable text. If it is a scanned document, it must be passed through OCR before it can be checked.",
+    "submission": "scanned-submission"
   },
   {
     "id": "EV-19",
@@ -37,6 +40,7 @@
     "actual": "Refused a 60-page submission before any model call: Checklist plus submission is roughly 21,267 tokens, above the 12,336 token budget of the configured context window (16,384 tokens). Raise PROCURECHECK_CONTEXT_TOKENS if the machine has the memory, or route to the Google Gemini 1.5 Flash fallback described in Prompt Specification v1.0 Sec. 7, which is not yet configured.",
     "passed": true,
     "seconds": 0.1,
-    "detail": "Checklist plus submission is roughly 21,267 tokens, above the 12,336 token budget of the configured context window (16,384 tokens). Raise PROCURECHECK_CONTEXT_TOKENS if the machine has the memory, or route to the Google Gemini 1.5 Flash fallback described in Prompt Specification v1.0 Sec. 7, which is not yet configured."
+    "detail": "Checklist plus submission is roughly 21,267 tokens, above the 12,336 token budget of the configured context window (16,384 tokens). Raise PROCURECHECK_CONTEXT_TOKENS if the machine has the memory, or route to the Google Gemini 1.5 Flash fallback described in Prompt Specification v1.0 Sec. 7, which is not yet configured.",
+    "submission": "long-submission"
   }
 ]

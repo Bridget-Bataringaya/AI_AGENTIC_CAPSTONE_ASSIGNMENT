@@ -5,7 +5,7 @@ expected vs actual behaviour". Assigned to Jonathan Katongole and Bataringaya
 Bridget.
 
 Written so the two of you can sit down together, run it once, and leave with the
-finished table. Bridget writes the Week 2 report from the output.
+finished table, which the report is then written from.
 
 Every command below is one line starting with `python run.py`. There is no
 `PYTHONPATH` to set and nothing to install beyond the requirements. The same
@@ -117,43 +117,42 @@ Then paste the table into the ClickUp task as a comment. Use bullet points or a
 code block, not a markdown table: ClickUp renders markdown tables as the literal
 word `undefined`.
 
-## Bringing your own documents
+## Evaluating a target document
 
-Two different jobs, so two different commands.
+The built-in run uses the fixtures in `knowledge/samples/`. To point the
+evaluation at a document of your own, use the target flags below. Two different
+jobs, so two different commands.
 
-### Just check a submission and get a readable report
+### Job 1: check a target submission and get a readable report
 
-Use this when you have a submission and a checklist and you want to see what
-the assistant makes of them. No expectations needed.
+Use this when you have a submission and a checklist and you want to see what the
+assistant makes of them. No expectations needed.
 
 ```bash
-python run.py check --checklist MY-CHECKLIST.csv --submission MY-SUBMISSION.pdf --format pdf
+python run.py check --checklist TARGET-CHECKLIST.csv --submission TARGET-SUBMISSION.pdf --format pdf
 ```
 
-The report is named after the submission and lands in `evidence/reports/`, so
-checking a second document never overwrites the first document's report:
+The report is named after the target submission and lands in `evidence/reports/`,
+so checking a second document never overwrites the first one's report:
 
 ```text
-evidence/reports/MY-SUBMISSION-completeness-report.pdf
+evidence/reports/TARGET-SUBMISSION-completeness-report.pdf
 ```
 
 Add `--out somewhere/else.pdf` to choose the path yourself. `--format json` and
 `--format csv` behave the same way. `--format text` prints to the terminal
 instead, since that is the format you read rather than keep.
 
-That produces a PDF written for a non-technical reader: what was located, on
-which page, quoting the exact words, what was not located, what needs a person
-to decide, and what to do next. Good for demonstrating the system to someone.
+The target checklist can be a CSV with `id,description` columns, or a plain text
+or PDF list with one requirement per line. The target submission can be PDF,
+DOCX, TXT or MD.
 
-The checklist can be a CSV with `id,description` columns, or a plain text or PDF
-list with one requirement per line. The submission can be PDF, DOCX, TXT or MD.
+### Job 2: evaluate a target submission, recording expected against actual
 
-### Evaluate it, meaning record expected against actual
-
-An evaluation needs to know what the right answer is, otherwise there is nothing
-to compare against. So you also supply an expectations file: a two-column CSV
+An evaluation has to know the right answer, otherwise there is nothing to
+compare against. So you also supply an expectations file: a two-column CSV
 saying, for each checklist item, whether it should be `present` or `absent` in
-that submission.
+that target submission.
 
 Copy `knowledge/samples/expectations-template.csv` and edit it:
 
@@ -164,27 +163,96 @@ CHK-02,present
 CHK-05,absent
 ```
 
-Only list the items you want tested. Anything you leave out is skipped.
+Only `present` or `absent` are accepted. List only the items you want tested;
+anything you leave out is skipped. The ids must match the target checklist: if it
+is a CSV with an `id` column those are the ids, and if it is a plain list they
+are numbered `CHK-01`, `CHK-02` and so on in order.
+
+Then:
 
 ```bash
-python run.py evaluate --checklist MY-CHECKLIST.csv --submission MY-SUBMISSION.pdf --expect MY-EXPECTED.csv
+python run.py evaluate --checklist TARGET-CHECKLIST.csv --submission TARGET-SUBMISSION.pdf --expect TARGET-EXPECTED.csv
 ```
 
-This writes the same four outputs as the built-in run, named after your
-submission, so it cannot overwrite the team's evidence:
+All three flags must be given together. The command refuses partial input rather
+than guessing, and it tells you if an id in the expectations file is not in the
+checklist.
 
-- `docs/evaluation/evaluation-MY-SUBMISSION.md`
-- `docs/evaluation/evaluation-MY-SUBMISSION.csv`
-- `docs/evaluation/evaluation-MY-SUBMISSION.pdf`
-- `evidence/traces/evaluation-MY-SUBMISSION-raw.json`
+Outputs are named after the target submission, so a target run can never
+overwrite the team's committed evidence:
+
+```text
+docs/evaluation/evaluation-TARGET-SUBMISSION.md
+docs/evaluation/evaluation-TARGET-SUBMISSION.csv
+docs/evaluation/evaluation-TARGET-SUBMISSION.pdf
+evidence/traces/evaluation-TARGET-SUBMISSION-raw.json
+```
 
 Add `--name something` to choose the base filename yourself.
 
-Expect roughly three to five minutes per item listed in the expectations file.
+Budget roughly three to five minutes per item listed in the expectations file.
+Ten items is about forty minutes, so keep the list short for a live session and
+run a longer one afterwards.
 
-All three flags must be given together. The command refuses partial input rather
-than guessing at what you meant, and it tells you if an id in your expectations
-file is not in your checklist.
+### Errors you may hit
+
+Each of these is reported with a message that says what to do:
+
+- Only some of the three target flags given: it explains that all three are
+  needed and why the expectations file matters.
+- A named file that does not exist: `No such file: ...`.
+- An id in the expectations file that is not in the checklist: it lists the ids
+  the checklist actually has.
+- Anything other than `present` or `absent` in the expected column: it names the
+  two allowed values.
+
+### A non-zero exit code is not a crash
+
+The command exits with code 1 when any case fails to meet expectation. That is
+correct behaviour for a test runner. If the terminal flags it, read the table.
+
+## Every document gets its own output as well
+
+A run that spans several documents writes the combined table **and** a separate
+set for each document evaluated, so a single submission's result can be handed
+to someone without them filtering a table covering seven fixtures.
+
+After a full built-in run you get the combined set:
+
+```text
+docs/evaluation/prompt-evaluation-table.md
+docs/evaluation/prompt-evaluation-table.csv
+docs/evaluation/prompt-evaluation-table.pdf
+evidence/traces/prompt-evaluation-table-raw.json
+```
+
+plus one set per document, named `<combined>.<document>`:
+
+```text
+docs/evaluation/prompt-evaluation-table.synthetic-submission.md
+docs/evaluation/prompt-evaluation-table.synthetic-submission.pdf
+docs/evaluation/prompt-evaluation-table.no-items-submission.md
+docs/evaluation/prompt-evaluation-table.scanned-submission.md
+docs/evaluation/prompt-evaluation-table.long-submission.md
+...
+```
+
+The terminal prints a per-document tally at the end so you can see at a glance
+which document each failure came from:
+
+```text
+15 of 19 cases met expectation.
+
+Per document:
+  long-submission: 1 of 1 met expectation
+  no-items-submission: 0 of 1 met expectation
+  scanned-submission: 1 of 1 met expectation
+  synthetic-submission: 11 of 14 met expectation
+```
+
+Cases that exercise no document at all, such as rejecting two submissions at
+once, appear only in the combined table. The combined table also gains a
+`Document` column naming the source of every row.
 
 ## Other useful commands
 

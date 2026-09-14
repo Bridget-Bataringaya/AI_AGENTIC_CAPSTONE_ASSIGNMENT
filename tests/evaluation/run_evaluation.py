@@ -106,6 +106,9 @@ class CaseResult:
     passed: bool
     seconds: float
     detail: str = ""
+    # Which submission produced this result. Empty for cases that exercise no
+    # document at all, such as rejecting two submissions at once.
+    submission: str = ""
 
 
 def _fmt_verification(verification) -> str:
@@ -467,7 +470,27 @@ def run_target(
                 f"  {case.id} {case.checklist_item_id}...", file=sys.stderr, flush=True
             )
             results.append(_run_format(case, engine, items))
+            results[-1].submission = submission_path.stem
     return results
+
+
+BASE_SUBMISSION = "synthetic-submission"
+
+
+def _submission_for(case: EvaluationCase) -> str:
+    """Name the document a case was run against.
+
+    Kept in one place rather than set by each handler, so a new case cannot
+    quietly forget to record it. Cases that exercise no document at all return
+    an empty string and appear only in the combined table.
+    """
+    if case.submission_file:
+        return Path(case.submission_file).stem
+    if case.kind is CaseKind.INJECTION:
+        return f"{BASE_SUBMISSION}-injected"
+    if case.kind in (CaseKind.CLASSIFICATION, CaseKind.SAFETY_REFUSAL):
+        return BASE_SUBMISSION
+    return ""
 
 
 def run(include_model_cases: bool) -> List[CaseResult]:
@@ -490,6 +513,7 @@ def run(include_model_cases: bool) -> List[CaseResult]:
                 continue
 
             print(f"  {case.id} {case.kind.value}...", file=sys.stderr, flush=True)
+            before = len(results)
             if case.kind is CaseKind.CLASSIFICATION:
                 results.append(_run_classification(case, engine, items, submission))
             elif case.kind is CaseKind.SAFETY_REFUSAL:
@@ -508,12 +532,23 @@ def run(include_model_cases: bool) -> List[CaseResult]:
                 results.append(_run_absence(case, engine, items))
             elif case.kind is CaseKind.OVERFLOW:
                 results.append(_run_overflow(case, engine, items))
+
+            # Stamp the document once, here, so a new case kind cannot forget to.
+            if len(results) > before:
+                results[-1].submission = _submission_for(case)
     return results
 
 
 def _escape(text: str) -> str:
     return text.replace("|", "\\|").replace("\n", " ")
 
+
+ALL_DOCUMENTS_NOTE = (
+    "A seven-page synthetic tender submission, the same content again as a "
+    "Word file and as plain text, a scanned image-only version of it, a "
+    "realistic tender package containing none of the required documents, "
+    "and a sixty-page document used to test the size limit."
+)
 
 CAVEATS = [
     "The machine used for testing has no graphics card, so the model runs on the "
@@ -531,7 +566,9 @@ CAVEATS = [
 ]
 
 
-def _write_pdf_report(results: List[CaseResult], stem: str) -> Path:
+def _write_pdf_report(
+    results: List[CaseResult], stem: str, submission_note: Optional[str] = None
+) -> Path:
     """Render the novice-readable PDF alongside the Markdown and CSV tables."""
     settings = Settings.from_env()
     meta = ReportMeta(
@@ -540,12 +577,7 @@ def _write_pdf_report(results: List[CaseResult], stem: str) -> Path:
         strategy="one check per checklist item",
         context_tokens=settings.context_tokens,
         threshold=settings.human_review_threshold,
-        submission_note=(
-            "A seven-page synthetic tender submission, the same content again as a "
-            "Word file and as plain text, a scanned image-only version of it, a "
-            "realistic tender package containing none of the required documents, "
-            "and a sixty-page document used to test the size limit."
-        ),
+        submission_note=submission_note or ALL_DOCUMENTS_NOTE,
     )
     return write_pdf(results, meta, CAVEATS, EVALUATION_DIR / (stem + ".pdf"))
 
@@ -582,38 +614,10 @@ def _write_guarded(destination: Path, write, label: str) -> Optional[Path]:
         return None
 
 
-def write_outputs(
-    results: List[CaseResult],
-    model: str,
-    partial: bool = False,
-    stem: Optional[str] = None,
-) -> None:
-    """Write the raw trace, then the tables, then the PDF.
-
-    Order matters: the JSON trace is the complete record and is written first,
-    so a later failure can never leave a run with nothing to show. Each output
-    is independent, so one locked file cannot take the others down with it.
-    """
-    stem = stem or (
-        "prompt-evaluation-table.partial" if partial
-        else "prompt-evaluation-table"
-    )
-    trace_name = f"{stem}-raw.json"
+def _markdown_table(results: List[CaseResult], model: str, heading: str) -> str:
     passed = sum(1 for r in results if r.passed)
-
-    # 1. The raw trace first. Everything else can be rebuilt from it.
-    _write_guarded(
-        TRACES_DIR / trace_name,
-        lambda p: p.write_text(
-            json.dumps([asdict(r) for r in results], indent=2, ensure_ascii=False),
-            encoding="utf-8",
-        ),
-        "raw trace",
-    )
-
-    # 2. The Markdown table.
     lines = [
-        "# Prompt Evaluation Table",
+        f"# {heading}",
         "",
         "Public Procurement Document-Completeness Agent, Week 2 baseline.",
         "",
@@ -622,52 +626,128 @@ def write_outputs(
         f"Cases run: {len(results)}  ",
         f"Cases meeting expectation: {passed} of {len(results)}",
         "",
-        "| Case | AC | Scenario | Expected | Actual | Result | Seconds |",
-        "|---|---|---|---|---|---|---|",
+        "| Case | AC | Document | Scenario | Expected | Actual | Result | Seconds |",
+        "|---|---|---|---|---|---|---|---|",
     ]
     for r in results:
         verdict = "Pass" if r.passed else "Fail"
         lines.append(
-            f"| {r.id} | {_escape(r.acceptance_criteria)} | {_escape(r.description)} "
+            f"| {r.id} | {_escape(r.acceptance_criteria)} "
+            f"| {_escape(r.submission or 'none')} | {_escape(r.description)} "
             f"| {_escape(r.expected)} | {_escape(r.actual)} | {verdict} | {r.seconds} |"
         )
-    md_path = _write_guarded(
-        EVALUATION_DIR / f"{stem}.md",
-        lambda p: p.write_text("\n".join(lines) + "\n", encoding="utf-8"),
-        "markdown table",
+    return "\n".join(lines) + "\n"
+
+
+def _write_one_set(
+    results: List[CaseResult],
+    model: str,
+    stem: str,
+    heading: str,
+    submission_note: str,
+) -> Optional[Path]:
+    """Write the trace, Markdown, CSV and PDF for one group of results.
+
+    The trace goes first because everything else can be rebuilt from it, and
+    each output is guarded so one locked file cannot take the rest down.
+    """
+    _write_guarded(
+        TRACES_DIR / f"{stem}-raw.json",
+        lambda p: p.write_text(
+            json.dumps([asdict(r) for r in results], indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        ),
+        f"{stem} raw trace",
     )
 
-    # 3. The CSV.
+    md_path = _write_guarded(
+        EVALUATION_DIR / f"{stem}.md",
+        lambda p: p.write_text(_markdown_table(results, model, heading), encoding="utf-8"),
+        f"{stem} markdown",
+    )
+
     def _write_csv(path: Path) -> None:
         with path.open("w", newline="", encoding="utf-8") as handle:
             writer = csv.DictWriter(
                 handle,
-                fieldnames=["id", "acceptance_criteria", "description", "expected",
-                            "actual", "passed", "seconds", "detail"],
+                fieldnames=["id", "acceptance_criteria", "submission", "description",
+                            "expected", "actual", "passed", "seconds", "detail"],
             )
             writer.writeheader()
             for r in results:
                 writer.writerow(asdict(r))
 
-    _write_guarded(EVALUATION_DIR / f"{stem}.csv", _write_csv, "csv table")
+    _write_guarded(EVALUATION_DIR / f"{stem}.csv", _write_csv, f"{stem} csv")
 
-    # 4. The PDF, last because it is the most likely to fail and the easiest to
-    #    regenerate from the trace.
     try:
-        pdf_path = _write_pdf_report(results, stem)
-        pdf_note = f"\nWrote {pdf_path}"
+        _write_pdf_report(results, stem, submission_note)
     except PermissionError:
-        pdf_note = (
-            f"\n{stem}.pdf is locked, probably open in a PDF viewer. "
-            f"Close it and rerun, or regenerate from the trace."
+        print(
+            f"  {stem}.pdf is locked, probably open in a viewer. Close it and "
+            f"rerun, or rebuild it from the trace.",
+            file=sys.stderr,
         )
     except Exception as exc:  # a PDF failure must never lose the results
-        pdf_note = f"\nPDF report could not be generated: {exc}"
+        print(f"  {stem}.pdf could not be generated: {exc}", file=sys.stderr)
+    return md_path
+
+
+def write_outputs(
+    results: List[CaseResult],
+    model: str,
+    partial: bool = False,
+    stem: Optional[str] = None,
+) -> None:
+    """Write the combined output set, plus one set per document evaluated.
+
+    The combined table stays the headline deliverable. The per-document sets
+    exist so that a single submission's result can be handed to someone on its
+    own, without them having to filter a table spanning seven fixtures.
+    """
+    combined_stem = stem or (
+        "prompt-evaluation-table.partial" if partial
+        else "prompt-evaluation-table"
+    )
+    passed = sum(1 for r in results if r.passed)
+
+    md_path = _write_one_set(
+        results,
+        model,
+        combined_stem,
+        "Prompt Evaluation Table",
+        ALL_DOCUMENTS_NOTE,
+    )
+
+    # One set per document. Results from cases that exercise no document, such
+    # as rejecting two submissions at once, appear only in the combined table.
+    by_document: Dict[str, List[CaseResult]] = {}
+    for r in results:
+        if r.submission:
+            by_document.setdefault(r.submission, []).append(r)
+
+    per_document: List[str] = []
+    for document, group in sorted(by_document.items()):
+        document_stem = f"{combined_stem}.{document}"
+        _write_one_set(
+            group,
+            model,
+            document_stem,
+            f"Evaluation of {document}",
+            f"The submission {document}, one of the documents used for testing.",
+        )
+        group_passed = sum(1 for r in group if r.passed)
+        per_document.append(
+            f"  {document}: {group_passed} of {len(group)} met expectation"
+        )
 
     print(
         f"\n{passed} of {len(results)} cases met expectation."
         + (f"\nWrote {md_path}" if md_path else "")
-        + pdf_note,
+        + (
+            "\n\nPer document:\n" + "\n".join(per_document)
+            if per_document
+            else ""
+        ),
         file=sys.stderr,
     )
 
