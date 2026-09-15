@@ -4,7 +4,7 @@ Runs a completeness check without starting the API, so that the baseline model
 interaction can be demonstrated and evaluated from a terminal.
 
 Usage:
-    python -m procurecheck.cli check --checklist FILE --submission FILE
+    python -m procurecheck.cli check --submission FILE [--checklist FILE|standard]
     python -m procurecheck.cli health
 """
 
@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 from typing import List, Optional
 
+from . import checklists
 from .config import STRATEGY_BATCH, STRATEGY_PER_ITEM, Settings
 from .engine import ContextOverflowError, MatchingEngine
 from .ingestion import (
@@ -53,7 +54,16 @@ def _build_parser() -> argparse.ArgumentParser:
     subparsers.add_parser("health", help="Check that the model backend is reachable")
 
     check = subparsers.add_parser("check", help="Run a completeness check")
-    check.add_argument("--checklist", required=True, type=Path)
+    check.add_argument(
+        "--checklist",
+        default=checklists.STANDARD,
+        help=(
+            "Path to a checklist file, or the name of a bundled one "
+            f"({', '.join(checklists.bundled_names())}). Defaults to "
+            f"{checklists.STANDARD!r}, so a new document can be checked without "
+            "writing a checklist first."
+        ),
+    )
     check.add_argument("--submission", required=True, type=Path)
     check.add_argument("--instruction", default=None, help="Optional user instruction")
     check.add_argument(
@@ -105,11 +115,20 @@ def _default_report_path(submission: Path, output_format: str) -> Path:
 
 def _run_check(args: argparse.Namespace, settings: Settings) -> int:
     try:
-        items = parse_checklist(args.checklist)
+        checklist_path, checklist_label, is_template = checklists.resolve(args.checklist)
+        items = parse_checklist(checklist_path)
         parsed = parse_submission(args.submission)
-    except (UnsupportedDocumentError, EmptyChecklistError, EmptyDocumentError) as exc:
+    except (
+        checklists.UnknownChecklistError,
+        UnsupportedDocumentError,
+        EmptyChecklistError,
+        EmptyDocumentError,
+    ) as exc:
         print(f"Input error: {exc}", file=sys.stderr)
         return EXIT_USER_ERROR
+
+    if is_template:
+        print(f"Using {checklist_label}. {checklists.TEMPLATE_CAVEAT}", file=sys.stderr)
 
     if parsed.scanned_pages:
         print(
@@ -149,7 +168,14 @@ def _run_check(args: argparse.Namespace, settings: Settings) -> int:
         from .report_pdf import write_check_pdf
 
         destination.parent.mkdir(parents=True, exist_ok=True)
-        write_check_pdf(report, settings.model, parsed.page_count, destination)
+        write_check_pdf(
+            report,
+            settings.model,
+            parsed.page_count,
+            destination,
+            checklist_label=checklist_label,
+            caveat=checklists.TEMPLATE_CAVEAT if is_template else "",
+        )
         print(f"Report written to {destination}", file=sys.stderr)
         # Still show the findings in the terminal, so the run is not silent.
         print(to_text(report, settings.model))
