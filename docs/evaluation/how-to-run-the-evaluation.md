@@ -92,6 +92,8 @@ competing for the CPU roughly doubles the time.
 Three files are written:
 
 - `docs/evaluation/prompt-evaluation-table.md` is the table for the report
+- `docs/evaluation/prompt-evaluation-table.docx` is the same results as a Word
+  document, which is the copy handed to a supervisor or marker
 - `docs/evaluation/prompt-evaluation-table.csv` is the same table as a spreadsheet
 - `evidence/traces/evaluation-raw.json` is the raw output of every case, for the appendix
 
@@ -129,7 +131,7 @@ Use this when you have a submission and a checklist and you want to see what the
 assistant makes of them. No expectations needed.
 
 ```bash
-python run.py check --checklist TARGET-CHECKLIST.csv --submission TARGET-SUBMISSION.pdf --format pdf
+python run.py check --submission TARGET-SUBMISSION.pdf --format pdf
 ```
 
 The report is named after the target submission and lands in `evidence/reports/`,
@@ -143,7 +145,14 @@ Add `--out somewhere/else.pdf` to choose the path yourself. `--format json` and
 `--format csv` behave the same way. `--format text` prints to the terminal
 instead, since that is the format you read rather than keep.
 
-The target checklist can be a CSV with `id,description` columns, or a plain text
+`--checklist` is optional. Left out, the run uses the bundled standard checklist
+in `knowledge/checklists/`, so a new document can be checked without anyone
+writing a checklist first. That list is a general template: the documents a bid
+must actually contain are set by the bidding document for that tender, so edit
+it to match before relying on the findings. Every report says which checklist
+produced it.
+
+Pass `--checklist FILE` to use your own. It can be a CSV with `id,description` columns, or a plain text
 or PDF list with one requirement per line. The target submission can be PDF,
 DOCX, TXT or MD.
 
@@ -183,6 +192,7 @@ overwrite the team's committed evidence:
 
 ```text
 docs/evaluation/evaluation-TARGET-SUBMISSION.md
+docs/evaluation/evaluation-TARGET-SUBMISSION.docx
 docs/evaluation/evaluation-TARGET-SUBMISSION.csv
 docs/evaluation/evaluation-TARGET-SUBMISSION.pdf
 evidence/traces/evaluation-TARGET-SUBMISSION-raw.json
@@ -221,6 +231,7 @@ After a full built-in run you get the combined set:
 
 ```text
 docs/evaluation/prompt-evaluation-table.md
+docs/evaluation/prompt-evaluation-table.docx
 docs/evaluation/prompt-evaluation-table.csv
 docs/evaluation/prompt-evaluation-table.pdf
 evidence/traces/prompt-evaluation-table-raw.json
@@ -259,13 +270,13 @@ once, appear only in the combined table. The combined table also gains a
 Run a completeness check against the synthetic sample and print a readable report:
 
 ```bash
-python run.py check --checklist knowledge/samples/checklist.csv --submission knowledge/samples/synthetic-submission.pdf
+python run.py check --submission knowledge/samples/synthetic-submission.pdf
 ```
 
 Write that report to a file instead:
 
 ```bash
-python run.py check --checklist knowledge/samples/checklist.csv --submission knowledge/samples/synthetic-submission.pdf --format csv --out report.csv
+python run.py check --submission knowledge/samples/synthetic-submission.pdf --format csv --out report.csv
 ```
 
 Start the API, then open `http://localhost:8000/docs` in a browser. Useful for

@@ -94,23 +94,28 @@ def to_csv(report: CompletenessReport, model_name: str) -> str:
 
 
 def to_text(report: CompletenessReport, model_name: str) -> str:
-    """Render a plain-text report for terminal output."""
+    """Render a short plain-text report for terminal output.
+
+    One line per item, so a full checklist fits on a screen. The evidence
+    snippet is trimmed rather than wrapped: anyone who needs the full quotation
+    has the CSV, the JSON or the PDF.
+    """
     counts = summarise(report)
     lines: List[str] = [
-        f"Completeness report for: {report.submission_id}",
-        f"Model: {model_name}",
-        f"Generated: {_generated_at()}",
-        "",
+        f"{report.submission_id}  ({model_name})",
         "  ".join(f"{status}: {count}" for status, count in counts.items()),
         "",
     ]
     for item in report.verified_items:
-        location = f"page {item.page_number}" if item.page_number else "no location"
-        lines.append(f"[{item.status.value}] {item.checklist_item_id}  {item.clause_title}")
-        lines.append(f"    confidence {item.confidence_score:.2f}  ({location})")
+        location = f"p{item.page_number}" if item.page_number else "-"
+        title = item.clause_title[:46]
+        lines.append(
+            f"{item.checklist_item_id:<8} {title:<46} "
+            f"{item.status.value:<21} {item.confidence_score:.2f}  {location}"
+        )
         if item.extracted_snippet:
-            snippet = item.extracted_snippet.replace("\n", " ")
-            lines.append(f"    evidence: {snippet}")
-        lines.append("")
+            snippet = " ".join(item.extracted_snippet.split())[:96]
+            lines.append(f"{'':<8} -> {snippet}")
+    lines.append("")
     lines.append(COMPLETENESS_DISCLAIMER)
     return "\n".join(lines)
