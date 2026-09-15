@@ -17,7 +17,7 @@ from typing import List, Optional
 
 from . import checklists
 from .config import STRATEGY_BATCH, STRATEGY_PER_ITEM, Settings
-from .engine import ContextOverflowError, MatchingEngine
+from .engine import ContextOverflowError, ItemProgress, MatchingEngine
 from .ingestion import (
     EmptyChecklistError,
     EmptyDocumentError,
@@ -52,6 +52,15 @@ def _build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     subparsers.add_parser("health", help="Check that the model backend is reachable")
+
+    verify = subparsers.add_parser(
+        "verify", help="Self-check: prove the system works end to end"
+    )
+    verify.add_argument(
+        "--quick",
+        action="store_true",
+        help="Skip the two model calls; finishes instantly",
+    )
 
     check = subparsers.add_parser("check", help="Run a completeness check")
     check.add_argument(
@@ -144,10 +153,13 @@ def _run_check(args: argparse.Namespace, settings: Settings) -> int:
         file=sys.stderr,
     )
 
+    def show(progress: ItemProgress) -> None:
+        print(progress.line, file=sys.stderr, flush=True)
+
     try:
         with OllamaClient(settings) as client:
             outcome = MatchingEngine(client, settings).analyse(
-                items, parsed, args.instruction
+                items, parsed, args.instruction, on_progress=show
             )
     except ModelUnavailableError as exc:
         print(f"Model backend unavailable: {exc}", file=sys.stderr)
@@ -210,6 +222,11 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if args.command == "health":
         return _run_health(settings)
+
+    if args.command == "verify":
+        from .verify import main as run_verify
+
+        return run_verify(quick=args.quick)
 
     if getattr(args, "strategy", None):
         settings = Settings(

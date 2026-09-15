@@ -17,8 +17,9 @@ constraints and refusal behaviour.
 from __future__ import annotations
 
 import re
+import time
 from dataclasses import dataclass
-from typing import Final, List, Optional, Sequence, Set
+from typing import Callable, Final, List, Optional, Sequence, Set
 
 from .config import STRATEGY_BATCH, Settings
 from .ingestion.submission import ParsedSubmission
@@ -46,6 +47,35 @@ _WHITESPACE: Final[re.Pattern] = re.compile(r"\s+")
 
 class ContextOverflowError(RuntimeError):
     """Raised when checklist plus submission exceed the local context window."""
+
+
+@dataclass(frozen=True)
+class ItemProgress:
+    """One checklist item finished. Reported live so a long run is visible."""
+
+    index: int
+    total: int
+    item: ChecklistItem
+    verification: ClauseVerification
+    seconds: float
+
+    @property
+    def line(self) -> str:
+        """A single line fit for a terminal, e.g. '[3/22] STD-03 Found 0.95 p4 12s'."""
+        location = (
+            f"p{self.verification.page_number}"
+            if self.verification.page_number
+            else "-"
+        )
+        return (
+            f"[{self.index}/{self.total}] {self.item.id} "
+            f"{self.verification.status.value} "
+            f"{self.verification.confidence_score:.2f} {location} "
+            f"{self.seconds:.0f}s  {self.item.description[:48]}"
+        )
+
+
+ProgressCallback = Callable[[ItemProgress], None]
 
 
 @dataclass(frozen=True)
@@ -189,8 +219,14 @@ class MatchingEngine:
         items: Sequence[ChecklistItem],
         submission: ParsedSubmission,
         instruction: Optional[str] = None,
+        on_progress: Optional[ProgressCallback] = None,
     ) -> AnalysisOutcome:
-        """Run the check, refusing first if the request crosses the boundary."""
+        """Run the check, refusing first if the request crosses the boundary.
+
+        `on_progress`, if given, is called after each checklist item is
+        decided. A per-item call takes minutes on CPU, so a run without it
+        prints nothing for an hour and is indistinguishable from a hang.
+        """
         verdict = screen_request(instruction)
         if not verdict.allowed:
             return AnalysisOutcome(refusal=verdict.to_refusal())
@@ -205,7 +241,9 @@ class MatchingEngine:
         if self._settings.strategy == STRATEGY_BATCH:
             verifications = self._run_batch(items, submission_text, submission, haystack)
         else:
-            verifications = self._run_per_item(items, submission_text, submission, haystack)
+            verifications = self._run_per_item(
+                items, submission_text, submission, haystack, on_progress
+            )
 
         return AnalysisOutcome(
             report=CompletenessReport(
@@ -221,10 +259,13 @@ class MatchingEngine:
         submission_text: str,
         submission: ParsedSubmission,
         haystack: str,
+        on_progress: Optional[ProgressCallback] = None,
     ) -> List[ClauseVerification]:
         system_prompt = get_prompt(self._settings.resolved_prompt_version)
         results: List[ClauseVerification] = []
-        for item in items:
+        total = len(items)
+        for index, item in enumerate(items, start=1):
+            started = time.monotonic()
             user_message = build_item_user_message(
                 item, submission_text, self._settings.human_review_threshold
             )
@@ -232,11 +273,23 @@ class MatchingEngine:
                 raw = self._client.complete_structured(
                     system_prompt, user_message, ClauseVerification
                 )
+                verification = _post_process(
+                    raw, item, submission, haystack, self._settings
+                )
             except StructuredOutputError:
                 # One unusable answer must not lose the whole report.
-                results.append(_unreviewed(item))
-                continue
-            results.append(_post_process(raw, item, submission, haystack, self._settings))
+                verification = _unreviewed(item)
+            results.append(verification)
+            if on_progress is not None:
+                on_progress(
+                    ItemProgress(
+                        index=index,
+                        total=total,
+                        item=item,
+                        verification=verification,
+                        seconds=time.monotonic() - started,
+                    )
+                )
         return results
 
     def _run_batch(

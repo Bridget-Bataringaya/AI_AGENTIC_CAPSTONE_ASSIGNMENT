@@ -30,6 +30,7 @@ Public Procurement Document-Completeness Agent
 
 Usage:
   python run.py health                        Check the model backend is reachable
+  python run.py verify [--quick]              Self-check that the system works
   python run.py check --checklist F --submission F [options]
                                               Run a completeness check
   python run.py evaluate [--no-model]         Run the prompt evaluation cases
@@ -98,7 +99,7 @@ def main(argv: list[str] | None = None) -> int:
         return _run_tests(rest)
     if command == "api":
         return _run_api(rest)
-    if command in ("health", "check"):
+    if command in ("health", "check", "verify"):
         _bootstrap()
         from procurecheck.cli import main as cli_main
 
