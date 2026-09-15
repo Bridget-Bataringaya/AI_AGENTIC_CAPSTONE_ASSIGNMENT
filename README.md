@@ -53,6 +53,15 @@ python run.py health
 Run a completeness check against the synthetic sample:
 
 ```bash
+python run.py verify --quick
+```
+
+That is the fastest way to tell the system is working: five checks, no model
+needed, instant. Drop `--quick` to add two real model calls against a document
+whose contents are known, which takes a few minutes and proves the whole
+pipeline end to end.
+
+```bash
 python run.py check --submission knowledge/samples/synthetic-submission.pdf
 ```
 
