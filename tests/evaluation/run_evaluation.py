@@ -41,6 +41,8 @@ from procurecheck.ingestion.submission import (  # noqa: E402
 )
 from procurecheck.llm import OllamaClient  # noqa: E402
 from procurecheck.models import ItemStatus  # noqa: E402
+from procurecheck import checklists  # noqa: E402
+from procurecheck.report_docx import DocxMeta, write_docx  # noqa: E402
 from procurecheck.report_pdf import ReportMeta, write_pdf  # noqa: E402
 from procurecheck.safety import (  # noqa: E402
     MultipleSubmissionsError,
@@ -595,6 +597,28 @@ def _write_pdf_report(
     return write_pdf(results, meta, CAVEATS, EVALUATION_DIR / (stem + ".pdf"))
 
 
+def _write_docx_report(
+    results: List[CaseResult], stem: str, heading: str, submission_note: Optional[str] = None
+) -> Path:
+    """Write the Word copy of the results, in the team's academic format.
+
+    Rule for this project: no deliverable ships as Markdown alone. The .md is
+    the repository record, the .docx is what a human is handed.
+    """
+    settings = Settings.from_env()
+    meta = DocxMeta(
+        model=settings.model,
+        prompt_version=settings.resolved_prompt_version,
+        strategy="one check per checklist item",
+        context_tokens=settings.context_tokens,
+        threshold=settings.human_review_threshold,
+        submission_note=submission_note or ALL_DOCUMENTS_NOTE,
+    )
+    return write_docx(
+        results, meta, CAVEATS, EVALUATION_DIR / (stem + ".docx"), heading
+    )
+
+
 def _write_guarded(destination: Path, write, label: str) -> Optional[Path]:
     """Write one output, falling back to a timestamped name if the path is locked.
 
@@ -692,6 +716,12 @@ def _write_one_set(
 
     _write_guarded(EVALUATION_DIR / f"{stem}.csv", _write_csv, f"{stem} csv")
 
+    _write_guarded(
+        EVALUATION_DIR / f"{stem}.docx",
+        lambda p: _write_docx_report(results, p.stem, heading, submission_note),
+        f"{stem} word document",
+    )
+
     try:
         _write_pdf_report(results, stem, submission_note)
     except PermissionError:
@@ -774,10 +804,19 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     target = parser.add_argument_group(
         "your own documents",
-        "Supply all three to evaluate a checklist and submission of your own "
-        "instead of the built-in cases.",
+        "Supply a submission and an expectations file to evaluate a document of "
+        "your own instead of the built-in cases. The checklist is optional.",
     )
-    target.add_argument("--checklist", type=Path, help="Your checklist, PDF/CSV/TXT")
+    target.add_argument(
+        "--checklist",
+        default=None,
+        help=(
+            "Your checklist, PDF/CSV/TXT, or a bundled name "
+            f"({', '.join(checklists.bundled_names())}). Left out, the bundled "
+            "standard checklist is used, so a new document can be evaluated "
+            "without writing a checklist first."
+        ),
+    )
     target.add_argument("--submission", type=Path, help="Your submission, PDF/DOCX/TXT")
     target.add_argument(
         "--expect",
@@ -794,23 +833,36 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    target_args = (args.checklist, args.submission, args.expect)
-    if any(target_args) and not all(target_args):
+    required_target_args = (args.submission, args.expect)
+    if any(required_target_args) and not all(required_target_args):
         print(
-            "--checklist, --submission and --expect must be given together. "
-            "The expectations file is what makes an evaluation possible: without "
-            "it there is nothing to compare the actual behaviour against.",
+            "--submission and --expect must be given together. The expectations "
+            "file is what makes an evaluation possible: without it there is "
+            "nothing to compare the actual behaviour against. --checklist is "
+            "optional and defaults to the bundled standard checklist.",
             file=sys.stderr,
         )
         return 2
 
-    if all(target_args):
-        for path in target_args:
+    if all(required_target_args):
+        try:
+            checklist_path, checklist_label, is_template = checklists.resolve(
+                args.checklist
+            )
+        except checklists.UnknownChecklistError as exc:
+            print(f"Input error: {exc}", file=sys.stderr)
+            return 2
+        for path in required_target_args:
             if not path.is_file():
                 print(f"No such file: {path}", file=sys.stderr)
                 return 2
+        if is_template:
+            print(
+                f"Using {checklist_label}. {checklists.TEMPLATE_CAVEAT}",
+                file=sys.stderr,
+            )
         try:
-            results = run_target(args.checklist, args.submission, args.expect)
+            results = run_target(checklist_path, args.submission, args.expect)
         except ValueError as exc:
             print(f"Input error: {exc}", file=sys.stderr)
             return 2

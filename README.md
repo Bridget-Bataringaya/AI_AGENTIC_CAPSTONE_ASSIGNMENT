@@ -24,6 +24,7 @@ AI Boundary Matrix and User Stories AC6 to AC9.
 | `docs/evaluation/` | Prompt evaluation tables |
 | `docs/weekly-reports/` | Weekly progress reports |
 | `prompts/` | Prompt specification and version history |
+| `knowledge/checklists/` | The bundled standard checklist, used when none is named |
 | `knowledge/samples/` | Synthetic checklist and submission for testing |
 | `evidence/` | Screenshots, traces, demo recordings |
 | `tests/` | Test suite |
@@ -52,13 +53,13 @@ python run.py health
 Run a completeness check against the synthetic sample:
 
 ```bash
-python run.py check --checklist knowledge/samples/checklist.csv --submission knowledge/samples/synthetic-submission.pdf
+python run.py check --submission knowledge/samples/synthetic-submission.pdf
 ```
 
 Export the report instead of printing it:
 
 ```bash
-python run.py check --checklist knowledge/samples/checklist.csv --submission knowledge/samples/synthetic-submission.pdf --format csv --out report.csv
+python run.py check --submission knowledge/samples/synthetic-submission.pdf --format csv --out report.csv
 ```
 
 ## Running the API
