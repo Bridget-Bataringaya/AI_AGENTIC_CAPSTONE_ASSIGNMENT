@@ -33,7 +33,9 @@ def test_quick_run_skips_rather_than_silently_passing_the_model_checks():
     checks = verify.run(include_model=False)
     skipped = [check for check in checks if check.outcome == verify.SKIP]
 
-    assert len(skipped) == 3
+    # The backend check, plus one per model-tier case: present, absent, and
+    # the near miss the evidence check exists to reject.
+    assert len(skipped) == 4
     assert all("skipped" in check.detail for check in skipped)
 
 

@@ -12,6 +12,28 @@ is the default because an 8B model holds evidence discipline far better over
 one requirement than over a dozen at once, and because a malformed answer then
 costs one item rather than the whole report. Both paths use the same schema,
 constraints and refusal behaviour.
+
+Two model passes, not one. The first pass reads the submission and proposes an
+answer. Every item it claims to have found then goes to a second pass that is
+shown the requirement and the quoted passage ONLY, and asked whether they are
+the same document (see prompts.PROMPT_ADJUDICATOR_V1_0).
+
+That second pass is here because of what the baseline measured. Both surviving
+failures, EV-05 and EV-07, are false positives where the first pass quoted real
+text from the submission that belongs to a different document: a
+conflict-of-interest declaration offered as an anti-bribery declaration, a
+certificate of registration offered as a certificate of non-blacklisting. The
+two code-side guards cannot catch either. Grounding only asks whether the
+quotation is real, and it was. The confidence threshold only asks what the
+model claimed, and it claimed 0.95 both times.
+
+Nothing deterministic can tell an anti-bribery declaration from a
+conflict-of-interest declaration; that judgement is the work. So it stays with
+the model, and what changes is the question the model is asked. Searching a
+document always offers a nearest match, and a model asked to search and to
+judge in one call judges in favour of what it has just found. Withhold the
+document and the task stops being retrieval: two names, one question, no answer
+of its own to defend.
 """
 
 from __future__ import annotations
@@ -24,8 +46,16 @@ from typing import Callable, Final, List, Optional, Sequence, Set
 from .config import STRATEGY_BATCH, Settings
 from .ingestion.submission import ParsedSubmission
 from .llm import OllamaClient, StructuredOutputError
-from .models import ChecklistItem, ClauseVerification, CompletenessReport, RefusalResponse
+from .models import (
+    AdjudicatedClause,
+    ChecklistItem,
+    ClauseVerification,
+    CompletenessReport,
+    EvidenceAdjudication,
+    RefusalResponse,
+)
 from .prompts import (
+    build_adjudication_user_message,
     build_batch_user_message,
     build_item_user_message,
     get_prompt,
@@ -122,7 +152,7 @@ def _unreviewed(item: ChecklistItem) -> ClauseVerification:
     Reported as requiring human review rather than as confidently missing, so
     that a model failure is never presented to the reviewer as a finding.
     """
-    return ClauseVerification(
+    return AdjudicatedClause(
         checklist_item_id=item.id,
         clause_title=item.description,
         is_present=False,
@@ -130,6 +160,7 @@ def _unreviewed(item: ChecklistItem) -> ClauseVerification:
         extracted_snippet=None,
         confidence_score=0.0,
         requires_human_review=True,
+        adjudication_note="The model gave no usable answer for this item.",
     )
 
 
@@ -139,7 +170,7 @@ def _post_process(
     submission: ParsedSubmission,
     haystack_normalised: str,
     settings: Settings,
-) -> ClauseVerification:
+) -> AdjudicatedClause:
     """Apply deterministic corrections the model must not be trusted to make.
 
     The confidence threshold, snippet grounding and page-number validity are
@@ -174,7 +205,7 @@ def _post_process(
         # confidence score here simply means the model found nothing.
         needs_review = verification.requires_human_review
 
-    return ClauseVerification(
+    return AdjudicatedClause(
         checklist_item_id=item.id,
         clause_title=verification.clause_title.strip() or item.description,
         is_present=is_present,
@@ -182,6 +213,85 @@ def _post_process(
         extracted_snippet=snippet if is_present else None,
         confidence_score=verification.confidence_score,
         requires_human_review=needs_review,
+        adjudication_note=(
+            None
+            if grounded or not claimed_present
+            else (
+                "Reported present, but the quotation could not be located in "
+                "the submission."
+            )
+        ),
+    )
+
+
+def _apply_adjudication(
+    clause: AdjudicatedClause,
+    adjudication: EvidenceAdjudication,
+    settings: Settings,
+) -> AdjudicatedClause:
+    """Fold the second pass's verdict into the first pass's answer.
+
+    Three outcomes, because a rejection the second pass does not itself stand
+    behind must not delete a document the bidder really filed:
+
+    - Accepted. The item stays Found. Its confidence becomes the weaker of the
+      two judgements, which is the first point in this pipeline where the
+      review threshold does real work: the first pass returns 0.95 for
+      everything it finds, so on its own the threshold never fires.
+    - Rejected cleanly, the match score low. The item becomes Not Found, with
+      the reason recorded for the reviewer.
+    - Rejected while still scoring the passage highly. The second pass is
+      arguing with itself, so the item goes to human review with its evidence
+      intact rather than a document being deleted on a call that was torn.
+    """
+    if adjudication.accepts:
+        confidence = min(clause.confidence_score, adjudication.match_confidence)
+        return clause.model_copy(
+            update={
+                "confidence_score": confidence,
+                "requires_human_review": (
+                    clause.requires_human_review
+                    or confidence < settings.human_review_threshold
+                ),
+                "adjudication": adjudication,
+                "adjudication_note": adjudication.note,
+            }
+        )
+
+    where = f" on page {clause.page_number}" if clause.page_number else ""
+    reason = (
+        f"The first pass quoted a {adjudication.quoted_document}{where}. The "
+        f"evidence check found that is not the required "
+        f"{adjudication.required_document}."
+    )
+
+    if adjudication.contradicts_itself(settings.adjudication_conflict_score):
+        return clause.model_copy(
+            update={
+                "requires_human_review": True,
+                "confidence_score": min(
+                    clause.confidence_score, adjudication.match_confidence
+                ),
+                "adjudication": adjudication,
+                "adjudication_note": (
+                    f"{reason} It still rated the passage a "
+                    f"{adjudication.match_confidence:.2f} match, so the two "
+                    f"halves of that answer disagree and the item is left for "
+                    f"a human to settle."
+                ),
+            }
+        )
+
+    return clause.model_copy(
+        update={
+            "is_present": False,
+            "page_number": None,
+            "extracted_snippet": None,
+            "confidence_score": 0.0,
+            "requires_human_review": False,
+            "adjudication": adjudication,
+            "adjudication_note": reason,
+        }
     )
 
 
@@ -213,6 +323,43 @@ class MatchingEngine:
     def __init__(self, client: OllamaClient, settings: Settings) -> None:
         self._client = client
         self._settings = settings
+
+    def _adjudicate(
+        self, clause: AdjudicatedClause, item: ChecklistItem
+    ) -> AdjudicatedClause:
+        """Second pass. Only items claimed present are worth checking.
+
+        An item already reported absent has no evidence to doubt, so it is
+        returned untouched rather than spending a model call to confirm a
+        negative.
+        """
+        if not self._settings.adjudicate:
+            return clause
+        if not clause.is_present or not clause.extracted_snippet:
+            return clause
+
+        system_prompt = get_prompt(self._settings.adjudicator_prompt_version)
+        user_message = build_adjudication_user_message(
+            item, clause.extracted_snippet, clause.page_number
+        )
+        try:
+            adjudication = self._client.complete_structured(
+                system_prompt, user_message, EvidenceAdjudication
+            )
+        except StructuredOutputError:
+            # The check could not be completed, so the claim is unverified.
+            # Reporting it as Found would present an unchecked answer as a
+            # checked one; reporting it as missing would invent a finding.
+            return clause.model_copy(
+                update={
+                    "requires_human_review": True,
+                    "adjudication_note": (
+                        "The evidence check could not be completed, so this "
+                        "match has not been verified."
+                    ),
+                }
+            )
+        return _apply_adjudication(clause, adjudication, self._settings)
 
     def analyse(
         self,
@@ -260,9 +407,9 @@ class MatchingEngine:
         submission: ParsedSubmission,
         haystack: str,
         on_progress: Optional[ProgressCallback] = None,
-    ) -> List[ClauseVerification]:
+    ) -> List[AdjudicatedClause]:
         system_prompt = get_prompt(self._settings.resolved_prompt_version)
-        results: List[ClauseVerification] = []
+        results: List[AdjudicatedClause] = []
         total = len(items)
         for index, item in enumerate(items, start=1):
             started = time.monotonic()
@@ -273,8 +420,9 @@ class MatchingEngine:
                 raw = self._client.complete_structured(
                     system_prompt, user_message, ClauseVerification
                 )
-                verification = _post_process(
-                    raw, item, submission, haystack, self._settings
+                verification = self._adjudicate(
+                    _post_process(raw, item, submission, haystack, self._settings),
+                    item,
                 )
             except StructuredOutputError:
                 # One unusable answer must not lose the whole report.
@@ -298,7 +446,7 @@ class MatchingEngine:
         submission_text: str,
         submission: ParsedSubmission,
         haystack: str,
-    ) -> List[ClauseVerification]:
+    ) -> List[AdjudicatedClause]:
         system_prompt = get_prompt(self._settings.resolved_prompt_version)
         user_message = build_batch_user_message(
             items, submission_text, self._settings.human_review_threshold
@@ -308,11 +456,16 @@ class MatchingEngine:
         )
         by_id = {v.checklist_item_id: v for v in raw_report.verified_items}
 
-        results: List[ClauseVerification] = []
+        results: List[AdjudicatedClause] = []
         for item in items:
             raw = by_id.get(item.id)
             if raw is None:
                 results.append(_unreviewed(item))
                 continue
-            results.append(_post_process(raw, item, submission, haystack, self._settings))
+            results.append(
+                self._adjudicate(
+                    _post_process(raw, item, submission, haystack, self._settings),
+                    item,
+                )
+            )
         return results

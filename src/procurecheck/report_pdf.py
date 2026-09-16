@@ -44,6 +44,7 @@ td { padding: 4pt; vertical-align: top; border-bottom: 1px solid #dddddd; }
 .no { color: #a12020; font-weight: bold; }
 .rev { color: #8a5a00; font-weight: bold; }
 .q { font-family: monospace; font-size: 8pt; color: #333333; }
+.note { font-size: 7.5pt; color: #5a5a5a; font-style: italic; }
 ul { margin: 0 0 5pt 0; }
 li { margin: 0 0 2pt 0; }
 """
@@ -149,6 +150,12 @@ def _check_rows(report) -> str:
             if item.extracted_snippet
             else EM_DASH_PLACEHOLDER
         )
+        # The evidence check's reason, where there is one. An item reported Not
+        # Found because the quoted text turned out to be a different document
+        # reads as an unexplained absence without it.
+        note = getattr(item, "adjudication_note", None)
+        if note:
+            snippet += f'<br/><span class="note">{_truncate(note, 150)}</span>'
         rows.append(
             f"<tr><td><b>{_escape(item.checklist_item_id)}</b><br/>"
             f"{_escape(item.clause_title)}</td>"

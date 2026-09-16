@@ -10,13 +10,16 @@ boundary refuses a scoring request, an unsupported file is rejected, and a
 submission too large for the context window is refused rather than silently cut
 short.
 
-Tier 2 makes two real model calls against a submission whose contents are
-known. One checklist item is definitely in that document and one definitely is
-not. Reporting the present one as Found with a quotation that really appears in
-the text, and the absent one as Not Found, is the smallest honest proof that
-the whole pipeline works end to end.
+Tier 2 makes real model calls against a submission whose contents are known.
+Three checklist items, chosen to exercise each way the pipeline can be wrong:
+one that is definitely in the document, one that is definitely not, and one
+that is not there but has a close relative on the same page. The third is the
+one that matters. It is the shape of the only failure the measured baseline
+still had, and it is the case the evidence check exists to catch, so a run
+where the evidence check has quietly stopped working fails here rather than in
+a report someone signs.
 
-What this does NOT do is measure accuracy. Two cases cannot. Run
+What this does NOT do is measure accuracy. Three cases cannot. Run
 `python run.py evaluate` for that.
 """
 
@@ -50,6 +53,15 @@ PRESENT_ITEM = ChecklistItem(
 ABSENT_ITEM = ChecklistItem(
     id="CHK-07",
     description="Beneficial ownership disclosure form",
+)
+# Absent, but the submission carries a signed conflict of interest declaration,
+# which reads like it and sits on the same page. The single-pass baseline
+# returned that declaration for this item at confidence 0.95, and both
+# code-side guards passed it: the quotation was real, and the confidence was
+# high. Only the evidence check separates them.
+NEAR_MISS_ITEM = ChecklistItem(
+    id="CHK-05",
+    description="Anti-bribery and anti-corruption declaration signed by the bidder",
 )
 
 PASS = "PASS"
@@ -165,6 +177,10 @@ def _check_known_item(
         f"(confidence {verification.confidence_score:.2f}), expected {wanted.value}"
     )
 
+    note = getattr(verification, "adjudication_note", None)
+    if note:
+        detail += f"; {note}"
+
     if status is not wanted:
         return False, detail
 
@@ -214,6 +230,7 @@ def run(
             "Model backend reachable",
             "Finds an item that is present",
             "Reports an item that is absent",
+            "Rejects a near miss for the required document",
         ):
             checks.append(emit(Check(name, SKIP, "skipped, --quick was given")))
         return checks
@@ -223,7 +240,11 @@ def run(
     )
     checks.append(backend)
     if backend.outcome != PASS:
-        for name in ("Finds an item that is present", "Reports an item that is absent"):
+        for name in (
+            "Finds an item that is present",
+            "Reports an item that is absent",
+            "Rejects a near miss for the required document",
+        ):
             checks.append(
                 emit(Check(name, SKIP, "skipped, the backend is not reachable"))
             )
@@ -249,6 +270,27 @@ def run(
             )
         )
     )
+    if settings.adjudicate:
+        checks.append(
+            emit(
+                _timed(
+                    "Rejects a near miss for the required document",
+                    lambda: _check_known_item(
+                        settings, NEAR_MISS_ITEM, expect_present=False
+                    ),
+                )
+            )
+        )
+    else:
+        checks.append(
+            emit(
+                Check(
+                    "Rejects a near miss for the required document",
+                    SKIP,
+                    "skipped, the evidence check is switched off",
+                )
+            )
+        )
     return checks
 
 

@@ -58,6 +58,29 @@ STRATEGY_BATCH: Final[str] = "batch"
 # and compared against. See prompts/prompt-version-history.md.
 DEFAULT_PROMPT_VERSION: Final[str] = "v2.0"
 
+# The second model pass that checks the first pass's quotation against the
+# requirement, with the submission withheld. On by default: the measured
+# baseline's only two remaining failures are both false positives of the kind
+# it exists to catch, and a false positive is the one error this system must
+# not make, because it hides a missing document behind a completed check.
+# Set PROCURECHECK_ADJUDICATE=off to reproduce the single-pass baseline.
+DEFAULT_ADJUDICATE: Final[bool] = True
+DEFAULT_ADJUDICATOR_PROMPT_VERSION: Final[str] = "adjudicator-v1.0"
+
+# When a rejection by the second pass is taken as final, and when it is handed
+# to a human instead.
+#
+# The second pass returns a match score alongside its verdict. In the measured
+# runs the two always agree: 1.00 on every acceptance, 0.00 on every rejection.
+# A rejection that still scores the passage at or above this value is arguing
+# with itself, and one uncertain model call must not be allowed to delete a
+# document the bidder really filed. Those go to human review; a clean rejection
+# below it is reported as Not Found.
+DEFAULT_ADJUDICATION_CONFLICT_SCORE: Final[float] = 0.60
+
+_TRUE_VALUES: Final[frozenset] = frozenset({"1", "true", "yes", "on"})
+_FALSE_VALUES: Final[frozenset] = frozenset({"0", "false", "no", "off"})
+
 
 def _env_str(name: str, default: str) -> str:
     value = os.getenv(name)
@@ -72,6 +95,21 @@ def _env_float(name: str, default: float) -> float:
         return float(raw)
     except ValueError as exc:
         raise ValueError(f"{name} must be a number, got {raw!r}") from exc
+
+
+def _env_bool(name: str, default: bool) -> bool:
+    raw = os.getenv(name)
+    if raw is None or not raw.strip():
+        return default
+    value = raw.strip().lower()
+    if value in _TRUE_VALUES:
+        return True
+    if value in _FALSE_VALUES:
+        return False
+    raise ValueError(
+        f"{name} must be one of "
+        f"{', '.join(sorted(_TRUE_VALUES | _FALSE_VALUES))}, got {raw!r}"
+    )
 
 
 def _env_int(name: str, default: int) -> int:
@@ -100,6 +138,9 @@ class Settings:
     snippet_max_chars: int = DEFAULT_SNIPPET_MAX_CHARS
     strategy: str = STRATEGY_PER_ITEM
     prompt_version: str = DEFAULT_PROMPT_VERSION
+    adjudicate: bool = DEFAULT_ADJUDICATE
+    adjudicator_prompt_version: str = DEFAULT_ADJUDICATOR_PROMPT_VERSION
+    adjudication_conflict_score: float = DEFAULT_ADJUDICATION_CONFLICT_SCORE
 
     def __post_init__(self) -> None:
         if not 0.0 <= self.temperature <= 2.0:
@@ -119,13 +160,22 @@ class Settings:
         # Imported here rather than at module level so that the registry stays
         # the single source of truth for which versions exist, without config
         # taking a permanent dependency on the prompt text.
-        from .prompts import SELECTABLE_PROMPT_VERSIONS
+        from .prompts import PROMPT_REGISTRY, SELECTABLE_PROMPT_VERSIONS
 
         if self.prompt_version not in SELECTABLE_PROMPT_VERSIONS:
             selectable = ", ".join(SELECTABLE_PROMPT_VERSIONS)
             raise ValueError(
                 f"prompt_version must be one of: {selectable}. "
                 f"Got {self.prompt_version!r}."
+            )
+        if not 0.0 <= self.adjudication_conflict_score <= 1.0:
+            raise ValueError(
+                "adjudication_conflict_score must be between 0.0 and 1.0"
+            )
+        if self.adjudicator_prompt_version not in PROMPT_REGISTRY:
+            raise ValueError(
+                f"adjudicator_prompt_version {self.adjudicator_prompt_version!r} "
+                f"is not in the prompt registry."
             )
 
     @property
@@ -165,6 +215,15 @@ class Settings:
             prompt_version=_env_str(
                 "PROCURECHECK_PROMPT_VERSION", DEFAULT_PROMPT_VERSION
             ),
+            adjudicate=_env_bool("PROCURECHECK_ADJUDICATE", DEFAULT_ADJUDICATE),
+            adjudicator_prompt_version=_env_str(
+                "PROCURECHECK_ADJUDICATOR_PROMPT_VERSION",
+                DEFAULT_ADJUDICATOR_PROMPT_VERSION,
+            ),
+            adjudication_conflict_score=_env_float(
+                "PROCURECHECK_ADJUDICATION_CONFLICT_SCORE",
+                DEFAULT_ADJUDICATION_CONFLICT_SCORE,
+            ),
         )
 
     @property
@@ -175,3 +234,10 @@ class Settings:
         return resolve_prompt_version(
             self.prompt_version, per_item=self.strategy == STRATEGY_PER_ITEM
         )
+
+    @property
+    def pipeline_label(self) -> str:
+        """How the run should be named in a report, e.g. 'v2.0-per-item + adjudicator-v1.0'."""
+        if not self.adjudicate:
+            return self.resolved_prompt_version
+        return f"{self.resolved_prompt_version} + {self.adjudicator_prompt_version}"

@@ -3,7 +3,7 @@
 Public Procurement Document-Completeness Agent, Week 2 baseline.
 
 Model: `llama3.1:8b`  
-Prompt version: `v2.0-per-item`  
+Prompt version: `v2.0-per-item + adjudicator-v1.0`  
 Cases run: 1  
 Cases meeting expectation: 1 of 1
 

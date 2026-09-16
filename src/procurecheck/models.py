@@ -91,6 +91,101 @@ class ClauseVerification(BaseModel):
         return ItemStatus.FOUND if self.is_present else ItemStatus.NOT_FOUND
 
 
+class EvidenceAdjudication(BaseModel):
+    """The second model pass: is the quoted passage really the required document?
+
+    The first pass reads the whole submission and is under constant pressure to
+    return something, because a plausible passage is almost always available.
+    The measured baseline shows exactly that failure: a conflict-of-interest
+    declaration returned for an anti-bribery declaration, a certificate of
+    registration returned for a certificate of non-blacklisting. Both quotations
+    were genuine, so grounding passed them, and both carried confidence 0.95, so
+    the review threshold passed them too.
+
+    This schema is answered by a second call that is shown the requirement and
+    the quoted passage ONLY. With the document removed there is nothing to
+    latch onto, and the question narrows from "find it" to "are these two the
+    same document", which an 8B model answers far more reliably. The naming
+    fields come first on purpose: the model must state what the passage IS
+    before it is allowed to judge, so the verdict follows the naming instead of
+    the naming being written to fit a verdict already reached.
+    """
+
+    required_document: str = Field(
+        description="The document the checklist requirement asks for, named in a few words"
+    )
+    quoted_document: str = Field(
+        description="What the quoted passage actually is, named in a few words"
+    )
+    same_document: bool = Field(
+        description="True if one physical document could carry both names"
+    )
+    both_required_separately: bool = Field(
+        description=(
+            "True if a complete submission would contain both as separate "
+            "filings, which means the passage is a different document"
+        )
+    )
+    match_confidence: float = Field(
+        description=(
+            "How strongly the quoted passage satisfies the requirement, "
+            "0.0 to 1.0"
+        ),
+        ge=0.0,
+        le=1.0,
+    )
+
+    @property
+    def accepts(self) -> bool:
+        """Whether the evidence survives the check.
+
+        Both signals must agree. They are deliberately redundant: rejecting a
+        genuine document costs the officer one item to check by hand, while
+        accepting a missing one hides a real gap behind a sign-off.
+        """
+        return self.same_document and not self.both_required_separately
+
+    def contradicts_itself(self, conflict_score: float) -> bool:
+        """A rejection that still scores the passage highly is arguing with itself.
+
+        The field is a match score, not a meta-confidence: asked how sure it is,
+        an 8B model answers how well the passage fits, and in the measured runs
+        it returns 1.00 on every acceptance and 0.00 on every rejection. A
+        rejection that lands in between is the model genuinely torn, which is
+        the one case a human should settle rather than the pipeline.
+        """
+        return not self.accepts and self.match_confidence >= conflict_score
+
+    @property
+    def note(self) -> str:
+        """One line a reviewer can read without opening the submission."""
+        if self.accepts:
+            return (
+                f"Evidence check: the quoted {self.quoted_document} is the "
+                f"required {self.required_document}."
+            )
+        return (
+            f"Evidence check: the quoted text is a {self.quoted_document}, "
+            f"not the required {self.required_document}."
+        )
+
+
+class AdjudicatedClause(ClauseVerification):
+    """A verdict carrying the evidence check that produced it.
+
+    A subclass rather than a wider ClauseVerification because ClauseVerification
+    is the schema sent to the model, fixed by Prompt Specification v1.0 Sec. 6.
+    Widening it would oblige the model to fill a field only the pipeline can
+    answer. Reports and the API keep consuming ClauseVerification unchanged.
+    """
+
+    adjudication: Optional[EvidenceAdjudication] = None
+    adjudication_note: Optional[str] = Field(
+        default=None,
+        description="Why the evidence check changed the verdict, if it did",
+    )
+
+
 class CompletenessReport(BaseModel):
     """The full report for one submission."""
 

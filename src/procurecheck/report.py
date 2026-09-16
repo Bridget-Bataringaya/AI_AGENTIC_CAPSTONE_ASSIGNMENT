@@ -22,7 +22,18 @@ CSV_COLUMNS: Final[List[str]] = [
     "page_number",
     "extracted_snippet",
     "confidence_score",
+    "evidence_check",
 ]
+
+
+def _evidence_note(item: object) -> str:
+    """The evidence check's one-line reason, or empty when there is none.
+
+    Read defensively because the note lives on AdjudicatedClause, and a report
+    assembled by hand, restored from JSON, or produced with the second pass
+    switched off carries plain ClauseVerification items instead.
+    """
+    return getattr(item, "adjudication_note", None) or ""
 
 
 def _generated_at() -> str:
@@ -57,6 +68,7 @@ def to_dict(report: CompletenessReport, model_name: str) -> Dict[str, Any]:
                 "page_number": item.page_number,
                 "extracted_snippet": item.extracted_snippet,
                 "confidence_score": round(item.confidence_score, 3),
+                "evidence_check": _evidence_note(item) or None,
             }
             for item in report.verified_items
         ],
@@ -88,6 +100,7 @@ def to_csv(report: CompletenessReport, model_name: str) -> str:
                 item.page_number if item.page_number is not None else "",
                 (item.extracted_snippet or "").replace("\n", " "),
                 round(item.confidence_score, 3),
+                _evidence_note(item),
             ]
         )
     return buffer.getvalue()
@@ -116,6 +129,9 @@ def to_text(report: CompletenessReport, model_name: str) -> str:
         if item.extracted_snippet:
             snippet = " ".join(item.extracted_snippet.split())[:96]
             lines.append(f"{'':<8} -> {snippet}")
+        note = _evidence_note(item)
+        if note:
+            lines.append(f"{'':<8} note: {' '.join(note.split())[:108]}")
     lines.append("")
     lines.append(COMPLETENESS_DISCLAIMER)
     return "\n".join(lines)

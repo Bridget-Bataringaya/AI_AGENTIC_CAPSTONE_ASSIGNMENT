@@ -588,7 +588,7 @@ def _write_pdf_report(
     settings = Settings.from_env()
     meta = ReportMeta(
         model=settings.model,
-        prompt_version=settings.resolved_prompt_version,
+        prompt_version=settings.pipeline_label,
         strategy="one check per checklist item",
         context_tokens=settings.context_tokens,
         threshold=settings.human_review_threshold,
@@ -608,7 +608,7 @@ def _write_docx_report(
     settings = Settings.from_env()
     meta = DocxMeta(
         model=settings.model,
-        prompt_version=settings.resolved_prompt_version,
+        prompt_version=settings.pipeline_label,
         strategy="one check per checklist item",
         context_tokens=settings.context_tokens,
         threshold=settings.human_review_threshold,
@@ -659,7 +659,7 @@ def _markdown_table(results: List[CaseResult], model: str, heading: str) -> str:
         "Public Procurement Document-Completeness Agent, Week 2 baseline.",
         "",
         f"Model: `{model}`  ",
-        f"Prompt version: `{Settings.from_env().resolved_prompt_version}`  ",
+        f"Prompt version: `{Settings.from_env().pipeline_label}`  ",
         f"Cases run: {len(results)}  ",
         f"Cases meeting expectation: {passed} of {len(results)}",
         "",

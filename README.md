@@ -6,6 +6,31 @@ Checks a tender submission against a published procurement checklist and reports
 required items are present, missing, or need human review, with a page number and a
 verbatim quotation as evidence for every item it claims to have found.
 
+## How it decides
+
+Every item goes through the model twice.
+
+The first pass reads the submission and proposes an answer. The second pass is
+shown the requirement and the quotation the first pass returned, and nothing
+else, and is asked one question: is this the required document, or a different
+one? A quotation the second pass rejects is reported as Not Found with the
+reason attached, not as a match.
+
+The second pass exists because of a measured failure. Searching a document for
+a requirement always offers a nearest match, and a model asked to search and to
+judge in one breath judges in favour of what it has just found: the baseline
+returned the bidder's conflict of interest declaration for the required
+anti-bribery declaration, and its certificate of registration for the required
+certificate of non-blacklisting. Both quotations were real, so grounding passed
+them; both came back at confidence 0.95, so the review threshold passed them
+too. Nothing deterministic tells one declaration from another, so the judgement
+stays with the model and only the question changes. Withhold the document and
+the task stops being a search.
+
+Three deterministic guards still run on top of both passes: the quotation must
+really appear in the submission, the page number must exist, and a match below
+the confidence threshold is routed to a human rather than reported as found.
+
 ## What it will not do
 
 The safety boundary is enforced in code, not only in the prompt. The system refuses to
@@ -57,12 +82,24 @@ python run.py verify --quick
 ```
 
 That is the fastest way to tell the system is working: five checks, no model
-needed, instant. Drop `--quick` to add two real model calls against a document
-whose contents are known, which takes a few minutes and proves the whole
-pipeline end to end.
+needed, instant. Drop `--quick` to add real model calls against a document whose
+contents are known: one item that is in it, one that is not, and one that is not
+there but has a close relative on the same page. The third is the case the
+evidence check exists to catch, so a run where that check has quietly stopped
+working fails here rather than in a report someone signs. It takes several
+minutes and proves the whole pipeline end to end.
 
 ```bash
 python run.py check --submission knowledge/samples/synthetic-submission.pdf
+```
+
+The second pass roughly doubles the number of model calls for items the first
+pass claims to have found, though each one is short because it carries the
+quotation rather than the document. To time the single-pass baseline, or to
+trade accuracy for speed on a long checklist:
+
+```bash
+python run.py check --submission knowledge/samples/synthetic-submission.pdf --no-evidence-check
 ```
 
 Export the report instead of printing it:
@@ -121,7 +158,10 @@ Regenerate the submission with `python knowledge/samples/generate_submission.py`
 | `PROCURECHECK_CONTEXT_TOKENS` | `16384` | Context window requested from Ollama |
 | `PROCURECHECK_HUMAN_REVIEW_THRESHOLD` | `0.85` | Below this, route to human review |
 | `PROCURECHECK_STRATEGY` | `per_item` | `per_item` or `batch` |
-| `PROCURECHECK_PROMPT_VERSION` | `v2.0` | Prompt iteration to run, `v2.0` or `v1.0` |
+| `PROCURECHECK_PROMPT_VERSION` | `v2.0` | First-pass prompt iteration, `v2.0` or `v1.0` |
+| `PROCURECHECK_ADJUDICATE` | `on` | The second pass. `off` reproduces the single-pass baseline |
+| `PROCURECHECK_ADJUDICATOR_PROMPT_VERSION` | `adjudicator-v1.0` | Second-pass prompt |
+| `PROCURECHECK_ADJUDICATION_CONFLICT_SCORE` | `0.60` | A rejection still scoring the passage this highly goes to a human instead |
 
 ### A note on the context window
 

@@ -10,15 +10,15 @@ Week 2 deliverable: "Version at least two meaningful prompt iterations."
 | System | ProcureCheck, Public Procurement Document-Completeness Agent |
 | Model | `llama3.1:8b` served locally by Ollama |
 | Generation settings | temperature 0.0, top_p 0.9, num_ctx 16384, num_predict 2048 |
-| Versions defined | v1.0 (baseline), v2.0 (current default) |
+| Versions defined | v1.0 (baseline), v2.0, v2.1 (current default) |
 | Prompt source of truth | `src/procurecheck/prompts.py` |
-| Selected with | `PROCURECHECK_PROMPT_VERSION` (`v2.0` by default, `v1.0` to reproduce the baseline) |
+| Selected with | `PROCURECHECK_PROMPT_VERSION` (`v2.0` by default, `v1.0` to reproduce the baseline) and `PROCURECHECK_ADJUDICATE` (`on` by default, `off` for the single-pass v2.0 behaviour) |
 
 ---
 
 ## 1. Scope
 
-This document records the two numbered prompt versions the agent has had, what
+This document records the numbered prompt versions the agent has had, what
 each one does, what measured behaviour forced the change, and what was
 deliberately left alone. It is the version history that accompanies Prompt
 Specification v1.0; the specification states what the prompt must do, this
@@ -38,19 +38,20 @@ the baseline run then produced it on every case designed to expose it.
 
 ## 2. Versions at a glance
 
-|  | v1.0 | v2.0 |
-| --- | --- | --- |
-| Status | Superseded, kept selectable | Current default |
-| Origin | Prompt Specification v1.0 Sec. 8 | This iteration |
-| Role statement | Completeness Clerk, not a decision-maker | Unchanged, with "you report evidence so that a human officer can decide" added |
-| Decision guidance | Single task paragraph | Four-step ordered decision procedure |
-| Absence handling | Not addressed | Explicit: absence is an expected answer, not-present is the starting position |
-| Wrong-document guard | Not addressed | Identity test with four worked exclusions |
-| Confidence guidance | "near 1.0" / "near 0.0" | Four anchored bands tied to what was quoted |
-| Evidence rules | Verbatim snippet, real page marker | Same, plus never present without both page and snippet |
-| Self-check | None | Final check from the reviewer's point of view |
-| Output schema | `ClauseVerification` | Unchanged |
-| Safety boundary | Four prohibitions plus injection rule | Unchanged |
+|  | v1.0 | v2.0 | v2.1 |
+| --- | --- | --- | --- |
+| Status | Superseded, kept selectable | Superseded, kept selectable | Current default |
+| Origin | Prompt Specification v1.0 Sec. 8 | Second iteration | Third iteration, the first route named in Sec. 6.4 |
+| Model calls per item | One | One | One, plus a second for any item claimed present |
+| Role statement | Completeness Clerk, not a decision-maker | Unchanged, with "you report evidence so that a human officer can decide" added | Unchanged |
+| Decision guidance | Single task paragraph | Four-step ordered decision procedure | Unchanged in the first pass |
+| Absence handling | Not addressed | Explicit: absence is an expected answer, not-present is the starting position | Unchanged |
+| Wrong-document guard | Not addressed | Identity test with four worked exclusions | Identity test moved into its own call, with the submission withheld |
+| Confidence guidance | "near 1.0" / "near 0.0" | Four anchored bands tied to what was quoted | Plus a second, independent match score from the evidence check |
+| Evidence rules | Verbatim snippet, real page marker | Same, plus never present without both page and snippet | Unchanged |
+| Self-check | None | Final check from the reviewer's point of view | Performed by a separate call instead of by the same one |
+| Output schema | `ClauseVerification` | Unchanged | Unchanged. `EvidenceAdjudication` is a second schema for the second call |
+| Safety boundary | Four prohibitions plus injection rule | Unchanged | Unchanged, and applied to the second prompt too |
 
 Each version exists in two forms: a batch form carrying the whole checklist in
 one call, and a `-per-item` form carrying one checklist item. The forms share
@@ -246,17 +247,20 @@ The shipped prompt was then run against the complete 19-case evaluation, on the
 same harness and settings that produced the v1.0 baseline. The probe table above
 is the tuning loop; this is the result that counts.
 
-| Measure | v1.0 | v2.0 |
-| --- | --- | --- |
-| Cases meeting expectation | 15 of 19 | **17 of 19** |
-| Times a required document was reported absent | never | correctly on 4 of the 6 absent items |
-| EV-18, a submission containing none of the required documents | 0 of 3 Not Found | **3 of 3 Not Found** |
-| Safety boundary, EV-08 to EV-11 and EV-14 | all pass | all pass |
-| Format and validation, EV-12, EV-13, EV-15 to EV-17, EV-19 | all pass | all pass |
-| Remaining failures | EV-05, EV-06, EV-07, EV-18 | EV-05, EV-07 |
+| Measure | v1.0 | v2.0 | v2.1 |
+| --- | --- | --- | --- |
+| Cases meeting expectation | 15 of 19 | 17 of 19 | **19 of 19** |
+| Times a required document was reported absent | never | correctly on 4 of the 6 absent items | **correctly on all 6** |
+| EV-18, a submission containing none of the required documents | 0 of 3 Not Found | 3 of 3 Not Found | 3 of 3 Not Found |
+| Safety boundary, EV-08 to EV-11 and EV-14 | all pass | all pass | all pass |
+| Format and validation, EV-12, EV-13, EV-15 to EV-17, EV-19 | all pass | all pass | all pass |
+| Remaining failures | EV-05, EV-06, EV-07, EV-18 | EV-05, EV-07 | **none** |
 
-Both generated tables name their prompt version in the header, so neither run
-can be mistaken for the other.
+The v2.1 row is recorded here for the comparison; Sec. 7 is where that version
+is described.
+
+Every generated table names the pipeline that produced it in its header, so no
+two runs can be mistaken for each other.
 
 ### 6.3 What each draft taught
 
@@ -329,52 +333,206 @@ What remains is discriminating between two documents that share vocabulary,
 issuer and subject area, which is a harder judgement than the model can be
 talked into making.
 
-Two routes are open for v2.1, and both are structural rather than rhetorical:
+Two routes were open, and both are structural rather than rhetorical:
 
-- **Tighten the confidence bands in code.** The model reports 0.95 for these
-  matches, comfortably above the 0.85 threshold. A second, cheaper verification
-  call asking only "is this quoted text the required document, yes or no" would
-  give `engine.py` an independent signal instead of the model's self-assessment.
+- **A second verification call.** The model reports 0.95 for these matches,
+  comfortably above the 0.85 threshold. A second, cheaper call asking only "is
+  this quoted text the required document, yes or no" would give `engine.py` an
+  independent signal instead of the model's self-assessment.
 - **Adopt Johnson's `explanation` field.** A one-sentence justification would
   make the faulty reasoning visible in the report itself, where a reviewer would
   catch it, rather than leaving a bare confidence number the threshold trusts.
 
-Until one of those lands, the system's behaviour on this class of case should be
-stated plainly to any officer using it: a required document that has a close
-cousin elsewhere in the submission may still be reported present. The completeness
-check reduces the reviewer's work; it does not yet replace their reading of the
-near-miss items.
+The first route is v2.1 and is described in Sec. 7. The second is still open and
+is recorded in Sec. 10.
 
-## 7. What deliberately did not change
+## 7. Version 2.1, the evidence check
 
-- **The output schema.** `ClauseVerification` is unchanged, so v1.0 and v2.0 can
-  be run against the same evaluation harness and compared directly. Changing the
-  prompt and the schema at once would make it impossible to attribute any
-  difference to either.
+### 7.1 Why a prompt could not finish the job
+
+Sec. 6.4 records where v2.0 stopped and why. Three formulations of the identity
+test were tried against EV-05 and EV-07, and none moved either case. The
+diagnostic detail is the one in Sec. 6.4: across those formulations the model
+changed which passage it quoted but never stopped quoting one. It is not
+holding a wrong belief that better wording could argue it out of. It is
+answering the question it was asked, which is "find this in the document", and
+a search of a real submission always has a nearest match to return.
+
+So v2.1 does not rewrite the instruction. It splits the work into two calls and
+changes what the second one is asked.
+
+The judgement itself stays with the model, and has to. No rule in `engine.py`
+can tell an anti-bribery declaration from a conflict of interest declaration:
+they share vocabulary, issuer, signatory and page. Deciding that two documents
+with the same subject are nonetheless two documents is the work this system
+exists to do, and the only component capable of it is the model. What code can
+do is choose the conditions under which the model is asked.
+
+### 7.2 What the second pass is
+
+Every item the first pass claims to have found goes to a second call, carrying
+the requirement and the quoted passage and nothing else. The submission is
+withheld deliberately. With no document in front of it the model has nothing
+left to search, the task narrows from retrieval to a two-way comparison, and it
+has no answer of its own to defend, because the answer under review was produced
+by a separate call.
+
+The prompt is `adjudicator-v1.0` in `src/procurecheck/prompts.py`, and its
+schema, `EvidenceAdjudication`, orders the fields so that the naming comes
+before the verdict:
+
+| Field | What it asks |
+| --- | --- |
+| `required_document` | Name the document the requirement asks for |
+| `quoted_document` | Name what the passage actually is, not what it is near |
+| `same_document` | Could one physical document carry both names? |
+| `both_required_separately` | Would a complete submission contain both, as separate filings? |
+| `match_confidence` | How strongly the passage satisfies the requirement |
+
+Ollama constrains generation to that schema at decode time, so the fields are
+filled in order. The model must say what the passage is before it is allowed to
+judge, which stops the naming being written to fit a verdict already reached.
+The two booleans are redundant on purpose, and the evidence must clear both:
+rejecting a genuine document costs the officer one item to check by hand, while
+accepting a missing one hides a real gap behind a completed check.
+
+`match_confidence` is a match score, not a meta-confidence. That is what the
+model reliably produces: asked how sure it is, an 8B model answers how well the
+passage fits. In the measured runs it returned 1.00 on every acceptance and 0.00
+or 0.01 on every rejection, in agreement with its own booleans every time. The
+schema was named to match what the model does rather than fight it.
+
+### 7.3 What the engine does with the answer
+
+Three outcomes, in `engine.py`:
+
+- **Accepted.** The item stays Found, and its confidence becomes the weaker of
+  the two judgements. This is the first point in the pipeline where the 0.85
+  review threshold does real work: the first pass returns 0.95 for everything it
+  finds, so on its own the threshold never fires.
+- **Rejected, match score below `PROCURECHECK_ADJUDICATION_CONFLICT_SCORE`
+  (0.60).** The item becomes Not Found, and the reason is recorded on it and
+  printed in the report, so an absence is explained rather than bare.
+- **Rejected while still scoring the passage at or above 0.60.** The second pass
+  is arguing with itself, so the item goes to human review with its quotation
+  intact. One torn model call must not be allowed to delete a document the
+  bidder really filed.
+
+Two further failure paths are handled rather than assumed away. An item the
+first pass reports absent is never sent for checking, because there is no
+evidence to doubt and no call worth spending. An evidence check that returns
+unusable output routes the item to human review: reporting it Found would
+present an unchecked answer as a checked one, and reporting it missing would
+invent a finding.
+
+### 7.4 Measured result
+
+**19 of 19 cases met expectation**, against 17 of 19 for v2.0 and 15 of 19 for
+v1.0. That is the full evaluation harness, same fixtures, same model, same
+generation settings, regenerated by `python run.py evaluate` and recorded in
+`docs/evaluation/prompt-evaluation-table.md`. The v2.0 tables are kept beside it
+as `prompt-evaluation-table.v2.0-single-pass.*` so the comparison survives the
+re-run.
+
+The six cases the change could move are set out below, taken from individual
+runs where the second pass's own answer was captured.
+
+The two cases v2.0 could not fix:
+
+| Case | Required | First pass quoted | Evidence check named it | Verdict |
+| --- | --- | --- | --- | --- |
+| EV-05 | Anti-bribery and anti-corruption declaration | The declaration of interest on page 7 | "Director and Shareholder Declaration", not the same document, match 0.01 | Not Found |
+| EV-07 | Certificate of non-blacklisting | The certificate of registration on page 2 | "Certificate of Registration of the Company", not the same document and both would be filed separately, match 0.01 | Not Found |
+
+Both were reported Found at confidence 0.95 in the v2.0 baseline. Both now come
+back Not Found, with the reason printed beside them in the report rather than a
+bare absence the officer has to take on trust.
+
+The four cases that had to survive it, where the submission does contain the
+required document under another name:
+
+| Case | Required | Submission's wording | Evidence check | Verdict |
+| --- | --- | --- | --- | --- |
+| EV-01 | Certificate of Incorporation | Certificate of Registration | Same document, match 1.00 | Found |
+| EV-02 | Tax clearance certificate | Tax Clearance Certificate | Same document, match 1.00 | Found |
+| EV-03 | Audited financial statements | Audited accounts | Same document, match 1.00 | Found |
+| EV-04 | Bid security | Bid guarantee | Same document, match 1.00 | Found |
+
+Note what the second pass wrote in `quoted_document` on EV-05. The first pass
+returned the passage; the second pass, seeing only that passage, named it a
+"Director and Shareholder Declaration" and then answered its own question. The
+naming is what does the work, which is why the schema puts it before the
+verdict.
+
+The four synonym cases are the ones that could have been broken by this change,
+and they are the reason the accept path was tested as carefully as the reject
+path. A check that rejected "Certificate of Registration" for "Certificate of
+Incorporation" would trade two false positives for four false negatives. The
+second pass named each pair correctly and accepted all four.
+
+One visible side effect is worth recording. EV-01 is now reported Found at
+confidence 0.89 rather than 0.95, because the reported confidence is the weaker
+of the two passes and the evidence check rated that pair 0.89. It is still above
+the 0.85 threshold, so the classification is unchanged, but the number now moves
+when something is less than certain. Under v2.0 every Found item reported 0.95
+whatever the evidence, which is what made the threshold decorative.
+
+### 7.5 What it costs
+
+The second call roughly doubles the number of model calls for items claimed
+present, but each one carries a quotation rather than a document, so it is short:
+around 30 seconds against 150 or more for a first pass on the CPU-only
+development machine. Items reported absent cost nothing extra.
+
+Timings taken during this work are not comparable with the Sec. 6 baseline,
+because the machine was running other model work at the same time. The number
+worth recording is the shape, not the seconds: a second pass on a quotation is a
+small fraction of a first pass on a submission.
+
+`PROCURECHECK_ADJUDICATE=off`, or `--no-evidence-check`, restores the single-pass
+v2.0 behaviour exactly, so the comparison stays reproducible and a long checklist
+can trade the accuracy back for speed deliberately rather than by accident.
+
+## 8. What deliberately did not change
+
+- **The output schema.** `ClauseVerification` is unchanged in all three
+  versions, so any of them can be run against the same evaluation harness and
+  compared directly. Changing the prompt and the schema at once would make it
+  impossible to attribute any difference to either. v2.1 adds a second schema,
+  `EvidenceAdjudication`, for its second call; it is answered by a different
+  prompt and never widens the first pass's contract. The adjudication is carried
+  on `AdjudicatedClause`, a subclass, so reports and the API keep consuming
+  `ClauseVerification` unchanged.
 - **The safety boundary.** The four prohibitions and the injection rule are
-  identical in both versions and are covered by a test that runs against every
-  registered prompt. The boundary comes from the AI Boundary Matrix, not from a
+  identical in every version, the adjudicator prompt included, and are covered by
+  a test that runs against every registered prompt. The passage handed to the
+  second pass is bidder text and is fenced and labelled as data there too. The boundary comes from the AI Boundary Matrix, not from a
   prompt version, and must not be reopened by an iteration.
 - **The code-side guards.** Snippet grounding, page validation and the
-  confidence threshold in `engine.py` all still run. v2.0 reduces how often they
-  are the last line of defence; it does not replace them.
+  confidence threshold in `engine.py` all still run, ahead of the evidence
+  check. They catch different things: grounding catches a quotation that was
+  never in the document, the evidence check catches a quotation that was in the
+  document but belongs to another one. Neither subsumes the other.
 - **Johnson's `explanation` field.** His v2.0 schema carries a one or two
   sentence explanation for the officer. It is not adopted here, because adding a
   schema field in the same change as a prompt rewrite would confound the
-  comparison. It is recorded in Sec. 9 as the first candidate for v2.1.
+  comparison. It is recorded in Sec. 10 as the next candidate.
 
-## 8. Reproducing either version
+## 9. Reproducing any version
 
-Both versions stay selectable. The numbered version is chosen by environment
+All three versions stay selectable. The numbered version is chosen by environment
 variable and the batch or per-item form follows from the matching strategy:
 
 ```bash
-# Current default: v2.0, one call per checklist item
+# Current default: v2.1, one call per checklist item plus the evidence check
 python run.py check --checklist knowledge/samples/checklist.csv \
   --submission knowledge/samples/synthetic-submission.pdf
 
+# Reproduce v2.0: the same first pass, no evidence check
+python run.py check --submission knowledge/samples/synthetic-submission.pdf \n  --no-evidence-check
+
 # Reproduce the recorded v1.0 baseline
-PROCURECHECK_PROMPT_VERSION=v1.0 python run.py evaluate
+PROCURECHECK_PROMPT_VERSION=v1.0 PROCURECHECK_ADJUDICATE=off python run.py evaluate
 ```
 
 An unknown version fails at start-up with the list of selectable versions,
@@ -382,9 +540,10 @@ rather than falling back to a default and producing a run whose provenance is
 unclear. The version actually sent is recorded in the header of every generated
 evaluation table and PDF report.
 
-## 9. Known limits and the next iteration
+## 10. Known limits and the next iteration
 
-- **Latency.** v2.0's system prompt is roughly 1,858 tokens against v1.0's 430,
+- **Latency.** v2.1 adds a second call per item claimed present, costed in
+  Sec. 7.5. v2.0's system prompt is roughly 1,858 tokens against v1.0's 430,
   a little over four times the length. The cost is prefill time on slow
   hardware, not tokens generated. On the CPU-only development machine the first
   call of a run, which also carries model load, exceeded the 300 second default
@@ -392,9 +551,14 @@ evaluation table and PDF report.
   times across the comparison runs ranged from 91 to 432 seconds and were more
   sensitive to machine load than to prompt version, so the default timeout
   should be raised for anyone running on comparable hardware.
-- **The `explanation` field**, deferred from Sec. 7, is the first candidate for
-  v2.1. A short officer-readable justification would make a wrong-document match
+- **The `explanation` field**, deferred from Sec. 8, is the next candidate. A short officer-readable justification would make a wrong-document match
   visible in the report itself rather than only in the confidence number.
+- **A second opinion that is not the same model.** The evidence check is
+  llama3.1:8b reviewing llama3.1:8b. It works because the second call is asked a
+  narrower question, not because it is a different judge, so a mistake both
+  passes would make is still not caught. Routing the second call to a different
+  model is the cheapest way to test how much of the gain comes from the question
+  and how much from the split.
 - **Larger and messier test data.** Johnson's Sec. 8 asks for confirmation that
   the structured output stays valid across unusual formatting and handwritten
   annotation. All testing so far uses short synthetic submissions.
@@ -405,7 +569,7 @@ evaluation table and PDF report.
   Context Diagram does not exist, so scanned submissions are refused rather than
   checked, in either prompt version.
 
-## 10. Sources
+## 11. Sources
 
 | Source | Contribution |
 | --- | --- |

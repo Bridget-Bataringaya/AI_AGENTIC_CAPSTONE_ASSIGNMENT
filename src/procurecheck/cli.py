@@ -95,6 +95,17 @@ def _build_parser() -> argparse.ArgumentParser:
     check.add_argument(
         "--strategy", choices=(STRATEGY_PER_ITEM, STRATEGY_BATCH), default=None
     )
+    check.add_argument(
+        "--no-evidence-check",
+        dest="no_evidence_check",
+        action="store_true",
+        help=(
+            "Skip the second model pass that re-reads each quotation against "
+            "its requirement. Faster, and reproduces the single-pass baseline, "
+            "but a quotation from a different document is then reported as a "
+            "match."
+        ),
+    )
     return parser
 
 
@@ -149,9 +160,15 @@ def _run_check(args: argparse.Namespace, settings: Settings) -> int:
     print(
         f"Checking {len(items)} checklist items against "
         f"{parsed.page_count} page(s) using {settings.model} "
-        f"({settings.strategy})...",
+        f"({settings.strategy}, {settings.pipeline_label})...",
         file=sys.stderr,
     )
+    if not settings.adjudicate:
+        print(
+            "The evidence check is off. A quotation belonging to a different "
+            "document will be reported as a match.",
+            file=sys.stderr,
+        )
 
     def show(progress: ItemProgress) -> None:
         print(progress.line, file=sys.stderr, flush=True)
@@ -228,10 +245,13 @@ def main(argv: Optional[List[str]] = None) -> int:
 
         return run_verify(quick=args.quick)
 
+    overrides = {}
     if getattr(args, "strategy", None):
-        settings = Settings(
-            **{**settings.__dict__, "strategy": args.strategy}
-        )
+        overrides["strategy"] = args.strategy
+    if getattr(args, "no_evidence_check", False):
+        overrides["adjudicate"] = False
+    if overrides:
+        settings = Settings(**{**settings.__dict__, **overrides})
     return _run_check(args, settings)
 
 
