@@ -51,6 +51,8 @@ AI Boundary Matrix and User Stories AC6 to AC9.
 | `prompts/` | Prompt specification and version history |
 | `knowledge/checklists/` | The bundled standard checklist, used when none is named |
 | `knowledge/samples/` | Synthetic checklist and submission for testing |
+| `knowledge/corpus/` | The controlled corpus: 30 PPDA documents and 5 synthetic bids, with provenance |
+| `knowledge/index/` | The retrieval index, built locally and not committed |
 | `evidence/` | Screenshots, traces, demo recordings |
 | `tests/` | Test suite |
 
@@ -61,8 +63,12 @@ Requires Python 3.10 or later and [Ollama](https://ollama.com).
 ```bash
 pip install -r requirements.txt
 ollama pull llama3.1:8b
+ollama pull nomic-embed-text
 ollama serve
 ```
+
+`nomic-embed-text` (274 MB) is only needed for corpus search. Without it, search
+falls back to keywords and says so.
 
 Copy `.env.example` to `.env` and adjust if needed. Every setting has a working default,
 so the agent runs with no configuration at all.
@@ -154,6 +160,52 @@ Interactive documentation is then at `http://localhost:8000/docs`.
 | `POST /checklist/parse` | Extract required items so the user can edit them |
 | `POST /check` | Run a completeness check for one submission |
 
+## Searching the corpus
+
+The team's controlled corpus lives in `knowledge/corpus/`: 30 public PPDA documents
+(standard bidding documents, user guides, guidelines and the 2023 procurement
+regulations) and 5 synthetic tender submissions. `CORPUS_MANIFEST.csv` lists them and
+`Public_Procurement_Corpus_Provenance_Register.pdf` records where each came from.
+Some file names are long, so on Windows run `git config core.longpaths true` in the
+repository if a checkout reports "Filename too long".
+
+Build the index once, then search it:
+
+```bash
+python run.py index
+python run.py search "what form of bid security is required for open bidding"
+```
+
+Each result names its document, page, section heading and chunk id, and says whether
+keyword search, meaning search or both found it. Every search writes its full trace
+to `evidence/traces/retrieval/`. Add `--doc DOC-030` to search one document,
+`--mode bm25` or `--mode dense` to use one search alone, and `--json` for the trace.
+
+How it works, one module per stage in `src/procurecheck/retrieval/`:
+
+| Stage | Module | What it does |
+| --- | --- | --- |
+| Ingestion | `corpus.py` | Reads the manifest and resolves each document to readable text |
+| Segmentation | `segment.py` | Splits a document into blocks in reading order, each carrying its heading and page |
+| Chunking | `chunking.py` | Packs blocks into passages of about 220 words that never cross a heading |
+| Keyword index | `lexical.py` | BM25 over each passage with its document title and heading prepended |
+| Meaning index | `embeddings.py` | `nomic-embed-text` vectors from the local Ollama server |
+| Retrieval | `retriever.py` | Runs both searches and fuses the rankings by reciprocal rank |
+
+Eight documents cannot be read as filed. Five are legacy Word 97-2003 files, converted
+to `.docx`; three are scanned PDFs with no text layer, read by OCR. The derived text is
+in `knowledge/corpus/derived/` and `DERIVATIONS.csv` records how each file was made. A
+passage from OCR text is labelled as such wherever it is shown, because OCR errors are
+not corrected.
+
+A rebuild re-embeds only passages whose text changed. Embedding runs at about one
+passage per second on a CPU-only machine, so the first build of the full corpus takes
+roughly an hour and later rebuilds take minutes.
+
+Measure retrieval quality with `python run.py evaluate-retrieval`, which runs the
+labelled queries in `tests/evaluation/retrieval_cases.py` through keyword, meaning and
+hybrid search and writes `docs/evaluation/retrieval-evaluation.md`.
+
 ## Tests
 
 ```bash
@@ -216,6 +268,9 @@ Regenerate the submission with `python knowledge/samples/generate_submission.py`
 | `PROCURECHECK_ADJUDICATOR_PROMPT_VERSION` | `adjudicator-v1.0` | Second-pass prompt |
 | `PROCURECHECK_ADJUDICATION_CONFLICT_SCORE` | `0.60` | A rejection still scoring the passage this highly goes to a human instead |
 | `PROCURECHECK_WORD_COPY` | `on` | Write a Word copy beside each check PDF. For development; `off` for the PDF alone |
+| `PROCURECHECK_EMBEDDING_MODEL` | `nomic-embed-text` | Embedding model for corpus search |
+| `PROCURECHECK_INDEX_DIR` | `knowledge/index` | Where the retrieval index is written and read |
+| `PROCURECHECK_RETRIEVAL_MIN_COSINE` | `0.60` | Below this best similarity, a search reports that the corpus holds no evidence |
 
 ### A note on the context window
 

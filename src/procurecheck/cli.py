@@ -6,6 +6,8 @@ interaction can be demonstrated and evaluated from a terminal.
 Usage:
     python -m procurecheck.cli check --submission FILE [--checklist FILE|standard]
     python -m procurecheck.cli health
+    python -m procurecheck.cli index [--no-embeddings]
+    python -m procurecheck.cli search "QUERY" [--top-k N] [--mode hybrid|bm25|dense]
 """
 
 from __future__ import annotations
@@ -27,6 +29,7 @@ from .ingestion import (
 )
 from .llm import ModelUnavailableError, OllamaClient
 from .report import to_csv, to_json, to_text
+from .retrieval import commands as retrieval_commands
 
 # Where reports land when the caller does not choose a path. Named after
 # the submission so that checking a second document cannot silently
@@ -61,6 +64,8 @@ def _build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Skip the two model calls; finishes instantly",
     )
+
+    retrieval_commands.add_parsers(subparsers)
 
     check = subparsers.add_parser("check", help="Run a completeness check")
     check.add_argument(
@@ -277,6 +282,12 @@ def main(argv: Optional[List[str]] = None) -> int:
         from .verify import main as run_verify
 
         return run_verify(quick=args.quick)
+
+    if args.command == "index":
+        return retrieval_commands.run_index(args, settings)
+
+    if args.command == "search":
+        return retrieval_commands.run_search(args, settings)
 
     overrides = {}
     if getattr(args, "strategy", None):

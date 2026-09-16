@@ -33,7 +33,10 @@ Usage:
   python run.py verify [--quick]              Self-check that the system works
   python run.py check --checklist F --submission F [options]
                                               Run a completeness check
+  python run.py index [--no-embeddings]       Build the retrieval index over the corpus
+  python run.py search "QUERY" [--top-k N]    Search the corpus, with sources and a trace
   python run.py evaluate [--no-model]         Run the prompt evaluation cases
+  python run.py evaluate-retrieval            Measure retrieval quality on labelled queries
   python run.py test                          Run the unit test suite
   python run.py api                           Start the FastAPI server
 
@@ -56,6 +59,13 @@ def _bootstrap() -> None:
 def _run_evaluate(argv: list[str]) -> int:
     """Run the evaluation as a subprocess so its own sys.path setup applies."""
     script = EVALUATION_DIR / "run_evaluation.py"
+    if not script.is_file():
+        raise SystemExit(f"Cannot find {script}.")
+    return subprocess.call([sys.executable, str(script), *argv])
+
+
+def _run_retrieval_evaluation(argv: list[str]) -> int:
+    script = EVALUATION_DIR / "run_retrieval_evaluation.py"
     if not script.is_file():
         raise SystemExit(f"Cannot find {script}.")
     return subprocess.call([sys.executable, str(script), *argv])
@@ -95,11 +105,13 @@ def main(argv: list[str] | None = None) -> int:
 
     if command == "evaluate":
         return _run_evaluate(rest)
+    if command == "evaluate-retrieval":
+        return _run_retrieval_evaluation(rest)
     if command == "test":
         return _run_tests(rest)
     if command == "api":
         return _run_api(rest)
-    if command in ("health", "check", "verify"):
+    if command in ("health", "check", "verify", "index", "search"):
         _bootstrap()
         from procurecheck.cli import main as cli_main
 

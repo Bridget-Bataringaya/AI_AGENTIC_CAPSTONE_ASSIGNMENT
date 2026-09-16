@@ -15,3 +15,6 @@ docs/evaluation/*.partial.*
 
 # Large generated fixtures are rebuilt by the generator scripts
 evidence/traces/*.log
+
+# Retrieval index, rebuilt from knowledge/corpus/ with `python run.py index`
+knowledge/index/
