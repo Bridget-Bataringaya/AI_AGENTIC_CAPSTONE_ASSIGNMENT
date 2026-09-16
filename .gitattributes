@@ -1,0 +1,10 @@
+# Office documents and PDFs are binary. Without this, a PDF whose first bytes
+# contain no NUL is treated as text and its line endings rewritten on checkout,
+# which corrupts it.
+*.pdf binary
+*.doc binary
+*.docx binary
+*.odt binary
+*.png binary
+*.jpg binary
+*.f32 binary
