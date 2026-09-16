@@ -1,0 +1,43 @@
+'ministry" means the Ministry responsible for Finance.
+"password" means the secret information in the form of characters which, in
+combination with the User Identification allows the bidder to be authenticated by
+the e-Government Procurement System server;
+'person" means human or artificial persons and includes an individual, sole
+proprietorship, partnership, company, cooperative society that wish to participate
+in procurement or disposal proceedings.
+"provider registration" means the process by which a provider registers its interest
+to participate in the procurement or disposal processes of procuring and disposing
+entities using the e-GP System;
+"records" includes electronic and manual archives containing the data, documents
+and information relating to e-procurement procedures;
+"Super Administrator" means a designated person with rights to all key settings in
+the e-GP System.
+"PDE System Administrator" means a designated person to support the e-GP
+System on behalf of other users to ensure that it is configured in its original state.
+3.0
+3.1
+3.2
+3.3
+3.4
+PART 11 - GENERAL PROVISIONS ON E-GP
+Institutional Framework for e-GP
+The Secretary to Treasury shall set standards and practices for the
+implementation and performance of e-GP System and shall have powers
+for approval of exceptions to use of the System.
+The Procuring and Disposing Entity (PDE) enrolled on the e-GP System
+shall undertake the procurement processes and procedures for the supply
+of goods, works and services and the disposal of public assets using the
+System.
+Procuring and disposing entities enrolled on the e-GP System, the Attorney
+General, Accounting Officer, Contracts Committee, Evaluation Committee,
+Negotiation Team, Procurement and Disposal Unit and User Department,
+Internal Audit, User Departments, Heads of Department, Budget Managers,
+and other designated officers, over sight agencies, suppliers and
+development partners shall perform their roles and responsibilities in
+respect to procurement and disposal using the e-GP System.
+The Authority shall undertake compliance monitoring and oversight of
+procurement and disposal proceedings on the e-GP System to ensure
+compliance with the legal framework. The Authority shall also undertake
+provider registration and management of the list of suspended providers
+within the e-GP System.
+Page 4 of 18

@@ -1,0 +1,38 @@
+34.7
+34.8
+34.9
+35.0
+36.0
+36.1
+36.2
+reject the exception (with or without conditions) and, where necessary,
+require the procuring and disposing entity to undertake the procurement
+using the e-GP System.
+The Ministry shall maintain a central register of all exceptions granted under
+this clause and periodically analyze exception trends to identify systemic
+gaps in e-GP System. The exception data shall be used to inform
+improvements to the existing design of the System.
+All procuring and disposing entities shall report exceptions invoked under
+this clause in their reports to the Authority. The Authority may require
+additional reporting or conduct audits of exceptions to ensure compliance
+with this Guideline.
+Procurement undertaken off the e-GP System without invoking a valid
+exception or without obtaining required approvals may be subject to
+sanctions under the PPDA Act and Regulations.
+Preservation of Electronic Records
+The responsible Entity shall preserve the electronic records processed by
+the e-GP System for a period not less than seven years from the fulfillment
+of the obligations between the parties.
+Revocation of Guideline No. 1 of 2020 and Transition
+PPDA (Electronic Government Procurement) Guideline No. 1 of 2020 is
+revoked.
+This guideline shall not apply to procurements or disposals where bids were
+advertised or invited but had not been received prior to the commencement
+date of this guideline.
+shungi
+BOARD CHAIR
+Canon Benson Turamye
+EXECUTIVE DIRECTOR
+a$dune
+DATE
+Page 18 of 18

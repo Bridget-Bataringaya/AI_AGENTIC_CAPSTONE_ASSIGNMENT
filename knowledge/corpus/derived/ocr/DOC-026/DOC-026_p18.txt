@@ -1,0 +1,43 @@
+28.4
+29.0
+30.0
+31.0
+31.1
+31.2
+32.0
+33.0
+34.0
+34.1
+Where the bidder is satisfied with the administrative review, the System
+shall indicate closure of the contract, and the process shall proceed to
+contract signing.
+Complaint to the PPDA Appeals Tribunal
+Where the complaint is forwarded to the PPDA Appeals Tribunal, the
+process that had been halted under Clause 28.2 shall remain halted and
+the appeals tribunal registrar shall be notified. PPDA Tribunal proceedings
+shall be offline but the decision shall be uploaded on the System.
+PART Vill - DISPOSAL OF PUBLIC ASSETS
+Nomination of Board of Survey
+The Accounting Officer shall nominate a Board of Survey or user
+department to identify the public assets to be disposed of. The Board of
+Survey shall be comprised of persons from the same entity or outside the
+Entity.
+Preparation and Approval of Annual Disposal Plans
+The PDU shall upload the validated disposal plan in the accepted format.
+The appropriate method of disposal under the PPDA Act shall be used for
+disposal process.
+Amendment of the Disposal Plans
+The disposal plan may be amended by the Accounting Officer where
+necessary and the amendment shall require an updated Board of Survey
+report that shall be uploaded on the System.
+PART IX - MISCELLANEOUS
+Limitation of Providers from Participating in a Process Under the e-
+GP System
+Providers suspended by the Authority or debarred by an international
+agency of which Uganda is a member shall not participate in the
+procurement or disposal proceedings on the e-GP System during the period
+of suspension.
+Exceptions to use of the e-GP System
+A procuring and disposing entity may undertake procurement off the e-GP
+System in the following circumstances:
+Page 16 of 18

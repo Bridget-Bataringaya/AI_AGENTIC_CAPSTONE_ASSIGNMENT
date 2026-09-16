@@ -1,0 +1,46 @@
+17.0
+17.1
+17.2
+17.3
+17.4
+18.0
+18.1
+18.2
+19.0
+19.1
+19.2
+19.3
+20.0
+20.1
+Negotiations
+The PDE may conduct negotiations and upload the negotiation report onto
+the e-GP System.
+The negotiation team shall be appointed and approved on the e-GP System,
+the conducting and concluding of the negotiations shall be done through an
+online meeting and minutes shall be generated and uploaded.
+Negotiations shall be concluded within five working days. This period may
+be extended with justification.
+All stakeholders in the process shall be able to access and view the
+negotiation report after its approval.
+Contracts Committee Approval
+Submissions by the PDU to the Contracts Committee shall be approved
+within five working days.
+In case of an emergency and the Contracts Committee is unable to approve
+the procurement, the Accounting Officer shall approve the procurement
+which shall proceed to its logical conclusion without Contracts Committee
+approval.
+PART V - AWARD AND CONTRACTING
+Award of Contracts and Notification of Best Evaluated Bidder
+The decision of the Contracts Committee shall be submitted to the
+Accounting Officer.
+The Accounting Officer shall communicate the decision to award to the best
+evaluated bidder electronically on the e-GP System using the standard BEB
+notice template and this shall be copied to all bidders that submitted bids.
+The requirement for the procuring and disposing entity to have proof of
+receipt of the notice of the best evaluated bidder shall not apply to
+procurements undertaken using the e-GP System.
+Notice of Best Evaluated Bidder
+The notice of the Best Evaluated Bidder shall vary depending on the method
+procurement as follows:
+(i) five working days for open bidding; and
+Page 13 of 18
