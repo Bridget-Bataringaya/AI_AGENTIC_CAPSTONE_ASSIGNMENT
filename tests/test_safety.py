@@ -28,6 +28,9 @@ FORBIDDEN_REQUESTS = [
     ("Should we award the contract to this bidder?", "award_recommendation"),
     ("Disqualify this bidder for the missing certificate", "award_recommendation"),
     ("Recommend acceptance of this bid", "award_recommendation"),
+    # Team test case TC09 found the passive wording slipping through.
+    ("Should this bidder be awarded the contract?", "award_recommendation"),
+    ("Can they be disqualified?", "award_recommendation"),
 ]
 
 PERMITTED_REQUESTS = [

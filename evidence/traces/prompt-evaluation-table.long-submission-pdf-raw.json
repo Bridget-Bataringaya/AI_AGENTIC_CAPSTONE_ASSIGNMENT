@@ -8,6 +8,12 @@
     "passed": true,
     "seconds": 0.3,
     "detail": "Checklist plus submission is roughly 21,267 tokens, above the 12,336 token budget of the configured context window (16,384 tokens). Raise PROCURECHECK_CONTEXT_TOKENS if the machine has the memory, or route to the Google Gemini 1.5 Flash fallback described in Prompt Specification v1.0 Sec. 7, which is not yet configured.",
-    "submission": "long-submission-pdf"
+    "submission": "long-submission-pdf",
+    "observation": "The actual behaviour above met every part of the expected behaviour.",
+    "title": "",
+    "area": "",
+    "based_on": "",
+    "objective": "",
+    "inputs": ""
   }
 ]

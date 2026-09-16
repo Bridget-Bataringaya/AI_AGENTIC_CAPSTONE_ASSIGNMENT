@@ -1,22 +1,27 @@
 """Tests for the generated reports.
 
-These reports are the deliverable a supervisor or a procurement officer reads,
-so what is asserted here is shape rather than prose: the answer appears before
-the explanation, the checklist that produced the findings is named, and a run
-against the bundled template says so.
+These reports are the deliverable a supervisor or a procurement officer reads.
+What is asserted here is that they follow the team's Document Format Standard
+(Times New Roman 12, 1.5 spacing, justified, numbered Heading styles, each main
+section on a new page, captions above tables, no page number on the first
+page), that every Not Found item says what happened, and that the PDF and the
+Word copy carry the same content.
 """
 
 from __future__ import annotations
 
+import unicodedata
 from pathlib import Path
 
 import pytest
 
 from procurecheck import checklists
 from procurecheck.models import ClauseVerification, CompletenessReport
-from procurecheck.report import to_text
-from procurecheck.report_docx import DocxMeta, build_document, write_docx
-from procurecheck.report_pdf import ReportMeta, build_html, write_check_pdf
+from procurecheck.report import to_csv, to_dict, to_text
+from procurecheck.report_content import CheckMeta, EvaluationMeta, check_report_blocks
+from procurecheck.report_docx import build_evaluation_document, write_check_docx, write_evaluation_docx
+from procurecheck.report_layout import Heading, Table, build_word
+from procurecheck.report_pdf import write_check_pdf, write_evaluation_pdf
 
 
 class FakeResult:
@@ -28,7 +33,8 @@ class FakeResult:
         self.submission = "synthetic-submission.pdf"
         self.description = "Item deliberately omitted from the submission."
         self.expected = "Not Found, with no page number"
-        self.actual = "Found (confidence 0.95, page 7)"
+        self.actual = "Found, confidence 0.95. The model was given all 7 pages.\nCHK-05: Found."
+        self.observation = "Expected Not Found. The system returned Found."
         self.passed = passed
         self.seconds = 12.0
 
@@ -60,20 +66,47 @@ def report() -> CompletenessReport:
 
 
 @pytest.fixture
+def meta() -> CheckMeta:
+    return CheckMeta(
+        submission_name="synthetic-submission.pdf",
+        model="llama3.1:8b",
+        page_count=7,
+        checklist_label=checklists.label_for(checklists.STANDARD),
+        caveat=checklists.TEMPLATE_CAVEAT,
+        pipeline_label="v2.0-per-item + adjudicator-v1.0",
+        threshold=0.85,
+        evidence_check=True,
+    )
+
+
+@pytest.fixture
 def results():
     return [FakeResult("EV-01", True), FakeResult("EV-05", False)]
 
 
 @pytest.fixture
-def meta_kwargs():
-    return {
-        "model": "llama3.1:8b",
-        "prompt_version": "v2.0-per-item",
-        "strategy": "one check per checklist item",
-        "context_tokens": 16384,
-        "threshold": 0.85,
-        "submission_note": "A seven-page synthetic tender submission.",
-    }
+def evaluation_meta() -> EvaluationMeta:
+    return EvaluationMeta(
+        model="llama3.1:8b",
+        prompt_version="v2.0-per-item",
+        strategy="one check per checklist item",
+        context_tokens=16384,
+        threshold=0.85,
+        submission_note="A seven-page synthetic tender submission.",
+    )
+
+
+def _pdf_text(path: Path) -> list[str]:
+    pymupdf = pytest.importorskip("pymupdf")
+    with pymupdf.open(path) as document:
+        # NFKC folds the fi and ffi ligatures back into letters, as a viewer's
+        # search does. A space or hyphen that does not survive is a real fault.
+        return [unicodedata.normalize("NFKC", page.get_text()) for page in document]
+
+
+# ---------------------------------------------------------------------------
+# Content
+# ---------------------------------------------------------------------------
 
 
 def test_terminal_report_puts_one_item_on_one_line(report):
@@ -84,91 +117,169 @@ def test_terminal_report_puts_one_item_on_one_line(report):
     assert any(line.startswith("STD-09") and "Not Found" in line for line in lines)
 
 
-def test_check_pdf_names_the_checklist_and_carries_the_template_caveat(
-    report, tmp_path: Path
-):
-    destination = tmp_path / "check.pdf"
+def test_csv_and_json_say_what_happened_to_every_item(report):
+    assert "what_happened" in to_csv(report, "llama3.1:8b").splitlines()[5]
+    item = to_dict(report, "llama3.1:8b")["items"][1]
+    assert "no page and no quotation" in item["what_happened"]
+    assert "Search the submission by hand" in item["next_step"]
 
-    write_check_pdf(
-        report,
-        "llama3.1:8b",
-        7,
-        destination,
-        checklist_label=checklists.label_for(checklists.STANDARD),
-        caveat=checklists.TEMPLATE_CAVEAT,
-    )
 
-    assert destination.is_file()
-    pymupdf = pytest.importorskip("pymupdf")
-    with pymupdf.open(destination) as document:
-        text = "".join(page.get_text() for page in document)
+def test_every_item_explains_what_had_to_be_present_and_what_happened(report, meta):
+    texts = [getattr(b, "text", "") for b in check_report_blocks(report, meta)]
+    labels = [getattr(b, "label", "") for b in check_report_blocks(report, meta)]
 
-    assert "Completeness Check" in text
+    assert labels.count("What had to be present.") == 2
+    assert labels.count("What the system did.") == 2
+    assert labels.count("Next step.") == 2
+    assert any("all 7 pages" in t and "no page and no quotation" in t for t in texts)
+
+
+def test_every_table_is_referred_to_before_it_appears(report, meta):
+    blocks = check_report_blocks(report, meta)
+    for index, block in enumerate(blocks):
+        if isinstance(block, Table):
+            earlier = " ".join(getattr(b, "text", "") for b in blocks[:index])
+            assert f"Table {block.number}" in earlier
+
+
+def test_sections_and_subsections_are_numbered_in_order(report, meta):
+    headings = [b.text for b in check_report_blocks(report, meta) if isinstance(b, Heading)]
+
+    assert headings[0] == "1. Introduction"
+    assert "2. Summary of findings" in headings
+    assert "3.1 STD-02: Certificate of incorporation" in headings
+    assert "3.2 STD-09: Bid security" in headings
+
+
+def test_a_report_of_almost_nothing_found_asks_for_the_inputs_to_be_checked(meta):
+    absent = [
+        ClauseVerification(
+            checklist_item_id=f"STD-{n:02d}", clause_title=f"Document {n}",
+            is_present=False, confidence_score=0.0, requires_human_review=False,
+        )
+        for n in range(1, 11)
+    ]
+    report = CompletenessReport(submission_id="x", verified_items=absent, missing_items=[])
+    labels = [getattr(b, "label", "") for b in check_report_blocks(report, meta)]
+
+    assert "Check the inputs first." in labels
+
+
+def test_no_report_text_contains_an_em_or_en_dash(report, meta):
+    for block in check_report_blocks(report, meta):
+        for value in vars(block).values():
+            assert "\u2014" not in str(value) and "\u2013" not in str(value)
+
+
+# ---------------------------------------------------------------------------
+# Format standard, Word
+# ---------------------------------------------------------------------------
+
+
+def test_word_copy_follows_the_document_format_standard(report, meta):
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+
+    document = build_word(check_report_blocks(report, meta))
+    normal = document.styles["Normal"]
+    heading = document.styles["Heading 1"]
+
+    assert normal.font.name == "Times New Roman"
+    assert normal.font.size.pt == 12
+    assert normal.paragraph_format.line_spacing == 1.5
+    assert normal.paragraph_format.alignment == WD_ALIGN_PARAGRAPH.JUSTIFY
+    assert heading.font.name == "Times New Roman" and heading.font.bold
+    assert heading.paragraph_format.page_break_before, "each main section starts a new page"
+    assert document.sections[0].different_first_page_header_footer, "no number on page one"
+    assert "PAGE" in document.sections[0].footer._element.xml
+
+
+def test_word_captions_sit_above_their_tables(report, meta):
+    document = build_word(check_report_blocks(report, meta))
+    body = list(document.element.body.iterchildren())
+    for index, element in enumerate(body):
+        if element.tag.endswith("}tbl"):
+            caption = body[index - 1]
+            text = "".join(caption.itertext())
+            assert text.startswith("Table ") and ":" in text
+
+
+def test_word_headings_use_real_heading_styles(report, meta):
+    document = build_word(check_report_blocks(report, meta))
+    styled = {p.style.name for p in document.paragraphs if p.text.startswith(("1. ", "3.1 "))}
+    assert styled == {"Heading 1", "Heading 2"}
+
+
+def test_write_check_docx_produces_a_readable_file(report, meta, tmp_path: Path):
+    docx = pytest.importorskip("docx")
+    destination = write_check_docx(report, meta, tmp_path / "check.docx")
+
+    reopened = docx.Document(str(destination))
+    assert any("What the system did." in p.text for p in reopened.paragraphs)
+
+
+# ---------------------------------------------------------------------------
+# Format standard, PDF
+# ---------------------------------------------------------------------------
+
+
+def test_check_pdf_names_the_checklist_and_carries_the_template_caveat(report, meta, tmp_path: Path):
+    pages = _pdf_text(write_check_pdf(report, meta, tmp_path / "check.pdf"))
+    text = "".join(pages)
+
+    assert "Completeness Check Report" in pages[0]
     assert "bundled template" in text
-    assert "bidding document" in text  # the caveat survived into the page
+    assert "bidding document" in text
+    assert "What the system did." in text
 
 
-def test_check_pdf_omits_the_caveat_when_a_real_checklist_was_used(
-    report, tmp_path: Path
-):
-    destination = tmp_path / "check.pdf"
-
-    write_check_pdf(report, "llama3.1:8b", 7, destination, checklist_label="tender-42.csv")
-
-    pymupdf = pytest.importorskip("pymupdf")
-    with pymupdf.open(destination) as document:
-        text = "".join(page.get_text() for page in document)
+def test_check_pdf_omits_the_caveat_when_a_real_checklist_was_used(report, tmp_path: Path):
+    meta = CheckMeta(submission_name="bid.pdf", model="llama3.1:8b", page_count=7, checklist_label="tender-42.csv")
+    text = "".join(_pdf_text(write_check_pdf(report, meta, tmp_path / "check.pdf")))
 
     assert "tender-42.csv" in text
     assert "Edit the checklist" not in text
 
 
-def test_evaluation_html_leads_with_the_result_not_an_explanation(
-    results, meta_kwargs
-):
-    html = build_html(results, ReportMeta(**meta_kwargs), ["One caveat."])
+def test_pdf_title_page_is_unnumbered_and_sections_start_new_pages(report, meta, tmp_path: Path):
+    pages = _pdf_text(write_check_pdf(report, meta, tmp_path / "check.pdf"))
 
-    headline = html.index("1 of 2 cases behaved as expected")
-    assert headline < html.index("<h2>")  # the answer precedes every section
-    assert "glossary" not in html.lower()
-
-
-def test_evaluation_html_lists_failures_before_the_full_table(results, meta_kwargs):
-    html = build_html(results, ReportMeta(**meta_kwargs), ["One caveat."])
-
-    assert html.index("What failed") < html.index("Every case")
+    assert pages[0].strip().splitlines()[-1] != "1"
+    assert pages[1].strip().splitlines()[-1] == "2"
+    assert "\xa0" not in pages[1] and "\xad" not in pages[1], "the text layer must stay searchable"
+    starts = [page.lstrip().splitlines()[0] for page in pages[1:]]
+    for heading in ("1. Introduction", "2. Summary of findings", "3. Item-by-item findings"):
+        assert heading in starts
 
 
-def test_evaluation_html_has_no_failure_section_when_everything_passed(meta_kwargs):
-    html = build_html([FakeResult("EV-01", True)], ReportMeta(**meta_kwargs), [])
-
-    assert "What failed" not in html
-
-
-def test_docx_has_a_title_block_numbered_sections_and_tables(results, meta_kwargs):
-    document = build_document(results, DocxMeta(**meta_kwargs), ["One caveat."])
-
-    texts = [paragraph.text for paragraph in document.paragraphs]
-    assert "Public Procurement Document-Completeness Agent" in texts
-    assert "1. Run details" in texts
-    assert "2. Results by area" in texts
-    assert len(document.tables) == 3
+# ---------------------------------------------------------------------------
+# Evaluation report
+# ---------------------------------------------------------------------------
 
 
-def test_docx_renumbers_sections_when_there_are_no_failures(meta_kwargs):
-    document = build_document([FakeResult("EV-01", True)], DocxMeta(**meta_kwargs), [])
+def test_evaluation_report_sets_expected_beside_actual_with_an_observation(results, evaluation_meta):
+    document = build_evaluation_document(results, evaluation_meta, ["One caveat."])
+    texts = [p.text for p in document.paragraphs]
 
-    texts = [paragraph.text for paragraph in document.paragraphs]
-    assert "3. Every case" in texts
-    assert not any(text.endswith("Failures") for text in texts)
+    assert "2. Methodology" in texts
+    assert "4.2 EV-05: Noticing documents that are missing" in texts
+    assert any(t.startswith("Expected behaviour.") for t in texts)
+    assert any(t.startswith("Actual behaviour.") for t in texts)
+    assert any(t.startswith("Observation.") for t in texts)
+    assert "CHK-05: Found." in texts, "multi-line actual behaviour becomes a list"
 
 
-def test_write_docx_produces_a_readable_file(results, meta_kwargs, tmp_path: Path):
-    docx = pytest.importorskip("docx")
-    destination = tmp_path / "evaluation.docx"
+def test_evaluation_report_discusses_failures_only_when_there_are_any(results, evaluation_meta):
+    failing = [p.text for p in build_evaluation_document(results, evaluation_meta, []).paragraphs]
+    passing = [p.text for p in build_evaluation_document([FakeResult("EV-01", True)], evaluation_meta, []).paragraphs]
 
-    write_docx(results, DocxMeta(**meta_kwargs), ["One caveat."], destination)
+    assert "5. Discussion of failures" in failing
+    assert not any(t.endswith("Discussion of failures") for t in passing)
+    assert "5. Limitations" in passing
 
-    assert destination.is_file()
-    reopened = docx.Document(str(destination))
-    assert any("cases behaved as expected" in p.text for p in reopened.paragraphs)
+
+def test_evaluation_pdf_and_word_copy_are_both_written(results, evaluation_meta, tmp_path: Path):
+    pdf = write_evaluation_pdf(results, evaluation_meta, ["One caveat."], tmp_path / "e.pdf")
+    docx = write_evaluation_docx(results, evaluation_meta, ["One caveat."], tmp_path / "e.docx")
+
+    assert pdf.is_file() and docx.is_file()
+    assert "1 of 2 cases behaved as expected" in "".join(_pdf_text(pdf))

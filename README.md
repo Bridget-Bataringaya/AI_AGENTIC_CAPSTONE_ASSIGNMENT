@@ -102,11 +102,43 @@ trade accuracy for speed on a long checklist:
 python run.py check --submission knowledge/samples/synthetic-submission.pdf --no-evidence-check
 ```
 
-Export the report instead of printing it:
+A check writes a PDF to `evidence/reports/<submission>-completeness-report.pdf`.
+The PDF is the report of record for a procurement officer. While the project is
+in development, a Word copy with identical content is written beside it, so the
+team can review and correct the wording. Set `PROCURECHECK_WORD_COPY=off`, or pass
+`--no-word-copy`, to produce the PDF alone.
+
+Export the findings as data instead:
 
 ```bash
 python run.py check --submission knowledge/samples/synthetic-submission.pdf --format csv --out report.csv
 ```
+
+### Reading a report
+
+A status on its own does not say what happened, so every item in the report
+states five things:
+
+- **What had to be present.** The document the submission needed to contain, and
+  what the system needed to see before it could report it Found.
+- **What the system did.** Each stage it ran: the pages the model was given, what
+  the model claimed, whether the quotation exists in the submission, and what the
+  evidence check decided.
+- **Evidence.** The page and quotation relied on, or the rejected quotation and
+  its page, or a statement that nothing was returned.
+- **Result.** The status and what it does and does not establish.
+- **Next step.** What the procurement officer does about it.
+
+Not Found is not proof of absence. It means no text in the submission was
+accepted as that document, and the report says whether that is because the model
+found nothing or because the passage it offered turned out to be a different
+document. The CSV and JSON exports carry the same `what_happened` and `next_step`
+text.
+
+Every report, the PDF and the Word copy alike, follows the team's Document
+Format Standard: Times New Roman 12 point, 1.5 line spacing, justified text,
+numbered headings, each main section on a new page, captions above tables, and
+no page number on the title page.
 
 ## Running the API
 
@@ -131,6 +163,27 @@ python run.py test
 The suite runs without a model server: the engine tests use a stubbed client, so the
 deterministic behaviour (confidence threshold, snippet grounding, page validity, safety
 refusals) is verified independently of model output.
+
+## Evaluation
+
+The team's ten test cases, TC01 to TC10 from
+`docs/evaluation/test-cases/Public Procurement Agent - 10 Test Cases.docx`, run
+through the application with their own checklists, submissions and requests:
+
+```bash
+python run.py evaluate --suite team
+```
+
+Each case in `docs/evaluation/team-test-case-evaluation.pdf` (and `.docx`, `.md`,
+`.csv`) sets the expected behaviour beside the actual behaviour in full, with an
+observation stating the difference. Do not check the test-case document itself
+with `check`: it is not a tender submission, so almost every item comes back Not
+Found and the result measures nothing.
+
+The built-in prompt evaluation is `python run.py evaluate`. To regenerate the
+reports of a past run from its saved trace, without any model calls, add
+`--rebuild` (and `--suite team` or `--name STEM` to choose the run). See
+`docs/evaluation/how-to-run-the-evaluation.md`.
 
 ## Synthetic test data
 
@@ -162,6 +215,7 @@ Regenerate the submission with `python knowledge/samples/generate_submission.py`
 | `PROCURECHECK_ADJUDICATE` | `on` | The second pass. `off` reproduces the single-pass baseline |
 | `PROCURECHECK_ADJUDICATOR_PROMPT_VERSION` | `adjudicator-v1.0` | Second-pass prompt |
 | `PROCURECHECK_ADJUDICATION_CONFLICT_SCORE` | `0.60` | A rejection still scoring the passage this highly goes to a human instead |
+| `PROCURECHECK_WORD_COPY` | `on` | Write a Word copy beside each check PDF. For development; `off` for the PDF alone |
 
 ### A note on the context window
 

@@ -13,6 +13,7 @@ import json
 from datetime import datetime, timezone
 from typing import Any, Dict, Final, List
 
+from .explain import explain
 from .models import COMPLETENESS_DISCLAIMER, CompletenessReport, ItemStatus
 
 CSV_COLUMNS: Final[List[str]] = [
@@ -23,6 +24,8 @@ CSV_COLUMNS: Final[List[str]] = [
     "extracted_snippet",
     "confidence_score",
     "evidence_check",
+    "what_happened",
+    "next_step",
 ]
 
 
@@ -69,6 +72,8 @@ def to_dict(report: CompletenessReport, model_name: str) -> Dict[str, Any]:
                 "extracted_snippet": item.extracted_snippet,
                 "confidence_score": round(item.confidence_score, 3),
                 "evidence_check": _evidence_note(item) or None,
+                "what_happened": explain(item).happened,
+                "next_step": explain(item).next_step,
             }
             for item in report.verified_items
         ],
@@ -101,6 +106,8 @@ def to_csv(report: CompletenessReport, model_name: str) -> str:
                 (item.extracted_snippet or "").replace("\n", " "),
                 round(item.confidence_score, 3),
                 _evidence_note(item),
+                explain(item).happened,
+                explain(item).next_step,
             ]
         )
     return buffer.getvalue()

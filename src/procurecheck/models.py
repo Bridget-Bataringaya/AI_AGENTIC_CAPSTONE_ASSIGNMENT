@@ -185,6 +185,39 @@ class AdjudicatedClause(ClauseVerification):
         description="Why the evidence check changed the verdict, if it did",
     )
 
+    # What each stage actually did, kept so a report can say what happened
+    # rather than only what was decided. A bare "Not Found 0.00" reads the same
+    # whether the model searched every page and found nothing, or offered a
+    # passage the evidence check then threw out, and a reviewer needs to know
+    # which. The first-pass quotation is kept here even when it is rejected,
+    # because the rejected passage is where a reviewer should look first.
+    pages_read: Optional[int] = Field(
+        default=None, description="Pages of the submission the model was given"
+    )
+    model_answered: bool = Field(
+        default=True, description="False if the model gave no usable answer at all"
+    )
+    first_pass_present: Optional[bool] = Field(
+        default=None, description="What the first pass claimed, before any check"
+    )
+    first_pass_confidence: Optional[float] = None
+    first_pass_page: Optional[int] = Field(
+        default=None, description="The page the first pass cited, even if invalid"
+    )
+    first_pass_snippet: Optional[str] = Field(
+        default=None, description="The quotation the first pass offered, even if rejected"
+    )
+    quotation_grounded: Optional[bool] = Field(
+        default=None, description="Whether that quotation appears in the submission"
+    )
+    evidence_check: Optional[str] = Field(
+        default=None,
+        description=(
+            "Outcome of the second pass: accepted, rejected, disputed, failed, "
+            "or None when it did not run"
+        ),
+    )
+
 
 class CompletenessReport(BaseModel):
     """The full report for one submission."""

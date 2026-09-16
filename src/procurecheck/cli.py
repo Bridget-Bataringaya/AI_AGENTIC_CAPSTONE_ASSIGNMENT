@@ -32,7 +32,7 @@ from .report import to_csv, to_json, to_text
 # the submission so that checking a second document cannot silently
 # overwrite the first one's report.
 REPORTS_DIR = Path("evidence") / "reports"
-EXTENSIONS = {"text": ".txt", "json": ".json", "csv": ".csv", "pdf": ".pdf"}
+EXTENSIONS = {"text": ".txt", "json": ".json", "csv": ".csv", "pdf": ".pdf", "docx": ".docx"}
 
 EXIT_OK = 0
 EXIT_USER_ERROR = 1
@@ -78,9 +78,18 @@ def _build_parser() -> argparse.ArgumentParser:
     check.add_argument(
         "--format",
         dest="output_format",
-        choices=("text", "json", "csv", "pdf"),
-        default="text",
-        help="pdf produces a readable report for a non-technical reader",
+        choices=("pdf", "text", "json", "csv"),
+        default="pdf",
+        help=(
+            "pdf (the default) is the report of record for a procurement officer. "
+            "While PROCURECHECK_WORD_COPY is on, a Word copy is written beside it."
+        ),
+    )
+    check.add_argument(
+        "--no-word-copy",
+        dest="no_word_copy",
+        action="store_true",
+        help="Write the PDF alone, without the development Word copy",
     )
     check.add_argument(
         "--out",
@@ -194,18 +203,42 @@ def _run_check(args: argparse.Namespace, settings: Settings) -> int:
 
     if args.output_format == "pdf":
         destination = args.out or _default_report_path(args.submission, "pdf")
+        from .report_content import CheckMeta
         from .report_pdf import write_check_pdf
 
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        write_check_pdf(
-            report,
-            settings.model,
-            parsed.page_count,
-            destination,
+        meta = CheckMeta(
+            submission_name=args.submission.name,
+            model=settings.model,
+            page_count=parsed.page_count,
             checklist_label=checklist_label,
             caveat=checklists.TEMPLATE_CAVEAT if is_template else "",
+            pipeline_label=settings.pipeline_label,
+            threshold=settings.human_review_threshold,
+            evidence_check=settings.adjudicate,
         )
-        print(f"Report written to {destination}", file=sys.stderr)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            write_check_pdf(report, meta, destination)
+            print(f"Report written to {destination}", file=sys.stderr)
+        except PermissionError:
+            print(
+                f"Could not write {destination}: it is open in another program. "
+                f"Close it and run the check again.",
+                file=sys.stderr,
+            )
+        if settings.word_copy and not args.no_word_copy:
+            from .report_docx import write_check_docx
+
+            word_copy = destination.with_suffix(".docx")
+            try:
+                write_check_docx(report, meta, word_copy)
+                print(f"Word copy written to {word_copy}", file=sys.stderr)
+            except PermissionError:
+                print(
+                    f"Could not write {word_copy}: it is open in Word. Close it "
+                    f"and run the check again.",
+                    file=sys.stderr,
+                )
         # Still show the findings in the terminal, so the run is not silent.
         print(to_text(report, settings.model))
         return EXIT_OK

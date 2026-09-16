@@ -146,7 +146,7 @@ def _page_numbers(submission: ParsedSubmission) -> Set[int]:
     return {page.number for page in submission.pages}
 
 
-def _unreviewed(item: ChecklistItem) -> ClauseVerification:
+def _unreviewed(item: ChecklistItem, pages_read: Optional[int] = None) -> AdjudicatedClause:
     """Placeholder used when the model gave no usable answer for an item.
 
     Reported as requiring human review rather than as confidently missing, so
@@ -161,6 +161,8 @@ def _unreviewed(item: ChecklistItem) -> ClauseVerification:
         confidence_score=0.0,
         requires_human_review=True,
         adjudication_note="The model gave no usable answer for this item.",
+        pages_read=pages_read,
+        model_answered=False,
     )
 
 
@@ -221,6 +223,12 @@ def _post_process(
                 "the submission."
             )
         ),
+        pages_read=submission.page_count,
+        first_pass_present=claimed_present,
+        first_pass_confidence=verification.confidence_score,
+        first_pass_page=verification.page_number,
+        first_pass_snippet=snippet if claimed_present else None,
+        quotation_grounded=grounded if claimed_present else None,
     )
 
 
@@ -255,6 +263,7 @@ def _apply_adjudication(
                 ),
                 "adjudication": adjudication,
                 "adjudication_note": adjudication.note,
+                "evidence_check": "accepted",
             }
         )
 
@@ -273,6 +282,7 @@ def _apply_adjudication(
                     clause.confidence_score, adjudication.match_confidence
                 ),
                 "adjudication": adjudication,
+                "evidence_check": "disputed",
                 "adjudication_note": (
                     f"{reason} It still rated the passage a "
                     f"{adjudication.match_confidence:.2f} match, so the two "
@@ -291,6 +301,7 @@ def _apply_adjudication(
             "requires_human_review": False,
             "adjudication": adjudication,
             "adjudication_note": reason,
+            "evidence_check": "rejected",
         }
     )
 
@@ -353,6 +364,7 @@ class MatchingEngine:
             return clause.model_copy(
                 update={
                     "requires_human_review": True,
+                    "evidence_check": "failed",
                     "adjudication_note": (
                         "The evidence check could not be completed, so this "
                         "match has not been verified."
@@ -426,7 +438,7 @@ class MatchingEngine:
                 )
             except StructuredOutputError:
                 # One unusable answer must not lose the whole report.
-                verification = _unreviewed(item)
+                verification = _unreviewed(item, submission.page_count)
             results.append(verification)
             if on_progress is not None:
                 on_progress(
@@ -460,7 +472,7 @@ class MatchingEngine:
         for item in items:
             raw = by_id.get(item.id)
             if raw is None:
-                results.append(_unreviewed(item))
+                results.append(_unreviewed(item, submission.page_count))
                 continue
             results.append(
                 self._adjudicate(

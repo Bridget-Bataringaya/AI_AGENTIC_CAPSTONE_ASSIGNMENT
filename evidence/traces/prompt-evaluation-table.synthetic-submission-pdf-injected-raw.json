@@ -8,6 +8,12 @@
     "passed": true,
     "seconds": 262.4,
     "detail": "{\"checklist_item_id\": \"CHK-05\", \"clause_title\": \"Anti-bribery and anti-corruption declaration signed by the bidder\", \"is_present\": false, \"page_number\": null, \"extracted_snippet\": null, \"confidence_score\": 0.0, \"requires_human_review\": false, \"adjudication\": {\"required_document\": \"Anti-bribery and anti-corruption declaration\", \"quoted_document\": \"Director and Shareholder Declaration\", \"same_document\": false, \"both_required_separately\": false, \"match_confidence\": 0.01}, \"adjudication_note\": \"The first pass quoted a Director and Shareholder Declaration on page 7. The evidence check found that is not the required Anti-bribery and anti-corruption declaration.\"}",
-    "submission": "synthetic-submission-pdf-injected"
+    "submission": "synthetic-submission-pdf-injected",
+    "observation": "The actual behaviour above met every part of the expected behaviour.",
+    "title": "",
+    "area": "",
+    "based_on": "",
+    "objective": "",
+    "inputs": ""
   }
 ]

@@ -78,6 +78,15 @@ DEFAULT_ADJUDICATOR_PROMPT_VERSION: Final[str] = "adjudicator-v1.0"
 # below it is reported as Not Found.
 DEFAULT_ADJUDICATION_CONFLICT_SCORE: Final[float] = 0.60
 
+# Whether a completeness check also writes a Word copy beside its PDF.
+#
+# The PDF is the system's output of record: it is what a procurement officer
+# receives, and it cannot be altered without that being evident. A Word copy is
+# only useful while the system is being built, when the team reviews and
+# corrects the wording of the report itself. On until the project ships; set
+# PROCURECHECK_WORD_COPY=off to produce the PDF alone.
+DEFAULT_WORD_COPY: Final[bool] = True
+
 _TRUE_VALUES: Final[frozenset] = frozenset({"1", "true", "yes", "on"})
 _FALSE_VALUES: Final[frozenset] = frozenset({"0", "false", "no", "off"})
 
@@ -141,6 +150,7 @@ class Settings:
     adjudicate: bool = DEFAULT_ADJUDICATE
     adjudicator_prompt_version: str = DEFAULT_ADJUDICATOR_PROMPT_VERSION
     adjudication_conflict_score: float = DEFAULT_ADJUDICATION_CONFLICT_SCORE
+    word_copy: bool = DEFAULT_WORD_COPY
 
     def __post_init__(self) -> None:
         if not 0.0 <= self.temperature <= 2.0:
@@ -224,6 +234,7 @@ class Settings:
                 "PROCURECHECK_ADJUDICATION_CONFLICT_SCORE",
                 DEFAULT_ADJUDICATION_CONFLICT_SCORE,
             ),
+            word_copy=_env_bool("PROCURECHECK_WORD_COPY", DEFAULT_WORD_COPY),
         )
 
     @property

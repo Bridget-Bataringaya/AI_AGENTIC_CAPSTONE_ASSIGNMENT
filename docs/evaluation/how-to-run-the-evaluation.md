@@ -68,7 +68,7 @@ minutes in.
 python run.py test
 ```
 
-Expected: `43 passed`.
+Expected: `124 passed`.
 
 ```bash
 python run.py evaluate --no-model
@@ -89,17 +89,67 @@ competing for the CPU roughly doubles the time.
 
 ## Step 6: collect the output
 
-Three files are written:
+These files are written:
 
-- `docs/evaluation/prompt-evaluation-table.md` is the table for the report
-- `docs/evaluation/prompt-evaluation-table.docx` is the same results as a Word
-  document, which is the copy handed to a supervisor or marker
+- `docs/evaluation/prompt-evaluation-table.pdf` is the evaluation report
+- `docs/evaluation/prompt-evaluation-table.docx` is the same report as a Word
+  document, for editing
+- `docs/evaluation/prompt-evaluation-table.md` is the table kept in the repository
 - `docs/evaluation/prompt-evaluation-table.csv` is the same table as a spreadsheet
-- `evidence/traces/evaluation-raw.json` is the raw output of every case, for the appendix
+- `evidence/traces/prompt-evaluation-table-raw.json` is the raw output of every
+  case, from which every other file can be rebuilt
 
-The table has one row per case: case ID, the acceptance criterion it covers, the
-scenario, what was expected, what actually happened, pass or fail, and seconds
-taken.
+The PDF and Word report follow the team's Document Format Standard. Each case
+gets its own subsection: the scenario, the expected behaviour, the actual
+behaviour in full, Pass or Fail, and an observation stating what any difference
+between expected and actual means.
+
+For a classification case, the actual behaviour says exactly what the system did,
+not only the verdict. A Not Found reads, for example: "The model was given all 7
+pages of the submission and asked to find this document. It reported that no
+passage is this document, and returned no page and no quotation." Where the model
+offered a passage that the evidence check then rejected, the report says what the
+passage was judged to be instead.
+
+## Step 6b: the team's ten test cases
+
+The ten cases in `test-cases/Public Procurement Agent - 10 Test Cases.docx` each
+define their own checklist, submission and request. They run through the
+application like this:
+
+```bash
+python run.py evaluate --suite team
+```
+
+About 20 to 40 minutes on a CPU-only machine. TC01 and TC06 to TC09 need no model
+and finish instantly. To run only some cases:
+
+```bash
+python run.py evaluate --suite team --only TC03,TC10
+```
+
+Output: `docs/evaluation/team-test-case-evaluation.pdf`, with `.docx`, `.md` and
+`.csv` beside it, and the trace in `evidence/traces/`.
+
+Do not run `check` on the test-case document itself. It is not a bid, so almost
+every checklist item comes back Not Found and the report measures nothing.
+
+## Rebuilding reports without the model
+
+Every run saves a raw trace. To regenerate a run's reports from it, for example
+after a change to the report layout, without spending model time:
+
+```bash
+python run.py evaluate --rebuild
+```
+
+```bash
+python run.py evaluate --rebuild --suite team
+```
+
+Add `--name STEM` for any other run, where `STEM` is the trace filename without
+`-raw.json`. Verdicts, Pass or Fail, and timings are taken from the trace
+unchanged; only the wording is regenerated.
 
 ## Step 7: commit the results
 
@@ -131,14 +181,16 @@ Use this when you have a submission and a checklist and you want to see what the
 assistant makes of them. No expectations needed.
 
 ```bash
-python run.py check --submission TARGET-SUBMISSION.pdf --format pdf
+python run.py check --submission TARGET-SUBMISSION.pdf
 ```
 
 The report is named after the target submission and lands in `evidence/reports/`,
-so checking a second document never overwrites the first one's report:
+so checking a second document never overwrites the first one's report. The PDF is
+the report of record; during development a Word copy is written beside it:
 
 ```text
 evidence/reports/TARGET-SUBMISSION-completeness-report.pdf
+evidence/reports/TARGET-SUBMISSION-completeness-report.docx
 ```
 
 Add `--out somewhere/else.pdf` to choose the path yourself. `--format json` and

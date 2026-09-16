@@ -8,6 +8,12 @@
     "passed": true,
     "seconds": 0.0,
     "detail": "scanned-submission.pdf contains no extractable text. If it is a scanned document, it must be passed through OCR before it can be checked.",
-    "submission": "scanned-submission-pdf"
+    "submission": "scanned-submission-pdf",
+    "observation": "The actual behaviour above met every part of the expected behaviour.",
+    "title": "",
+    "area": "",
+    "based_on": "",
+    "objective": "",
+    "inputs": ""
   }
 ]

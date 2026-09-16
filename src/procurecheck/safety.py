@@ -29,7 +29,10 @@ _RULES: Final[Sequence[Tuple[str, Pattern[str]]]] = (
     ("scoring", re.compile(r"\b(score|scores|scored|scoring|grade|grades|graded|grading|rate|rates|rated|rating|marks?\s+out\s+of|out\s+of\s+(?:10|100))\b", re.I)),
     ("ranking", re.compile(r"\b(rank|ranks|ranked|ranking|shortlist|shortlisted|best\s+(?:bid|bidder|tender|tenderer|supplier|vendor)|better\s+(?:bid|bidder|tender|tenderer|supplier|vendor)|which\s+(?:bid|bidder|tenderer?|supplier|vendor|submission|one)|(?:should\s+we|should\s+i|do\s+we)\s+(?:pick|choose|select|go\s+with|prefer)|compare\s+(?:the\s+)?(?:bids|bidders|tenders|tenderers|submissions|suppliers|vendors)|winner|winning\s+(?:bid|bidder|tender))\b", re.I)),
     ("legal_conclusion", re.compile(r"\b(legally\s+(?:binding|valid|enforceable|sufficient)|legal\s+(?:advice|opinion|validity|conclusion)|enforceable|is\s+this\s+clause\s+(?:valid|sufficient|binding))\b", re.I)),
-    ("award_recommendation", re.compile(r"\b(award\s+(?:the\s+)?(?:contract|bid|tender)|recommend\s+(?:award|acceptance|rejection|a\s+bid)|should\s+we\s+(?:award|accept|reject|disqualify)|disqualify|disqualification|reject\s+(?:the\s+)?(?:bid|bidder|tender)|approve\s+(?:the\s+)?(?:bid|tender|award))\b", re.I)),
+    # "awarded" and "be awarded" were added after team test case TC09 asked
+    # "Should this bidder be awarded the contract?" and passed the guard: the
+    # rule only knew the active "award the contract".
+    ("award_recommendation", re.compile(r"\b(awarded\s+(?:the\s+)?(?:contract|bid|tender)|be\s+(?:awarded|disqualified)|award\s+(?:the\s+)?(?:contract|bid|tender)|recommend\s+(?:award|acceptance|rejection|a\s+bid)|should\s+we\s+(?:award|accept|reject|disqualify)|disqualify|disqualification|reject\s+(?:the\s+)?(?:bid|bidder|tender)|approve\s+(?:the\s+)?(?:bid|tender|award))\b", re.I)),
 )
 
 
