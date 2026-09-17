@@ -31,7 +31,7 @@ CANDIDATE_POOL: Final[int] = 50
 # of passing the nearest unrelated passage to the model. Calibrated on the
 # retrieval check in tests/evaluation/retrieval_cases.py; see
 # docs/evaluation/retrieval-evaluation.md.
-DEFAULT_MIN_COSINE: Final[float] = 0.60
+DEFAULT_MIN_COSINE: Final[float] = 0.65
 
 MODE_HYBRID: Final[str] = "hybrid"
 MODE_BM25: Final[str] = "bm25"

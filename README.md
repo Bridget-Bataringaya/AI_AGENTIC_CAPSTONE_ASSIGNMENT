@@ -270,7 +270,7 @@ Regenerate the submission with `python knowledge/samples/generate_submission.py`
 | `PROCURECHECK_WORD_COPY` | `on` | Write a Word copy beside each check PDF. For development; `off` for the PDF alone |
 | `PROCURECHECK_EMBEDDING_MODEL` | `nomic-embed-text` | Embedding model for corpus search |
 | `PROCURECHECK_INDEX_DIR` | `knowledge/index` | Where the retrieval index is written and read |
-| `PROCURECHECK_RETRIEVAL_MIN_COSINE` | `0.60` | Below this best similarity, a search reports that the corpus holds no evidence |
+| `PROCURECHECK_RETRIEVAL_MIN_COSINE` | `0.65` | Below this best similarity, a search reports that the corpus holds no evidence |
 
 ### A note on the context window
 

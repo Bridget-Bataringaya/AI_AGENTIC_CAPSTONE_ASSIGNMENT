@@ -1,0 +1,51 @@
+{
+  "searched_at": "2026-09-17T03:13:42",
+  "index_built_at": "2026-09-17T00:11:52+00:00",
+  "index_stale": false,
+  "embedding_model": "nomic-embed-text",
+  "document_filter": null,
+  "query": "what form of bid security is required for open bidding",
+  "mode": "hybrid",
+  "best_cosine": 0.8043,
+  "min_cosine": 0.65,
+  "evidence_sufficient": true,
+  "notes": [],
+  "hits": [
+    {
+      "rank": 1,
+      "chunk_id": "DOC-014-C0041",
+      "location": "DOC-014, Section 1: Instructions to Bidders > Bid Security or Bid Securing Declaration",
+      "extraction": "native",
+      "fused_score": 0.032258,
+      "bm25_rank": 2,
+      "bm25_score": 10.9416,
+      "dense_rank": 2,
+      "cosine": 0.7999,
+      "text": "The Bid Security or Bid Securing Declaration shall be submitted using the appropriate form included in Section 4, Bidding Forms and shall be valid until the date specified in the BDS.\nAny bid not accompanied by appropriate Bid Security or Bid Securing Declaration, shall be rejected by the PDE as non-compliant.\nThe Bid Security or Bid Securing Declaration of all bidders shall be returned as promptly as possible once the successful bidder has signed the contract and provided the required Performance Security and ESHS Performance Security where applicable.\nFor a JV, the Bid Security or Bid-Securing Declaration must be issued in either the names of all the parties or any of the parties to the JV.\nThe Bid Security may be forfeited or the conditions of the Bid Securing Declaration executed in the following circumstances:\nIf a bidder withdraws its bid during the period of bid validity specified by the bidder in the Bid Submission Sheet, or during any extension thereto; or\nIf the successful bidder fails to:\nSign the contract in accordance with ITB 45.1;\nFurnish a Performance Security and if required in the BDS, the Environmental, Social, Health and Safety (ESHS) Performance Security in accordance with ITB 48.2."
+    },
+    {
+      "rank": 2,
+      "chunk_id": "DOC-015-C0032",
+      "location": "DOC-015, Section 8 “Special Conditions of Contract.” > Paragraph 6",
+      "extraction": "native",
+      "fused_score": 0.031319,
+      "bm25_rank": 7,
+      "bm25_score": 10.374,
+      "dense_rank": 1,
+      "cosine": 0.8043,
+      "text": "Paragraph 6\nThe amount of bid security should be stated as a fixed amount in accordance with the PPDA guideline on securities. Alternatively, if a bid security is not required then the paragraph should so state that a Bid Securing Declaration shall be required."
+    },
+    {
+      "rank": 3,
+      "chunk_id": "DOC-009-C0046",
+      "location": "DOC-009, pp. 12-29, General > Bid Security or Bid Securing Declaration",
+      "extraction": "native",
+      "fused_score": 0.03055,
+      "bm25_rank": 4,
+      "bm25_score": 10.8421,
+      "dense_rank": 7,
+      "cosine": 0.7927,
+      "text": "Bid Security or Bid Securing Declaration\nThe bidder shall furnish as part of its bid, a Bid Security or a Bid-Securing Declaration, if required, as specified in the BDS in original form and, in case of a Bid Security, in the amount and currency specified in the BDS.\nIf a Bid Security is specified pursuant to ITB Clause 25.1, the bid security shall be a demand guarantee/an on demand bid bond in the amount specified in the BDS and denominated in Uganda Shillings and shall:\nBe in the form of either a bank guarantee or demand bond from a banking institution or insurance company respectively\nBe issued by a reputable financial institution or insurance company selected by the bidder from an eligible country. If the institution issuing the security is located outside Uganda, it shall have a correspondent financial institution or insurance company located in Uganda to make it enforceable;\nBe substantially in accordance with the form of Bid Security included in Section 4, Bidding Forms;\nBe payable promptly upon written demand by the PDE in case the conditions listed in ITB Clause 25.7 are invoked;\nBe submitted in its original form - copies will not be accepted."
+    }
+  ]
+}
