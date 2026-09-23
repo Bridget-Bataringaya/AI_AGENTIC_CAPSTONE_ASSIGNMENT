@@ -1,0 +1,1005 @@
+{
+  "run_at": "2026-09-23T17:52",
+  "index": {
+    "built_at": "2026-09-17T00:11:52+00:00",
+    "chunks": 3974,
+    "embedding_model": "nomic-embed-text",
+    "threshold": 0.65
+  },
+  "results": [
+    {
+      "id": "Q1",
+      "query": "Does Bidder A's submission include a valid Uganda Revenue Authority tax clearance certificate?",
+      "mode": "hybrid",
+      "best_cosine": 0.7657,
+      "min_cosine": 0.65,
+      "evidence_sufficient": true,
+      "notes": [],
+      "hits": [
+        {
+          "rank": 1,
+          "chunk_id": "DOC-002-C0017",
+          "location": "DOC-002, p. 22, Submission of Bid",
+          "extraction": "native",
+          "fused_score": 0.029387,
+          "bm25_rank": 14,
+          "bm25_score": 16.7694,
+          "dense_rank": 3,
+          "cosine": 0.7582,
+          "text": "Not to have a conflict of interest in relation to this procurement requirement; and\nNot subject to suspension by the Public Procurement and Disposal of Public Assets Authority or not debarred from the procurement processes by an international agency of which Uganda is a member.\nDocuments Evidencing Eligibility: Bidders shall submit the following documents:\nA certificate of registration issued by the Authority for bidders currently registered with the Authority or a copy of the bidder’s trading license or equivalent and a copy of the bidder’s certificate of incorporation/registration or equivalent for bidders not currently registered with the Authority;\nEvidence of fulfilment of obligations to pay taxes and social security contributions in Uganda where applicable;\nRegistered/ certified powers of attorney (where applicable); and\nAny other relevant documentation.\nTechnical Requirements: The Non-Consultancy Services are defined in Part 2, Statement of Re- quirements.\nSustainable procurement: The SORs shall detail the minimum technical requirements (which may/ may not include specific sustainable Procurement technical requirements). This considers 3 aspects\nEnvironment (E.g., Energy stars, Eco labels)\nEconomy (life cycle costing); and\nSocial (working and health conditions. This is more appropriate to services and works."
+        },
+        {
+          "rank": 2,
+          "chunk_id": "DOC-013-C0022",
+          "location": "DOC-013, Section 1: Instructions to Bidders > Documents Evidencing Eligibility",
+          "extraction": "native",
+          "fused_score": 0.02938,
+          "bm25_rank": 17,
+          "bm25_score": 15.6278,
+          "dense_rank": 1,
+          "cosine": 0.7657,
+          "text": "Documents Evidencing Eligibility\nBidders shall submit the following documents:\na certificate of registration issued by the Authority for bidders currently registered with the Authority or a copy of the bidder’s trading license or equivalent and a copy of the bidder’s certificate of Incorporation/Registration or equivalent for bidders not currently registered with the Authority;\nEvidence of fulfilment of obligations to pay taxes and social security contributions in Uganda where applicable\nAny other relevant documentation."
+        },
+        {
+          "rank": 3,
+          "chunk_id": "DOC-017-C0018",
+          "location": "DOC-017, p. 17, SECTION 1: BIDDING PROCEDURES > Documents Evidencing Eligibility",
+          "extraction": "converted",
+          "fused_score": 0.028475,
+          "bm25_rank": 21,
+          "bm25_score": 15.1426,
+          "dense_rank": 2,
+          "cosine": 0.7613,
+          "text": "Documents Evidencing Eligibility\nBidders shall submit the following documents:\na certificate of registration issued by the Authority for bidders currently registered with the Authority or a copy of the Bidder’s Trading license or equivalent and a copy of the Bidder’s Certificate of Incorporation/Registration or equivalent for bidders not currently registered with the Authority;\nEvidence of fulfilment of obligations to pay taxes and social security contributions in Uganda where applicable;\nDocuments demonstrating majority shareholders of the company as women, youth or PWDs such as the Memorandum of Association or Constitution of the Registered Association, Certificate of Registration;\nAny other relevant documentation."
+        },
+        {
+          "rank": 4,
+          "chunk_id": "DOC-031-C0005",
+          "location": "DOC-031, 3. Tax Clearance Certificate",
+          "extraction": "native",
+          "fused_score": 0.027505,
+          "bm25_rank": 1,
+          "bm25_score": 33.6827,
+          "dense_rank": 30,
+          "cosine": 0.7066,
+          "text": "3. Tax Clearance Certificate\nA current tax clearance certificate is attached and is valid for the relevant financial year."
+        },
+        {
+          "rank": 5,
+          "chunk_id": "DOC-010-C0013",
+          "location": "DOC-010, p. 24, PART 1: Bidding Procedures Section 1: Instructions to Bidders",
+          "extraction": "native",
+          "fused_score": 0.0272,
+          "bm25_rank": 23,
+          "bm25_score": 14.7824,
+          "dense_rank": 6,
+          "cosine": 0.7448,
+          "text": "Not to have a conflict of interest in relation to this procurement requirement; and\nNot to be subject to suspension by the Public Procurement and Disposal of Public Assets Authority or not debarred from the procurement processes by an international agency of which Uganda is a member.\nDocuments Evidencing Eligibility: Bidders shall submit the following documents:\nA certificate of registration issued by the Authority for bidders currently registered with the Authority or a copy of the bidder’s Trading license or equivalent and a copy of the bidder’s certificate of registration or equivalent for bidders not currently registered with the Authority;\nEvidence of fulfilment of obligations to pay taxes and social security contributions in Uganda where applicable;\nRegistered/ Certified Powers of Attorney (where applicable); and\nAny other relevant documentation.\nOrigin of Supplies: All supplies and related services shall have as their country of origin an eligible country, as defined in the Special Conditions of Contract.\nTechnical Requirements: The Specification and Compliance Sheet details the minimum specification of the supplies required. The supplies offered must meet this specification, but no credit will be given for exceeding the specification.\nSustainable Procurement: The SORs shall detail the minimum technical requirements (which may/ may not include specific sustainable procurement technical requirements). This considers 3 aspects\nEnvironment (E.g., Energy stars, Eco labels)"
+        }
+      ]
+    },
+    {
+      "id": "Q2",
+      "query": "What registration number appears on Bidder A's business registration certificate?",
+      "mode": "hybrid",
+      "best_cosine": 0.7208,
+      "min_cosine": 0.65,
+      "evidence_sufficient": true,
+      "notes": [],
+      "hits": [
+        {
+          "rank": 1,
+          "chunk_id": "DOC-014-C0160",
+          "location": "DOC-014, Section 4: Bidding Forms > Form 4 Bidder Information Sheet",
+          "extraction": "native",
+          "fused_score": 0.031754,
+          "bm25_rank": 4,
+          "bm25_score": 17.7346,
+          "dense_rank": 2,
+          "cosine": 0.72,
+          "text": "Form 4 Bidder Information Sheet\nDate: ..........................................\nProcurement Reference Number: ..........................................\n1. Bidder’s Name3:\n2. In case of JV, state name of each party in Form 4A\n3. Bidder’s Country of Registration/Incorporation4:\n4. Bidder’s Year of Registration/Incorporation5:\n5. Bidder’s Address in Country of Registration/Incorporation6:\n6. Bidder’s Authorized Representative Information Name: Address: Telephone/Fax numbers: Email Address:\nAttached are copies of original documents of: Certificate of Incorporation or Registration of firm named in 1, above. In case of JV, the JV Agreement in case of government owned entity from the PDE’s country, Documents establishing legal capacity to contract."
+        },
+        {
+          "rank": 2,
+          "chunk_id": "DOC-022-C0195",
+          "location": "DOC-022, p. 107, Part 1 - Section 4: Bidding Forms > Bidder Information Sheet",
+          "extraction": "converted",
+          "fused_score": 0.031514,
+          "bm25_rank": 2,
+          "bm25_score": 17.7871,
+          "dense_rank": 5,
+          "cosine": 0.7094,
+          "text": "Bidder Information Sheet\nDate: ..........................................\nProcurement Reference Number: ..........................................\n1. Bidder’s Name3:\n2. In case of JV, state name of each party in Form 4A\n3. Bidder’s Country of Registration/Incorporation4:\n4. Bidder’s Year of Registration/Incorporation5:\n5. Bidder’s Address in Country of Registration/Incorporation6:\n6. Bidder’s Authorized Representative Information Name: Address: Telephone/Fax numbers: Email Address:\n7. Attached are copies of original documents of:  Certificate of Incorporation or Registration of firm named in 1, above.  In case of JV, the JV Agreement in case of government owned entity from the PDE’s country,  Documents establishing legal capacity to contract."
+        },
+        {
+          "rank": 3,
+          "chunk_id": "DOC-031-C0004",
+          "location": "DOC-031, 2. Company Registration Certificate",
+          "extraction": "native",
+          "fused_score": 0.029572,
+          "bm25_rank": 13,
+          "bm25_score": 15.4822,
+          "dense_rank": 3,
+          "cosine": 0.7133,
+          "text": "2. Company Registration Certificate\nA valid company registration certificate is attached to this submission and identifies Nile Office Solutions Ltd. as a registered company."
+        },
+        {
+          "rank": 4,
+          "chunk_id": "DOC-014-C0092",
+          "location": "DOC-014, Section 3: Evaluation Methodology and Criteria > For Firms that are legally constituted:",
+          "extraction": "native",
+          "fused_score": 0.028898,
+          "bm25_rank": 5,
+          "bm25_score": 17.6936,
+          "dense_rank": 14,
+          "cosine": 0.6944,
+          "text": "For Firms that are legally constituted:\nFor bidders currently registered by the Authority; a certificate of registration issued by the Authority or for bidders not currently registered with the Authority; a copy of the bidder’s trading license or equivalent and a copy of the bidder’s certificate of registration/ incorporation or equivalent;\nTax Clearance Certificate or its equivalent; and\nSocial Security Contribution Certificate or its equivalent."
+        },
+        {
+          "rank": 5,
+          "chunk_id": "DOC-017-C0018",
+          "location": "DOC-017, p. 17, SECTION 1: BIDDING PROCEDURES > Documents Evidencing Eligibility",
+          "extraction": "converted",
+          "fused_score": 0.02879,
+          "bm25_rank": 8,
+          "bm25_score": 16.8314,
+          "dense_rank": 11,
+          "cosine": 0.695,
+          "text": "Documents Evidencing Eligibility\nBidders shall submit the following documents:\na certificate of registration issued by the Authority for bidders currently registered with the Authority or a copy of the Bidder’s Trading license or equivalent and a copy of the Bidder’s Certificate of Incorporation/Registration or equivalent for bidders not currently registered with the Authority;\nEvidence of fulfilment of obligations to pay taxes and social security contributions in Uganda where applicable;\nDocuments demonstrating majority shareholders of the company as women, youth or PWDs such as the Memorandum of Association or Constitution of the Registered Association, Certificate of Registration;\nAny other relevant documentation."
+        }
+      ]
+    },
+    {
+      "id": "Q3",
+      "query": "Does the submission include a bid securing declaration?",
+      "mode": "hybrid",
+      "best_cosine": 0.8341,
+      "min_cosine": 0.65,
+      "evidence_sufficient": true,
+      "notes": [],
+      "hits": [
+        {
+          "rank": 1,
+          "chunk_id": "DOC-014-C0041",
+          "location": "DOC-014, Section 1: Instructions to Bidders > Bid Security or Bid Securing Declaration",
+          "extraction": "native",
+          "fused_score": 0.031545,
+          "bm25_rank": 6,
+          "bm25_score": 13.2496,
+          "dense_rank": 1,
+          "cosine": 0.8341,
+          "text": "The Bid Security or Bid Securing Declaration shall be submitted using the appropriate form included in Section 4, Bidding Forms and shall be valid until the date specified in the BDS.\nAny bid not accompanied by appropriate Bid Security or Bid Securing Declaration, shall be rejected by the PDE as non-compliant.\nThe Bid Security or Bid Securing Declaration of all bidders shall be returned as promptly as possible once the successful bidder has signed the contract and provided the required Performance Security and ESHS Performance Security where applicable.\nFor a JV, the Bid Security or Bid-Securing Declaration must be issued in either the names of all the parties or any of the parties to the JV.\nThe Bid Security may be forfeited or the conditions of the Bid Securing Declaration executed in the following circumstances:\nIf a bidder withdraws its bid during the period of bid validity specified by the bidder in the Bid Submission Sheet, or during any extension thereto; or\nIf the successful bidder fails to:\nSign the contract in accordance with ITB 45.1;\nFurnish a Performance Security and if required in the BDS, the Environmental, Social, Health and Safety (ESHS) Performance Security in accordance with ITB 48.2."
+        },
+        {
+          "rank": 2,
+          "chunk_id": "DOC-001-C0045",
+          "location": "DOC-001, p. 11, General > Bid Security or Bid Securing Declaration",
+          "extraction": "native",
+          "fused_score": 0.03101,
+          "bm25_rank": 4,
+          "bm25_score": 13.3992,
+          "dense_rank": 5,
+          "cosine": 0.8299,
+          "text": "The Bid Security or Bid Securing Declaration shall be submitted using the appropriate form included in Section 4, Bidding Forms and shall be valid until the date specified in the BDS.\nAny bid not accompanied by appropriate Bid Security or Bid Securing Declaration shall be rejected by the PDE as non-compliant.\nThe Bid Security or Bid Securing Declaration of all bidders shall be returned as promptly as possible once the successful bidder has signed the contract and provided the required Performance Security and ESHS performance Security where applicable.\nFor a JV, the Bid Security or Bid-Securing Declaration must be issued in either the names of all the parties or any of the parties to the JV.\nThe Bid Security may be forfeited or the conditions of the Bid Securing Declaration executed in the following circumstances:\nIf a bidder withdraws its bid during the period of bid validity specified by the bidder in the Bid Submission Sheet or during any extension thereto;\nIf the successful bidder fails to:\nSign the contract in accordance with ITB Clause 47; or\nFurnish any Performance Security and ESHS Performance Security in accordance with ITB Clause 50."
+        },
+        {
+          "rank": 3,
+          "chunk_id": "DOC-020-C0047",
+          "location": "DOC-020, p. 11, General > Bid Security or Bid Securing Declaration",
+          "extraction": "converted",
+          "fused_score": 0.03101,
+          "bm25_rank": 5,
+          "bm25_score": 13.3992,
+          "dense_rank": 4,
+          "cosine": 0.8313,
+          "text": "The Bid Security or Bid Securing Declaration shall be submitted using the appropriate form included in Section 4, Bidding Forms and shall be valid until the date specified in the BDS.\nAny bid not accompanied by appropriate Bid Security or Bid Securing Declaration shall be rejected by the PDE as non-compliant.\nThe Bid Security or Bid Securing Declaration of all bidders shall be returned as promptly as possible once the successful bidder has signed the contract and provided the required Performance Security and ESHS performance Security where applicable.\nFor a JV, the Bid Security or Bid-Securing Declaration must be issued in either the names of all the parties or any of the parties to the JV.\nThe Bid Security may be forfeited or the conditions of the Bid Securing Declaration executed in the following circumstances:\nIf a bidder withdraws its bid during the period of bid validity specified by the bidder in the Bid Submission Sheet or during any extension thereto;\nIf the successful bidder fails to:\nSign the contract in accordance with ITB Clause 47; or\nFurnish any Performance Security and ESHS Performance Security in accordance with ITB Clause 50."
+        },
+        {
+          "rank": 4,
+          "chunk_id": "DOC-009-C0047",
+          "location": "DOC-009, p. 29, General > Bid Security or Bid Securing Declaration",
+          "extraction": "native",
+          "fused_score": 0.030835,
+          "bm25_rank": 8,
+          "bm25_score": 12.6805,
+          "dense_rank": 2,
+          "cosine": 0.8324,
+          "text": "Be submitted in its original form - copies will not be accepted.\nThe Bid Security or Bid Securing Declaration shall be submitted using the appropriate form included in Section 4, Bidding Forms and shall remain valid until the date specified in the BDS.\nAny bid not accompanied by a substantially responsive Bid Security or Bid Securing Declaration, if one is required in accordance with ITB Sub-Clause 25.1, shall be rejected by the PDE as non-compliant.\nThe Bid Security or Bid Securing Declaration of all bidders shall be returned as promptly as possible once the successful bidder has signed the contract and provided the required Performance Security and ESHS Performance Security where applicable or upon request by the unsuccessful bidder after publication of the notice of best evaluated bidder.\nFor a JV, the Bid Security may be issued in either the names of all the parties or any of the parties to the JV. The Bid-Securing Declaration must be in the names in the names of all parties to the JV.\nIf a bidder withdraws its bid during the period of bid validity specified by the bidder on the Bid Submission Sheet, except as provided in ITB Sub-Clause 24.2; or\nIf the successful bidder fails to:\nSign the contract in accordance with ITB Clause 49; or"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "DOC-003-C0035",
+          "location": "DOC-003, p. 14, INVITATION TO BIDDERS UNDER QUOTATION BIDDING METHOD > Bid-Securing Declaration",
+          "extraction": "native",
+          "fused_score": 0.030798,
+          "bm25_rank": 3,
+          "bm25_score": 14.6167,
+          "dense_rank": 7,
+          "cosine": 0.8278,
+          "text": "Bid-Securing Declaration\nThe Bid-Securing Declaration a standard form for bidders/providers to fill and sign and include as part of their bid.\nAll information stated in the form is to be completed by bidders. The PDE is not required to input or change any information in the Bid–Securing Declaration and it is therefore not included in this User Guide.\nInstructions to the Bidders on completing the template are given at the top of the form in italics and should not be deleted by the PDE."
+        }
+      ]
+    },
+    {
+      "id": "Q4",
+      "query": "Is Bidder A's trading licence stated as valid for the current financial year?",
+      "mode": "hybrid",
+      "best_cosine": 0.7084,
+      "min_cosine": 0.65,
+      "evidence_sufficient": true,
+      "notes": [],
+      "hits": [
+        {
+          "rank": 1,
+          "chunk_id": "DOC-009-C0042",
+          "location": "DOC-009, p. 12, General > Documents Establishing the Eligibility of Supplies",
+          "extraction": "native",
+          "fused_score": 0.029236,
+          "bm25_rank": 6,
+          "bm25_score": 15.7731,
+          "dense_rank": 11,
+          "cosine": 0.686,
+          "text": "Documents Establishing the Eligibility of Supplies\nTo establish the eligibility of the supplies and related services, in accordance with ITB Clause 6, bidders shall complete the country-of-origin declarations in the Price Schedule included in Section 4, Bidding Forms.\nBidders with a current registration with the Authority are not required to submit:\nA copy of the bidder’s current trading license or equivalent;\nA copy of the bidder’s certificate of registration or equivalent;\nBut should include details of their Authority registration number in the bid submission sheet."
+        },
+        {
+          "rank": 2,
+          "chunk_id": "DOC-021-C0045",
+          "location": "DOC-021, p. 12, General > Documents Establishing the Eligibility of Supplies",
+          "extraction": "converted",
+          "fused_score": 0.0241,
+          "bm25_rank": 7,
+          "bm25_score": 15.7731,
+          "dense_rank": 49,
+          "cosine": 0.6735,
+          "text": "Documents Establishing the Eligibility of Supplies\nTo establish the eligibility of the supplies and related services, in accordance with ITB Clause 6, bidders shall complete the country-of-origin declarations in the Price Schedule included in Section 4, Bidding Forms.\nBidders with a current registration with the Authority are not required to submit:\nA copy of the bidder’s current trading license or equivalent;\nA copy of the bidder’s certificate of registration or equivalent;\nBut should include details of their Authority registration number in the bid submission sheet."
+        },
+        {
+          "rank": 3,
+          "chunk_id": "DOC-014-C0092",
+          "location": "DOC-014, Section 3: Evaluation Methodology and Criteria > For Firms that are legally constituted:",
+          "extraction": "native",
+          "fused_score": 0.021911,
+          "bm25_rank": 27,
+          "bm25_score": 10.0785,
+          "dense_rank": 36,
+          "cosine": 0.678,
+          "text": "For Firms that are legally constituted:\nFor bidders currently registered by the Authority; a certificate of registration issued by the Authority or for bidders not currently registered with the Authority; a copy of the bidder’s trading license or equivalent and a copy of the bidder’s certificate of registration/ incorporation or equivalent;\nTax Clearance Certificate or its equivalent; and\nSocial Security Contribution Certificate or its equivalent."
+        },
+        {
+          "rank": 4,
+          "chunk_id": "DOC-006-C0055",
+          "location": "DOC-006, p. 15, Section 1: Instructions to Consultants > Documents Establishing the Eligibility of the Consultant",
+          "extraction": "native",
+          "fused_score": 0.016393,
+          "bm25_rank": 1,
+          "bm25_score": 20.4019,
+          "dense_rank": null,
+          "cosine": 0.6408,
+          "text": "Documents Establishing the Eligibility of the Consultant\nTo establish their eligibility in accordance with ITC Clause 4, consultants shall complete the eligibility declarations in the Technical Proposal Submission Form included in Section 4, Proposal Forms and submit the documents required in Section 3, Evaluation Methodology and Criteria.\nBidders/consultants with a current registration with the PPDA are not required to submit:\nA copy of the bidder’s/consultant’s current trading licence or equivalent;\nA copy of the bidder’s/consultant’s certificate of incorporation or equivalent.\nNotwithstanding Sub-Clause 21.2, the bidders/consultants should include details of their PPDA registration number in the Technical Proposal Submission Form."
+        },
+        {
+          "rank": 5,
+          "chunk_id": "DOC-014-C0039",
+          "location": "DOC-014, Section 1: Instructions to Bidders > Bid Validity",
+          "extraction": "native",
+          "fused_score": 0.016393,
+          "bm25_rank": null,
+          "bm25_score": 6.089,
+          "dense_rank": 1,
+          "cosine": 0.7084,
+          "text": "Bid Validity\nBids shall remain valid until the date specified in the BDS or any extended date in accordance with ITB 20.2. A bid valid for a shorter period shall be rejected by the PDE as non-compliant while a bid valid for a longer period than the date specified in the BDS shall not be rejected.\nPrior to the expiration of the bid validity period, the PDE may request bidders in writing to extend the period of validity of their bids. The bidder may at his or her own discretion extend the bid validity period where the PDE delays to request the bidder to extend the bid validity and the validity period is likely to expire before completion of the procurement process. If a Bid Security or a Bid Securing Declaration is requested in accordance with ITB Clause 21, it shall also be extended for a period corresponding to the extension of the bid validity. In case of a bid security, such extension shall be undertaken by use of a Bid Securing Declaration. A bidder may refuse to extend its bid validity period without forfeiting its Bid Security or Bid Securing Declaration. A bidder who extends the validity period of its bid shall not be required or permitted to modify its bid."
+        }
+      ]
+    },
+    {
+      "id": "Q5",
+      "query": "Does the submission contain a declaration of non blacklisting?",
+      "mode": "hybrid",
+      "best_cosine": 0.6865,
+      "min_cosine": 0.65,
+      "evidence_sufficient": true,
+      "notes": [],
+      "hits": [
+        {
+          "rank": 1,
+          "chunk_id": "DOC-001-C0045",
+          "location": "DOC-001, p. 11, General > Bid Security or Bid Securing Declaration",
+          "extraction": "native",
+          "fused_score": 0.028139,
+          "bm25_rank": 6,
+          "bm25_score": 7.6214,
+          "dense_rank": 17,
+          "cosine": 0.6698,
+          "text": "The Bid Security or Bid Securing Declaration shall be submitted using the appropriate form included in Section 4, Bidding Forms and shall be valid until the date specified in the BDS.\nAny bid not accompanied by appropriate Bid Security or Bid Securing Declaration shall be rejected by the PDE as non-compliant.\nThe Bid Security or Bid Securing Declaration of all bidders shall be returned as promptly as possible once the successful bidder has signed the contract and provided the required Performance Security and ESHS performance Security where applicable.\nFor a JV, the Bid Security or Bid-Securing Declaration must be issued in either the names of all the parties or any of the parties to the JV.\nThe Bid Security may be forfeited or the conditions of the Bid Securing Declaration executed in the following circumstances:\nIf a bidder withdraws its bid during the period of bid validity specified by the bidder in the Bid Submission Sheet or during any extension thereto;\nIf the successful bidder fails to:\nSign the contract in accordance with ITB Clause 47; or\nFurnish any Performance Security and ESHS Performance Security in accordance with ITB Clause 50."
+        },
+        {
+          "rank": 2,
+          "chunk_id": "DOC-020-C0047",
+          "location": "DOC-020, p. 11, General > Bid Security or Bid Securing Declaration",
+          "extraction": "converted",
+          "fused_score": 0.027584,
+          "bm25_rank": 7,
+          "bm25_score": 7.6214,
+          "dense_rank": 19,
+          "cosine": 0.6676,
+          "text": "The Bid Security or Bid Securing Declaration shall be submitted using the appropriate form included in Section 4, Bidding Forms and shall be valid until the date specified in the BDS.\nAny bid not accompanied by appropriate Bid Security or Bid Securing Declaration shall be rejected by the PDE as non-compliant.\nThe Bid Security or Bid Securing Declaration of all bidders shall be returned as promptly as possible once the successful bidder has signed the contract and provided the required Performance Security and ESHS performance Security where applicable.\nFor a JV, the Bid Security or Bid-Securing Declaration must be issued in either the names of all the parties or any of the parties to the JV.\nThe Bid Security may be forfeited or the conditions of the Bid Securing Declaration executed in the following circumstances:\nIf a bidder withdraws its bid during the period of bid validity specified by the bidder in the Bid Submission Sheet or during any extension thereto;\nIf the successful bidder fails to:\nSign the contract in accordance with ITB Clause 47; or\nFurnish any Performance Security and ESHS Performance Security in accordance with ITB Clause 50."
+        },
+        {
+          "rank": 3,
+          "chunk_id": "DOC-009-C0047",
+          "location": "DOC-009, p. 29, General > Bid Security or Bid Securing Declaration",
+          "extraction": "native",
+          "fused_score": 0.023813,
+          "bm25_rank": 23,
+          "bm25_score": 6.6876,
+          "dense_rank": 25,
+          "cosine": 0.665,
+          "text": "Be submitted in its original form - copies will not be accepted.\nThe Bid Security or Bid Securing Declaration shall be submitted using the appropriate form included in Section 4, Bidding Forms and shall remain valid until the date specified in the BDS.\nAny bid not accompanied by a substantially responsive Bid Security or Bid Securing Declaration, if one is required in accordance with ITB Sub-Clause 25.1, shall be rejected by the PDE as non-compliant.\nThe Bid Security or Bid Securing Declaration of all bidders shall be returned as promptly as possible once the successful bidder has signed the contract and provided the required Performance Security and ESHS Performance Security where applicable or upon request by the unsuccessful bidder after publication of the notice of best evaluated bidder.\nFor a JV, the Bid Security may be issued in either the names of all the parties or any of the parties to the JV. The Bid-Securing Declaration must be in the names in the names of all parties to the JV.\nIf a bidder withdraws its bid during the period of bid validity specified by the bidder on the Bid Submission Sheet, except as provided in ITB Sub-Clause 24.2; or\nIf the successful bidder fails to:\nSign the contract in accordance with ITB Clause 49; or"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "DOC-014-C0041",
+          "location": "DOC-014, Section 1: Instructions to Bidders > Bid Security or Bid Securing Declaration",
+          "extraction": "native",
+          "fused_score": 0.023573,
+          "bm25_rank": 18,
+          "bm25_score": 6.9533,
+          "dense_rank": 33,
+          "cosine": 0.6615,
+          "text": "The Bid Security or Bid Securing Declaration shall be submitted using the appropriate form included in Section 4, Bidding Forms and shall be valid until the date specified in the BDS.\nAny bid not accompanied by appropriate Bid Security or Bid Securing Declaration, shall be rejected by the PDE as non-compliant.\nThe Bid Security or Bid Securing Declaration of all bidders shall be returned as promptly as possible once the successful bidder has signed the contract and provided the required Performance Security and ESHS Performance Security where applicable.\nFor a JV, the Bid Security or Bid-Securing Declaration must be issued in either the names of all the parties or any of the parties to the JV.\nThe Bid Security may be forfeited or the conditions of the Bid Securing Declaration executed in the following circumstances:\nIf a bidder withdraws its bid during the period of bid validity specified by the bidder in the Bid Submission Sheet, or during any extension thereto; or\nIf the successful bidder fails to:\nSign the contract in accordance with ITB 45.1;\nFurnish a Performance Security and if required in the BDS, the Environmental, Social, Health and Safety (ESHS) Performance Security in accordance with ITB 48.2."
+        },
+        {
+          "rank": 5,
+          "chunk_id": "DOC-002-C0013",
+          "location": "DOC-002, p. 22, Submission of Bid",
+          "extraction": "native",
+          "fused_score": 0.016393,
+          "bm25_rank": null,
+          "bm25_score": 5.8151,
+          "dense_rank": 1,
+          "cosine": 0.6865,
+          "text": "Submission of Bid\nYou are requested to quote for the services by completing, signing and returning the following:\nThe Bid Submission Sheet in this Part;\nThe Code of Ethical Conduct in Business for Bidders and Providers:\nThe Bid Securing Declaration in Part 1:\nThe List of Services and Price Schedule in Part 2;\nThe documents evidencing your eligibility, as listed below.\nYou are advised to carefully read the complete RFQ document, including the Special Conditions of Contract (SCC) in Part 3: Contract, before preparing your bid. The standard forms in this RFQ may be retyped for completion but the bidder is responsible for their accurate reproduction.\nWhere an electronic or digital version of the bidding document is issued by the PDE through the eGP system, the electronic or digital version of the bidding document is the original version. In the event of any discrepancy between the electronic or digital version and the printed hard copy, the electronic or digital version shall prevail. The bidding document issued through Email and other electronic forms with the exception of EGP shall be authenticated by the PDE\nValidity of Bids: The bid must remain valid until and including ............................................. (Insert day, month and year)."
+        }
+      ]
+    },
+    {
+      "id": "Q6",
+      "query": "On which page does the anti corruption compliance declaration appear in the submission?",
+      "mode": "hybrid",
+      "best_cosine": 0.6866,
+      "min_cosine": 0.65,
+      "evidence_sufficient": true,
+      "notes": [],
+      "hits": [
+        {
+          "rank": 1,
+          "chunk_id": "DOC-033-C0004",
+          "location": "DOC-033, Revenue Compliance Evidence",
+          "extraction": "native",
+          "fused_score": 0.026916,
+          "bm25_rank": 25,
+          "bm25_score": 8.2399,
+          "dense_rank": 6,
+          "cosine": 0.6837,
+          "text": "Revenue Compliance Evidence\nThe bidder provides an official certificate confirming that its tax obligations are in good standing for the current assessment period."
+        },
+        {
+          "rank": 2,
+          "chunk_id": "DOC-022-C0150",
+          "location": "DOC-022, p. 64, Part 1 - Section 4: Bidding Forms > Corruption",
+          "extraction": "converted",
+          "fused_score": 0.026671,
+          "bm25_rank": 14,
+          "bm25_score": 9.896,
+          "dense_rank": 16,
+          "cosine": 0.659,
+          "text": "Corruption\nBidders and providers must adhere to the highest standards of moral and ethical conduct and not engage in any form of integrity violations, including, but not limited to, fraud, corruption, coercion, collusion, and obstructive practices."
+        },
+        {
+          "rank": 3,
+          "chunk_id": "DOC-021-C0103",
+          "location": "DOC-021, p. 39, Section 3: Evaluation Methodology and Criteria > Administrative Compliance Criteria",
+          "extraction": "converted",
+          "fused_score": 0.026614,
+          "bm25_rank": 31,
+          "bm25_score": 8.0205,
+          "dense_rank": 4,
+          "cosine": 0.6846,
+          "text": "Administrative Compliance Criteria\nThe evaluation of Administrative Compliance shall be conducted in accordance with ITB Sub-Clauses 38.3 and 38.4 by confirmation of availability of the following:\nA Bid Submission Sheet in the format provided in Section 4, duly completed and signed by the authorised representative(s) of the bidder;\nBeneficial ownership form;\nPrice Schedule;\nBid Security or Bid Securing Declaration in accordance with ITB 25;\nWritten confirmation of authorisation to commit the bidder;\nThe Code of Ethical Conduct for Bidders and Providers; and\nA Power of Attorney which if drawn and signed in Uganda shall be registered with a competent authority and if drawn and signed outside Uganda shall be notarized; or\nFor Joint Venture: A Power of Attorney signed by each of the parties authorizing a representative to conduct all business for and on behalf of the JV during the bidding process, contract signature and contract execution which if drawn and signed in Uganda shall be commissioned and registered with the competent authority and if drawn and signed outside Uganda, shall be notarized and registered."
+        },
+        {
+          "rank": 4,
+          "chunk_id": "DOC-009-C0099",
+          "location": "DOC-009, p. 29, Section 3: Evaluation Methodology and Criteria > Administrative Compliance Criteria",
+          "extraction": "native",
+          "fused_score": 0.026496,
+          "bm25_rank": 30,
+          "bm25_score": 8.0205,
+          "dense_rank": 5,
+          "cosine": 0.6842,
+          "text": "Administrative Compliance Criteria\nThe evaluation of Administrative Compliance shall be conducted in accordance with ITB Sub- Clauses 38.3 and 38.4 by confirmation of availability of the following:\nA Bid Submission Sheet in the format provided in Section 4, duly completed and signed by the authorised representative(s) of the bidder;\nBeneficial ownership form;\nPrice Schedule;\nBid Security or Bid Securing Declaration in accordance with ITB 25;\nWritten confirmation of authorisation to commit the bidder;\nThe Code of Ethical Conduct for Bidders and Providers; and\nA Power of Attorney which if drawn and signed in Uganda shall be registered with a competent authority and if drawn and signed outside Uganda shall be notarized; or\nFor Joint Venture: A Power of Attorney signed by each of the parties authorizing a representative to conduct all business for and on behalf of the JV during the bidding process, contract signature and contract execution which if drawn and signed in Uganda shall be commissioned and registered with the competent authority and if drawn and signed outside Uganda, shall be notarized and registered."
+        },
+        {
+          "rank": 5,
+          "chunk_id": "DOC-020-C0064",
+          "location": "DOC-020, p. 25, Evaluation of Bids > Preliminary Examination of Bids – Eligibility and Administrative Compliance",
+          "extraction": "converted",
+          "fused_score": 0.026133,
+          "bm25_rank": 23,
+          "bm25_score": 8.2899,
+          "dense_rank": 11,
+          "cosine": 0.6672,
+          "text": "Preliminary Examination of Bids – Eligibility and Administrative Compliance\nThe PDE shall examine the legal documentation to establish the eligibility of the bidders and to verify the validity and authenticity of the documents submitted by the bidder.\nIf after the examination of eligibility, the PDE determines that the bid is not compliant, it shall reject the bid with the exception of rectification of omission in accordance with ITB 35.\nThe PDE shall confirm that the following administrative compliance documents and information have been provided in the bid. If any of these documents or information is missing or contrary to the requirements in the bidding document, the bid shall be rejected:\nThe Bid Submission Sheet duly signed by the authorised representative of the bidder, including:\nA brief description of the Services and related supplies offered;\nThe total price of the bid; and\nThe appropriate duration of the bid;\nThe Price Schedule;\nA Power of Attorney in accordance with ITB 30.5; and\nA Bid Security or Bid Securing Declaration, whichever is applicable in the appropriate form and amount.\nEligibility and administrative compliance shall be determined on a pass or fail basis and a bid which is not eligible or administratively compliant shall be rejected at the preliminary stage of evaluation."
+        }
+      ]
+    },
+    {
+      "id": "Q7",
+      "query": "Is the NSSF clearance certificate still valid as of the tender submission date?",
+      "mode": "hybrid",
+      "best_cosine": 0.7508,
+      "min_cosine": 0.65,
+      "evidence_sufficient": true,
+      "notes": [],
+      "hits": [
+        {
+          "rank": 1,
+          "chunk_id": "DOC-031-C0005",
+          "location": "DOC-031, 3. Tax Clearance Certificate",
+          "extraction": "native",
+          "fused_score": 0.032787,
+          "bm25_rank": 1,
+          "bm25_score": 30.47,
+          "dense_rank": 1,
+          "cosine": 0.7508,
+          "text": "3. Tax Clearance Certificate\nA current tax clearance certificate is attached and is valid for the relevant financial year."
+        },
+        {
+          "rank": 2,
+          "chunk_id": "DOC-031-C0006",
+          "location": "DOC-031, 4. Bid Security",
+          "extraction": "native",
+          "fused_score": 0.030415,
+          "bm25_rank": 10,
+          "bm25_score": 13.0576,
+          "dense_rank": 2,
+          "cosine": 0.693,
+          "text": "4. Bid Security\nThe bidder has attached the required bid security issued by Unity Commercial Bank. The security remains valid for the required period."
+        },
+        {
+          "rank": 3,
+          "chunk_id": "DOC-034-C0006",
+          "location": "DOC-034, Tax Statement",
+          "extraction": "native",
+          "fused_score": 0.016129,
+          "bm25_rank": 2,
+          "bm25_score": 21.2181,
+          "dense_rank": null,
+          "cosine": 0.6533,
+          "text": "Tax Statement\nThe bidder states that all statutory obligations are handled in the ordinary course of business, but no tax clearance certificate is attached."
+        },
+        {
+          "rank": 4,
+          "chunk_id": "DOC-001-C0043",
+          "location": "DOC-001, p. 10, General > Bid Validity",
+          "extraction": "native",
+          "fused_score": 0.015873,
+          "bm25_rank": null,
+          "bm25_score": 5.8836,
+          "dense_rank": 3,
+          "cosine": 0.6907,
+          "text": "Bid Validity\nBids shall remain valid until the date specified in the BDS. A bid valid for a shorter period shall be rejected by the PDE as non-compliant while a bid valid for a longer period than the date specified in the BDS shall not be rejected.\nPrior to the expiration of the bid validity period, the PDE may request bidders in writing to extend the period of validity of their bids. The bidder may at his or her own discretion extend the bid validity period where the PDE delays to request the bidder to extend the bid validity and the validity period is likely to expire before completion of the procurement process. If a Bid Security or Bid Securing Declaration is requested in accordance with ITB Clause 22, it shall also be extended for a period corresponding to the extension of the bid validity. In case of a bid security, such extension shall be undertaken by use of a bid securing declaration. A bidder may refuse to extend its bid validity period without forfeiting its Bid Security or Bid Securing Declaration. A bidder who extends the validity period of its bid shall not be required or permitted to modify its bid."
+        },
+        {
+          "rank": 5,
+          "chunk_id": "DOC-032-C0006",
+          "location": "DOC-032, Documents Intentionally Omitted",
+          "extraction": "native",
+          "fused_score": 0.015873,
+          "bm25_rank": 3,
+          "bm25_score": 21.0419,
+          "dense_rank": null,
+          "cosine": 0.6442,
+          "text": "Documents Intentionally Omitted\n• Tax Clearance Certificate is not included.\n• Power of Attorney is not included.\n• Professional indemnity insurance evidence is not included."
+        }
+      ]
+    },
+    {
+      "id": "Q8",
+      "query": "Does the bid securing declaration carry the required witness signature?",
+      "mode": "hybrid",
+      "best_cosine": 0.7757,
+      "min_cosine": 0.65,
+      "evidence_sufficient": true,
+      "notes": [],
+      "hits": [
+        {
+          "rank": 1,
+          "chunk_id": "DOC-012-C0029",
+          "location": "DOC-012, p. 11, Guidance Notes on Section 2: Bidding Forms > Bid-Securing Declaration",
+          "extraction": "native",
+          "fused_score": 0.030798,
+          "bm25_rank": 3,
+          "bm25_score": 13.9688,
+          "dense_rank": 7,
+          "cosine": 0.767,
+          "text": "Bid-Securing Declaration\nThe Bid-Securing Declaration a standard form for bidders/providers to fill and sign and include as part of their bid.\nAll information stated in the form is to be completed by bidders. The PDE is not required to input or change any information in the Bid–Securing Declaration and it is therefore not included in this User Guide.\nInstructions to the Bidders on completing the template are given at the top of the form in italics and should not be deleted by the PDE."
+        },
+        {
+          "rank": 2,
+          "chunk_id": "DOC-003-C0035",
+          "location": "DOC-003, p. 14, INVITATION TO BIDDERS UNDER QUOTATION BIDDING METHOD > Bid-Securing Declaration",
+          "extraction": "native",
+          "fused_score": 0.030769,
+          "bm25_rank": 5,
+          "bm25_score": 13.7502,
+          "dense_rank": 5,
+          "cosine": 0.7712,
+          "text": "Bid-Securing Declaration\nThe Bid-Securing Declaration a standard form for bidders/providers to fill and sign and include as part of their bid.\nAll information stated in the form is to be completed by bidders. The PDE is not required to input or change any information in the Bid–Securing Declaration and it is therefore not included in this User Guide.\nInstructions to the Bidders on completing the template are given at the top of the form in italics and should not be deleted by the PDE."
+        },
+        {
+          "rank": 3,
+          "chunk_id": "DOC-025-C0004",
+          "location": "DOC-025, p. 3, PROCUREMENT ANO OISPOSAL",
+          "extraction": "ocr",
+          "fused_score": 0.030622,
+          "bm25_rank": 2,
+          "bm25_score": 14.3615,
+          "dense_rank": 9,
+          "cosine": 0.7634,
+          "text": "The format of the bid bond is provided in the Standard Bidding Documents issued by the Authority.\nWhere an entity finds it necessary to extend the bid bond, such extension shall be undertaken by use of a bid securing declaration whose format is provided in the Standard Bidding Documents issued by the Authority.\nBid or Proposal Securing Declaration A Bid Securing Declaration shall be required for procurement of supplies, works and non- consultancy services under the restricted domestic, restricted international, quotation and direct bidding methods.\nA Proposal Securing Declaration shall be required for procurement of consultancy services under all procurement bidding methods.\nNotwithstanding provisions in 2.1 (i) and 2.2 (i) above, a bid securing declaration shall be required for procurements that are reserved for local providers under the open domestic bidding method."
+        },
+        {
+          "rank": 4,
+          "chunk_id": "DOC-014-C0041",
+          "location": "DOC-014, Section 1: Instructions to Bidders > Bid Security or Bid Securing Declaration",
+          "extraction": "native",
+          "fused_score": 0.03055,
+          "bm25_rank": 7,
+          "bm25_score": 13.6601,
+          "dense_rank": 4,
+          "cosine": 0.7723,
+          "text": "The Bid Security or Bid Securing Declaration shall be submitted using the appropriate form included in Section 4, Bidding Forms and shall be valid until the date specified in the BDS.\nAny bid not accompanied by appropriate Bid Security or Bid Securing Declaration, shall be rejected by the PDE as non-compliant.\nThe Bid Security or Bid Securing Declaration of all bidders shall be returned as promptly as possible once the successful bidder has signed the contract and provided the required Performance Security and ESHS Performance Security where applicable.\nFor a JV, the Bid Security or Bid-Securing Declaration must be issued in either the names of all the parties or any of the parties to the JV.\nThe Bid Security may be forfeited or the conditions of the Bid Securing Declaration executed in the following circumstances:\nIf a bidder withdraws its bid during the period of bid validity specified by the bidder in the Bid Submission Sheet, or during any extension thereto; or\nIf the successful bidder fails to:\nSign the contract in accordance with ITB 45.1;\nFurnish a Performance Security and if required in the BDS, the Environmental, Social, Health and Safety (ESHS) Performance Security in accordance with ITB 48.2."
+        },
+        {
+          "rank": 5,
+          "chunk_id": "DOC-014-C0143",
+          "location": "DOC-014, Section 4: Bidding Forms > Form of Bid-Securing Declaration",
+          "extraction": "native",
+          "fused_score": 0.030331,
+          "bm25_rank": 4,
+          "bm25_score": 13.7821,
+          "dense_rank": 8,
+          "cosine": 0.7652,
+          "text": "I/We* understand this Bid Securing Declaration shall cease to be valid if I am/we are* not thesuccessful bidder, upon the earlier of:\nThe expiry of the notice of best evaluated bidder without any pending administrative review application; or\nTwenty-eight days after the expiration of the validity of my/our* bid.\nSigned: [insert signature of person whose name is shown below]\nIn the capacity of [insert designation of person signing the Bid Securing Declaration]\nName: [insert complete name of person signing the Bid Securing Declaration]\nDuly authorized to sign the bid for and on behalf of: [insert complete name of bidder]\nDated on.................day of (month),. (year) [insert date ofsigning]\nCorporate Seal (where appropriate)\n[Note: In case of a JV the Bid Securing Declaration must be in the name of all partners that submit the bid and signed by the representative duly authorized by the partners.]"
+        }
+      ]
+    },
+    {
+      "id": "Q9",
+      "query": "Does the power of attorney cover the specific individual who signed the bid on Bidder A's behalf?",
+      "mode": "hybrid",
+      "best_cosine": 0.752,
+      "min_cosine": 0.65,
+      "evidence_sufficient": true,
+      "notes": [],
+      "hits": [
+        {
+          "rank": 1,
+          "chunk_id": "DOC-014-C0045",
+          "location": "DOC-014, Section 1: Instructions to Bidders > Format and Signing of Bid",
+          "extraction": "native",
+          "fused_score": 0.030679,
+          "bm25_rank": 10,
+          "bm25_score": 19.2495,
+          "dense_rank": 1,
+          "cosine": 0.752,
+          "text": "shall be notarized. The Power of Attorney shall be submitted in the bid. The name and position held by each person signing the authorisation must be typed or printed below the signature. All pages of the bid, except for un-amended printed literature, shall be signed or initialed by the person authorized to sign the bid.\nThe bid shall contain no alterations or additions, except those to comply with instructions issued by the PDE, in which case such shall be initialed by the person or persons signing the bid.\nA JV shall under a Power of Attorney appoint a representative to conduct all business for and on its behalf during the bid preparation, bidding process and contract execution in case of award of the contract.\nBidders whose bids are not be so authorized as provided under this ITB, shall be taken as not properly authorized and shall be disqualified.\nAny inter-lineation, erasures, or overwriting shall be valid only if they are signed or initialed by the person signing the bid."
+        },
+        {
+          "rank": 2,
+          "chunk_id": "DOC-009-C0050",
+          "location": "DOC-009, p. 29, General > Format and Signing of Bid",
+          "extraction": "native",
+          "fused_score": 0.029469,
+          "bm25_rank": 11,
+          "bm25_score": 17.8648,
+          "dense_rank": 5,
+          "cosine": 0.7379,
+          "text": "Any interlineations, erasures, or overwriting shall be valid only if they are signed or initialed by the person signing the bid.\nIn case of bids submitted by a JV, the JV shall nominate a representative through a power of attorney to conduct all business on its behalf during the bid preparation, bidding process and contract execution in case of award of the contract."
+        },
+        {
+          "rank": 3,
+          "chunk_id": "DOC-014-C0044",
+          "location": "DOC-014, Section 1: Instructions to Bidders > Format and Signing of Bid",
+          "extraction": "native",
+          "fused_score": 0.028405,
+          "bm25_rank": 8,
+          "bm25_score": 19.9687,
+          "dense_rank": 13,
+          "cosine": 0.7119,
+          "text": "Format and Signing of Bid\nThe bidder shall prepare one original of the documents comprising the bid as described in ITB Clause 15 and clearly mark it “ORIGINAL.” In addition, the bidder shall submit copies of the bid, in the number specified in the BDS, and clearly mark each of them “COPY.” In the event of any discrepancy between the original and the copies, the original shall prevail.\nThe original and all copies of the bid shall be signed by the bidder in the event that he or she is a physical person personally submitting the bid and in any other event by a person duly authorised to sign on behalf of the bidder. This authorisation shall consist of a Power of Attorney which if signed in Uganda shall be registered with the competent authority and if signed outside Uganda,\nshall be notarized. The Power of Attorney shall be submitted in the bid. The name and position held by each person signing the authorisation must be typed or printed below the signature. All pages of the bid, except for un-amended printed literature, shall be signed or initialed by the person authorized to sign the bid."
+        },
+        {
+          "rank": 4,
+          "chunk_id": "DOC-022-C0053",
+          "location": "DOC-022, p. 26, Part 1 - Section 1: Instructions to Bidders > Format and Signing of Bid",
+          "extraction": "converted",
+          "fused_score": 0.028382,
+          "bm25_rank": 9,
+          "bm25_score": 19.844,
+          "dense_rank": 12,
+          "cosine": 0.7125,
+          "text": "Format and Signing of Bid\nThe bidder shall prepare one original of the documents comprising the bid as described in ITB Clause 15 and clearly mark it “ORIGINAL.” In addition, the bidder shall submit copies of the bid, in the number specified in the BDS, and clearly mark each of them “COPY.” In the event of any discrepancy between the original and the copies, the original shall prevail.\nThe original and all copies of the bid shall be signed by the bidder in the event that he or she is a physical person personally submitting the bid and in any other event by a person duly authorised to sign on behalf of the bidder. This authorisation shall consist of a Power of Attorney which if signed in Uganda shall be registered with the competent authority and if signed outside Uganda, shall be notarized. The Power of Attorney shall be submitted in the bid. The name and position held by each person signing the authorisation must be typed or printed below the signature. All pages of the bid, except for un-amended printed literature, shall be signed or initialed by the person authorized to sign the bid."
+        },
+        {
+          "rank": 5,
+          "chunk_id": "DOC-021-C0053",
+          "location": "DOC-021, p. 16, General > Format and Signing of Bid",
+          "extraction": "converted",
+          "fused_score": 0.028175,
+          "bm25_rank": 12,
+          "bm25_score": 17.8648,
+          "dense_rank": 10,
+          "cosine": 0.7176,
+          "text": "Any interlineations, erasures, or overwriting shall be valid only if they are signed or initialed by the person signing the bid.\nIn case of bids submitted by a JV, the JV shall nominate a representative through a power of attorney to conduct all business on its behalf during the bid preparation, bidding process and contract execution in case of award of the contract."
+        }
+      ]
+    },
+    {
+      "id": "Q10",
+      "query": "Is the litigation history disclosure complete for all of Bidder A's listed directors?",
+      "mode": "hybrid",
+      "best_cosine": 0.655,
+      "min_cosine": 0.65,
+      "evidence_sufficient": true,
+      "notes": [],
+      "hits": [
+        {
+          "rank": 1,
+          "chunk_id": "DOC-014-C0164",
+          "location": "DOC-014, Section 4: Bidding Forms > Form 5A Pending Litigation",
+          "extraction": "native",
+          "fused_score": 0.029907,
+          "bm25_rank": 14,
+          "bm25_score": 9.6858,
+          "dense_rank": 1,
+          "cosine": 0.655,
+          "text": "Form 5A Pending Litigation\nPending Litigation, in accordance with Section III\nNo pending litigation in accordance with Sub-Factor 6.2.2 of Section III Pending litigation in accordance with Sub-Factor 6.2.2 of Section III, as indicated below\nYear | Outcome as Percent of Total Assets | Contract Identification | Total Contract Amount\nContract Identification: Name of employer: Address of employer: Matter in dispute:\nContract Identification: Name of employer: Address of employer: Matter in dispute:\nContract Identification: Name of employer: Address of employer: Matter in dispute:"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "DOC-028-C0003",
+          "location": "DOC-028, pp. 3-4, OF PUBLIC ASSETS AUTHORITY",
+          "extraction": "native",
+          "fused_score": 0.027493,
+          "bm25_rank": 28,
+          "bm25_score": 6.8447,
+          "dense_rank": 2,
+          "cosine": 0.6361,
+          "text": "13. Record of negotiations;\n14. Notice of best evaluated bidder;\n15. Submission of contract to the Attorney General for clearance where applicable;\n16. Approval by the Attorney General where applicable;\n17. Contract and amendments thereto;\n18. Contract Management Records;\n19. Contracts Committee minutes relating to the procurement; and\n20. Correspondences between a procuring and disposing entity and the bidder(s);\nDisposal Records\n1. Initiation of disposal - Form 28;\n2. Contracts Committee approval of the disposal method, bidding document, evaluation committee and shortlist of providers where applicable; '\n3. Bidding document and any amendments or clarifications;\n4. Copy of the published advertisement or shortlist;\n5. Record of issuance of bidding document;\n6. Record of receipt of bids;\n7. Record of opening of bids;\n8. Copies of bids received;\n9. Evaluation meetings and Evaluation Report;\n10. Record of negotiations;\n11. Notice of best evaluated bidder;\n12. Submission of contract to the Attorney General for clearance where·applicable;\nPage 3 of 4\n13. Approval by the Attorney General where applicable;\n14. Contract and amendments thereto;\n15. Contract Management Records;\n16. Contracts Committee minutes relating to the procurement; and\n17. Correspondences between a procuring and disposing entity and the bidder(s).\n\"-~~.~~~-- ....... ~~~···········\nBenson Turamye EXECUTIVE DIRECTOR\n.~. cl~\"-CN1~ .. ~~'i"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "DOC-022-C0199",
+          "location": "DOC-022, p. 107, Part 1 - Section 4: Bidding Forms > Pending Litigation",
+          "extraction": "converted",
+          "fused_score": 0.023222,
+          "bm25_rank": 13,
+          "bm25_score": 9.7283,
+          "dense_rank": 45,
+          "cosine": 0.6115,
+          "text": "Pending Litigation\nPending Litigation, in accordance with Section III\nNo pending litigation in accordance with Sub-Factor 6.2.2 of Section III Pending litigation in accordance with Sub-Factor 6.2.2 of Section III, as indicated below\nYear | Outcome as Percent of Total Assets | Contract Identification | Total Contract Amount\nContract Identification: Name of employer: Address of employer: Matter in dispute:\nContract Identification: Name of employer: Address of employer: Matter in dispute:\nContract Identification: Name of employer: Address of employer: Matter in dispute:"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "DOC-018-C0056",
+          "location": "DOC-018, SERVICES: > Historical Contract Performance",
+          "extraction": "native",
+          "fused_score": 0.016393,
+          "bm25_rank": 1,
+          "bm25_score": 16.6923,
+          "dense_rank": null,
+          "cosine": 0.5747,
+          "text": "Historical Contract Performance\nHistory of non-performing contracts\nPending litigation"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "DOC-018-C0057",
+          "location": "DOC-018, WORKS: > Historical Contract Performance",
+          "extraction": "native",
+          "fused_score": 0.016129,
+          "bm25_rank": 2,
+          "bm25_score": 16.6923,
+          "dense_rank": null,
+          "cosine": 0.5761,
+          "text": "Historical Contract Performance\nHistory of non-performing contracts\nPending litigation"
+        }
+      ]
+    },
+    {
+      "id": "Q11",
+      "query": "Does the submitted technical certification match the exact category required by the checklist?",
+      "mode": "hybrid",
+      "best_cosine": 0.7383,
+      "min_cosine": 0.65,
+      "evidence_sufficient": true,
+      "notes": [],
+      "hits": [
+        {
+          "rank": 1,
+          "chunk_id": "DOC-006-C0071",
+          "location": "DOC-006, p. 16, Section 1: Instructions to Consultants > Preliminary Examination of Proposals – Eligibility and Administrative Compliance",
+          "extraction": "native",
+          "fused_score": 0.028718,
+          "bm25_rank": 5,
+          "bm25_score": 9.7063,
+          "dense_rank": 15,
+          "cosine": 0.7091,
+          "text": "Preliminary Examination of Proposals – Eligibility and Administrative Compliance\nThe PDE shall examine the legal documentation and other information submitted by consultants to verify the eligibility of consultants and to verify the validity and authenticity of the documents submitted by the consultants.\nIf after the examination of eligibility, the PDE determines that the consultant is not eligible, it shall subject to ITC 34, reject the proposal.\nThe PDE shall while assessing administrative compliance of the proposal, examine the technical proposals to confirm that all documents and technical documentation requested in ITC Clause 17 have been provided, and to determine the completeness of each document submitted.\nThe PDE shall confirm that the following documents and information have been provided in the technical proposal. If any of these documents or information is missing, the proposal shall be rejected:\nTechnical Proposal Submission Form, including:\nA brief description of the services offered; and\nThe correct validity date of the proposal.\nSeparately sealed financial proposal;\nWritten confirmation of authorisation to commit the consultant (Power of Attorney); and\nA Proposal Securing Declaration, if required."
+        },
+        {
+          "rank": 2,
+          "chunk_id": "DOC-023-C0074",
+          "location": "DOC-023, Section 1: Instructions to Consultants > Preliminary Examination of Proposals – Eligibility and Administrative Compliance",
+          "extraction": "converted",
+          "fused_score": 0.028139,
+          "bm25_rank": 6,
+          "bm25_score": 9.7063,
+          "dense_rank": 17,
+          "cosine": 0.7083,
+          "text": "Preliminary Examination of Proposals – Eligibility and Administrative Compliance\nThe PDE shall examine the legal documentation and other information submitted by consultants to verify the eligibility of consultants and to verify the validity and authenticity of the documents submitted by the consultants.\nIf after the examination of eligibility, the PDE determines that the consultant is not eligible, it shall subject to ITC 34, reject the proposal.\nThe PDE shall while assessing administrative compliance of the proposal, examine the technical proposals to confirm that all documents and technical documentation requested in ITC Clause 17 have been provided, and to determine the completeness of each document submitted.\nThe PDE shall confirm that the following documents and information have been provided in the technical proposal. If any of these documents or information is missing, the proposal shall be rejected:\nTechnical Proposal Submission Form, including:\nA brief description of the services offered; and\nThe correct validity date of the proposal.\nSeparately sealed financial proposal;\nWritten confirmation of authorisation to commit the consultant (Power of Attorney); and\nA Proposal Securing Declaration, if required."
+        },
+        {
+          "rank": 3,
+          "chunk_id": "DOC-009-C0101",
+          "location": "DOC-009, p. 29, Section 3: Evaluation Methodology and Criteria > Technical Criteria",
+          "extraction": "native",
+          "fused_score": 0.027367,
+          "bm25_rank": 27,
+          "bm25_score": 6.8686,
+          "dense_rank": 3,
+          "cosine": 0.7285,
+          "text": "Technical Criteria\nTechnical responsiveness shall be evaluated in accordance with ITB Clause 39.3.\nThe Statement of Requirements details the minimum technical requirements. Responsiveness is determined by comparison of the specification offered to the specification required in Section 6, and the evaluation is conducted on a pass/fail basis. Substantial responsiveness shall be considered a pass."
+        },
+        {
+          "rank": 4,
+          "chunk_id": "DOC-021-C0105",
+          "location": "DOC-021, p. 39, Section 3: Evaluation Methodology and Criteria > Technical Criteria",
+          "extraction": "converted",
+          "fused_score": 0.026989,
+          "bm25_rank": 28,
+          "bm25_score": 6.8686,
+          "dense_rank": 4,
+          "cosine": 0.7278,
+          "text": "Technical Criteria\nTechnical responsiveness shall be evaluated in accordance with ITB Clause 39.3.\nThe Statement of Requirements details the minimum technical requirements. Responsiveness is determined by comparison of the specification offered to the specification required in Section 6, and the evaluation is conducted on a pass/fail basis. Substantial responsiveness shall be considered a pass."
+        },
+        {
+          "rank": 5,
+          "chunk_id": "DOC-032-C0007",
+          "location": "DOC-032, Testing Note",
+          "extraction": "native",
+          "fused_score": 0.026546,
+          "bm25_rank": 2,
+          "bm25_score": 11.0052,
+          "dense_rank": 36,
+          "cosine": 0.6991,
+          "text": "Testing Note\nThis document intentionally omits selected requirements so the system can be tested for correct retrieval and no-match behaviour."
+        }
+      ]
+    },
+    {
+      "id": "Q12",
+      "query": "Does Bidder A's submission include a certificate of good standing from the Uganda Registration Services Bureau?",
+      "mode": "hybrid",
+      "best_cosine": 0.7722,
+      "min_cosine": 0.65,
+      "evidence_sufficient": true,
+      "notes": [],
+      "hits": [
+        {
+          "rank": 1,
+          "chunk_id": "DOC-002-C0017",
+          "location": "DOC-002, p. 22, Submission of Bid",
+          "extraction": "native",
+          "fused_score": 0.031498,
+          "bm25_rank": 4,
+          "bm25_score": 19.5273,
+          "dense_rank": 3,
+          "cosine": 0.764,
+          "text": "Not to have a conflict of interest in relation to this procurement requirement; and\nNot subject to suspension by the Public Procurement and Disposal of Public Assets Authority or not debarred from the procurement processes by an international agency of which Uganda is a member.\nDocuments Evidencing Eligibility: Bidders shall submit the following documents:\nA certificate of registration issued by the Authority for bidders currently registered with the Authority or a copy of the bidder’s trading license or equivalent and a copy of the bidder’s certificate of incorporation/registration or equivalent for bidders not currently registered with the Authority;\nEvidence of fulfilment of obligations to pay taxes and social security contributions in Uganda where applicable;\nRegistered/ certified powers of attorney (where applicable); and\nAny other relevant documentation.\nTechnical Requirements: The Non-Consultancy Services are defined in Part 2, Statement of Re- quirements.\nSustainable procurement: The SORs shall detail the minimum technical requirements (which may/ may not include specific sustainable Procurement technical requirements). This considers 3 aspects\nEnvironment (E.g., Energy stars, Eco labels)\nEconomy (life cycle costing); and\nSocial (working and health conditions. This is more appropriate to services and works."
+        },
+        {
+          "rank": 2,
+          "chunk_id": "DOC-017-C0018",
+          "location": "DOC-017, p. 17, SECTION 1: BIDDING PROCEDURES > Documents Evidencing Eligibility",
+          "extraction": "converted",
+          "fused_score": 0.031319,
+          "bm25_rank": 7,
+          "bm25_score": 18.9884,
+          "dense_rank": 1,
+          "cosine": 0.7722,
+          "text": "Documents Evidencing Eligibility\nBidders shall submit the following documents:\na certificate of registration issued by the Authority for bidders currently registered with the Authority or a copy of the Bidder’s Trading license or equivalent and a copy of the Bidder’s Certificate of Incorporation/Registration or equivalent for bidders not currently registered with the Authority;\nEvidence of fulfilment of obligations to pay taxes and social security contributions in Uganda where applicable;\nDocuments demonstrating majority shareholders of the company as women, youth or PWDs such as the Memorandum of Association or Constitution of the Registered Association, Certificate of Registration;\nAny other relevant documentation."
+        },
+        {
+          "rank": 3,
+          "chunk_id": "DOC-013-C0022",
+          "location": "DOC-013, Section 1: Instructions to Bidders > Documents Evidencing Eligibility",
+          "extraction": "native",
+          "fused_score": 0.030214,
+          "bm25_rank": 11,
+          "bm25_score": 18.7687,
+          "dense_rank": 2,
+          "cosine": 0.7642,
+          "text": "Documents Evidencing Eligibility\nBidders shall submit the following documents:\na certificate of registration issued by the Authority for bidders currently registered with the Authority or a copy of the bidder’s trading license or equivalent and a copy of the bidder’s certificate of Incorporation/Registration or equivalent for bidders not currently registered with the Authority;\nEvidence of fulfilment of obligations to pay taxes and social security contributions in Uganda where applicable\nAny other relevant documentation."
+        },
+        {
+          "rank": 4,
+          "chunk_id": "DOC-010-C0013",
+          "location": "DOC-010, p. 24, PART 1: Bidding Procedures Section 1: Instructions to Bidders",
+          "extraction": "native",
+          "fused_score": 0.028139,
+          "bm25_rank": 17,
+          "bm25_score": 17.0058,
+          "dense_rank": 6,
+          "cosine": 0.747,
+          "text": "Not to have a conflict of interest in relation to this procurement requirement; and\nNot to be subject to suspension by the Public Procurement and Disposal of Public Assets Authority or not debarred from the procurement processes by an international agency of which Uganda is a member.\nDocuments Evidencing Eligibility: Bidders shall submit the following documents:\nA certificate of registration issued by the Authority for bidders currently registered with the Authority or a copy of the bidder’s Trading license or equivalent and a copy of the bidder’s certificate of registration or equivalent for bidders not currently registered with the Authority;\nEvidence of fulfilment of obligations to pay taxes and social security contributions in Uganda where applicable;\nRegistered/ Certified Powers of Attorney (where applicable); and\nAny other relevant documentation.\nOrigin of Supplies: All supplies and related services shall have as their country of origin an eligible country, as defined in the Special Conditions of Contract.\nTechnical Requirements: The Specification and Compliance Sheet details the minimum specification of the supplies required. The supplies offered must meet this specification, but no credit will be given for exceeding the specification.\nSustainable Procurement: The SORs shall detail the minimum technical requirements (which may/ may not include specific sustainable procurement technical requirements). This considers 3 aspects\nEnvironment (E.g., Energy stars, Eco labels)"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "DOC-017-C0087",
+          "location": "DOC-017, p. 13, Section 7 “Terms and Conditions of the Contract.” > Documents Evidencing Eligibility:",
+          "extraction": "converted",
+          "fused_score": 0.028125,
+          "bm25_rank": 20,
+          "bm25_score": 15.4938,
+          "dense_rank": 4,
+          "cosine": 0.7612,
+          "text": "Documents Evidencing Eligibility:\nBidders shall submit the following documents:\nA certificate of registration issued by the Authority for bidders currently registered with the Authority or a copy of the Bidder’s Trading license or equivalent and a copy of the Bidder’s Certificate of Incorporation/Registration or equivalent for bidders not currently registered with the Authority;\nEvidence of fulfilment of obligations to pay taxes and social security contributions in Uganda where applicable;\nDocuments demonstrating majority shareholders of the company as women, youth or PWDs such as the Memorandum of Association or Constitution of the Registered Association.\nAny other relevant documentation. [List any additional documents which are required as evidence of eligibility. If eligibility documents have already been checked, the clause may be amended to read “No documents are required as evidence of eligibility. However, bidders must advise the PDE of any change in respect to their eligibility status and submit updated documents where necessary.”]"
+        }
+      ]
+    },
+    {
+      "id": "Q13",
+      "query": "What is the total value of Bidder A's bid?",
+      "mode": "hybrid",
+      "best_cosine": 0.7132,
+      "min_cosine": 0.65,
+      "evidence_sufficient": true,
+      "notes": [],
+      "hits": [
+        {
+          "rank": 1,
+          "chunk_id": "DOC-022-C0136",
+          "location": "DOC-022, p. 64, Part 1 - Section 3: Evaluation Methodology and Criteria > Lots",
+          "extraction": "converted",
+          "fused_score": 0.026077,
+          "bm25_rank": 3,
+          "bm25_score": 8.7731,
+          "dense_rank": 38,
+          "cosine": 0.6762,
+          "text": "Lots\nBidders have the option to bid for any one or more lots. Bids will be evaluated lot- wise, taking into account discounts offered, if any, after considering all possible combinations of lots, the contract(s) will be awarded to the bidder or bidders offering the lowest evaluated cost to the PDE for combined lots, subject to the selected bidder(s) meeting the required qualification criteria for lot or combination of lots as the case may be.\nWhere there is a limit on the number of lots to be awarded to each bidder, the PDE shall award the lots to the bidder offering the lowest cost for the higher values of the lots."
+        },
+        {
+          "rank": 2,
+          "chunk_id": "DOC-017-C0016",
+          "location": "DOC-017, p. 17, SECTION 1: BIDDING PROCEDURES > Lots",
+          "extraction": "converted",
+          "fused_score": 0.024716,
+          "bm25_rank": 4,
+          "bm25_score": 8.743,
+          "dense_rank": 50,
+          "cosine": 0.673,
+          "text": "Lots\nWhere the requirements are divided into lots Bidders have the option to Bid for any one or more lots according to the following rules:\nBidders must bid for complete lots only. Bids for partial lots shall be rejected.\nBids shall be evaluated lot-wise, taking into account discounts offered, if any, after considering all possible combinations of lots, the contract(s) shall be awarded to the Bidder or Bidders offering the lowest evaluated cost to the PDE for combined lots, subject to the selected Bidder(s) meeting the required qualification criteria for a lot or combination of lots as the case may be.\nWhere there is a limit on the number of lots to be awarded to each bidder, the PDE shall award the lots to the bidder offering the lowest cost for the higher values of the lots."
+        },
+        {
+          "rank": 3,
+          "chunk_id": "DOC-022-C0062",
+          "location": "DOC-022, p. 26, Part 1 - Section 1: Instructions to Bidders > Bid Opening",
+          "extraction": "converted",
+          "fused_score": 0.022949,
+          "bm25_rank": 15,
+          "bm25_score": 8.4471,
+          "dense_rank": 44,
+          "cosine": 0.6756,
+          "text": "The PDE shall prepare a record of the bid opening that shall include, as a minimum: the name of the bidder and whether there is a withdrawal and/or replacement; the total bid price or the bid price per lot if applicable, including any discounts; the presence or absence of a Bid Security or Bid Securing Declaration, and whether a Power of Attorney was submitted. The bidders’ representatives who are present shall be requested to sign the record. The omission of a bidder’s signature on the record shall not invalidate the contents and effect of the record. A copy of the record shall upon request be distributed to bidders and displayed on the PDE’s Notice Board within one working day from the date of the bid opening for a minimum of seven (7) working days.\nThe original bids shall be kept in the custody of the Accounting Officer and where there is a discrepancy at evaluation of the bids, reference shall be made to the original in the custody of the Accounting Officer."
+        },
+        {
+          "rank": 4,
+          "chunk_id": "DOC-001-C0039",
+          "location": "DOC-001, p. 9, General > Bid Prices and Discounts",
+          "extraction": "native",
+          "fused_score": 0.0225,
+          "bm25_rank": 20,
+          "bm25_score": 7.943,
+          "dense_rank": 40,
+          "cosine": 0.6758,
+          "text": "Bid Prices and Discounts\nThe price to be quoted in the Bid Submission Sheet, in accordance with ITB Sub-Clause 15.1(c) shall be the total price of the bid, excluding any discounts offered.\nThe bidder shall quote any unconditional and conditional discounts and the methodology for their application in the Bid Submission Sheet, in accordance with ITB Sub-Clause 15.1(d).\nPrices quoted by the bidder shall be fixed during the bidder’s performance of the contract and not subject to variation on any account, unless otherwise specified in the BDS. A bid submitted with an adjustable price quotation shall be treated as non-responsive and shall be rejected, pursuant to ITB Clause 33."
+        },
+        {
+          "rank": 5,
+          "chunk_id": "DOC-009-C0024",
+          "location": "DOC-009, p. 6, General > One Bid per Bidder",
+          "extraction": "native",
+          "fused_score": 0.016393,
+          "bm25_rank": null,
+          "bm25_score": 6.3164,
+          "dense_rank": 1,
+          "cosine": 0.7132,
+          "text": "One Bid per Bidder\nEach bidder shall submit only one bid, either individually or as a partner in a JV. A bidder who submits or participates in more than one bid (other than as a subcontractor or in cases of alternatives that have been permitted or requested) shall cause all the bids with the bidder’s participation to be rejected."
+        }
+      ]
+    },
+    {
+      "id": "Q16",
+      "query": "Does Bidder A's submission satisfy the Public Procurement and Disposal of Public Assets Evaluation Regulations, 2023, in general?",
+      "mode": "hybrid",
+      "best_cosine": 0.7797,
+      "min_cosine": 0.65,
+      "evidence_sufficient": true,
+      "notes": [],
+      "hits": [
+        {
+          "rank": 1,
+          "chunk_id": "DOC-029-C0008",
+          "location": "DOC-029, p. 8, NOTICE OF BEST EVALUATED BIDDER",
+          "extraction": "native",
+          "fused_score": 0.032266,
+          "bm25_rank": 3,
+          "bm25_score": 22.761,
+          "dense_rank": 1,
+          "cosine": 0.7797,
+          "text": "NOTICE OF BEST EVALUATED BIDDER\n(For Disposal of Public Assets)\nThe bidder(s) named below has/ have been awarded as the best evaluated bidder(s) for the public asset(s) indicated. The Procuring and Disposing Entity intends to place a contract with the bidder(s) after ............ working days from the date for display below:\nDisposal Description of Method of Best Contract Reference Public Asset Disposal Evaluated Price and Number Bidder Currency\nUnsuccessful Bidders\nNo. Disposal Reference Bidder Stage of Reason for number Elimination Elimination\nDisplay of this notice does not constitute a contract. The contract shall be signed in accordance with the PPDA (Contracts) Regulations, 2023.\nPage 8 of8"
+        },
+        {
+          "rank": 2,
+          "chunk_id": "DOC-028-C0003",
+          "location": "DOC-028, pp. 3-4, OF PUBLIC ASSETS AUTHORITY",
+          "extraction": "native",
+          "fused_score": 0.029462,
+          "bm25_rank": 15,
+          "bm25_score": 17.52,
+          "dense_rank": 2,
+          "cosine": 0.7341,
+          "text": "13. Record of negotiations;\n14. Notice of best evaluated bidder;\n15. Submission of contract to the Attorney General for clearance where applicable;\n16. Approval by the Attorney General where applicable;\n17. Contract and amendments thereto;\n18. Contract Management Records;\n19. Contracts Committee minutes relating to the procurement; and\n20. Correspondences between a procuring and disposing entity and the bidder(s);\nDisposal Records\n1. Initiation of disposal - Form 28;\n2. Contracts Committee approval of the disposal method, bidding document, evaluation committee and shortlist of providers where applicable; '\n3. Bidding document and any amendments or clarifications;\n4. Copy of the published advertisement or shortlist;\n5. Record of issuance of bidding document;\n6. Record of receipt of bids;\n7. Record of opening of bids;\n8. Copies of bids received;\n9. Evaluation meetings and Evaluation Report;\n10. Record of negotiations;\n11. Notice of best evaluated bidder;\n12. Submission of contract to the Attorney General for clearance where·applicable;\nPage 3 of 4\n13. Approval by the Attorney General where applicable;\n14. Contract and amendments thereto;\n15. Contract Management Records;\n16. Contracts Committee minutes relating to the procurement; and\n17. Correspondences between a procuring and disposing entity and the bidder(s).\n\"-~~.~~~-- ....... ~~~···········\nBenson Turamye EXECUTIVE DIRECTOR\n.~. cl~\"-CN1~ .. ~~'i"
+        },
+        {
+          "rank": 3,
+          "chunk_id": "DOC-021-C0089",
+          "location": "DOC-021, p. 27, Award of Contract > A bidder may seek an Administrative Review for any omission or breach by the PDE in accordance with the Public Procurement and Disposal of Assets Act, Cap 205, Regulations or Guidelines made thereunder.",
+          "extraction": "converted",
+          "fused_score": 0.02879,
+          "bm25_rank": 8,
+          "bm25_score": 19.3612,
+          "dense_rank": 11,
+          "cosine": 0.7224,
+          "text": "A bidder may seek an Administrative Review for any omission or breach by the PDE in accordance with the Public Procurement and Disposal of Assets Act, Cap 205, Regulations or Guidelines made thereunder.\nThe PDE shall promptly provide a bidder who seeks administrative review with:\nA summary of the evaluation process;\nA comparison of the tenders, proposals, or quotations, including the evaluation criteria used;\nThe reasons for rejecting the concerned bids; and\nThe details of the applicable administrative review fees and the account to which the fees are to be paid."
+        },
+        {
+          "rank": 4,
+          "chunk_id": "DOC-029-C0001",
+          "location": "DOC-029, pp. 1-2, OF PUBLIC ASSETS AUTHORITY",
+          "extraction": "native",
+          "fused_score": 0.028612,
+          "bm25_rank": 17,
+          "bm25_score": 17.4985,
+          "dense_rank": 4,
+          "cosine": 0.7307,
+          "text": "OF PUBLIC ASSETS AUTHORITY\n\"Pv-oCCAVeV~AeVlt That De.fivt.t'\"s''\nGuideline issued by the Public Procurement and Disposal of Public\nAssets Authority under Section 97 of the Public Procurement and\nDisposal of Public Assets Act, 2003\nDetails covered in this Guideline:\nGuideline Subject: Standard Notice Formats\nGuideline Reference: 9/2024\nCommencement Date: 5th February 2024\nGuidelines are issued to all Accounting Officers wh_o are responsible for distributing copies to the Contracts Committee, user departments and Procurement and Disposal Units of the Procuring and Disposing Entities.\nThis Guideline can be accessed on the PPDA website at www.ppda.go.ug\nGuideline Subject: Standard Notice Formats\nIn accordance with section 7 (1 )(d) of the PPDA Act, 2003 which provides the Authority with the function of preparing, updating and issuance of authorized versions of the standardized bidding documents, procedural forms and any other attendant documents to procuring and disposing entities, the following formats shall be used for publication on the procurement and disposal notice boards, entity's websites where applicable and the website of the Authority with respect to procurement and disposal proceedings:\nProcurement Notices\n1. Notice of Shortlisted Bidders. 2. Notice Following Technical Evaluation for Consultancy Services. 3. Notice of Best Evaluated Bidder for Procurements of Works, Supplies and Non- consultancy Services. 4. Notice of Best Evaluated Bidder for Procurements of Consultancy Services.\nDisposal Notices"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "DOC-030-C0016",
+          "location": "DOC-030, p. 5, Part I—Preliminary > 1. Title and commencement.",
+          "extraction": "native",
+          "fused_score": 0.026378,
+          "bm25_rank": 4,
+          "bm25_score": 21.4126,
+          "dense_rank": 33,
+          "cosine": 0.709,
+          "text": "1. Title and commencement. (1) These Regulations may be cited as the Public Procurement and Disposal of Public Assets (Rules and Methods for Procurement of Supplies, Works and Non-Consultancy Services) Regulations, 2023.\n(2) These Regulations shall come into force on the 5th day of February, 2024."
+        }
+      ]
+    }
+  ]
+}
