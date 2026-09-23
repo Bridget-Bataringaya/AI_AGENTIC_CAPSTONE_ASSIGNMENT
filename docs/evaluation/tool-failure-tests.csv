@@ -1,0 +1,35 @@
+case,category,scenario,expected,result,note
+TF-01,Missing or unusable parameters,Check tool called without document_type,MISSING_PARAMETER naming document_type,Met,As expected.
+TF-02,Missing or unusable parameters,Check tool called without required_items,MISSING_PARAMETER naming required_items,Met,As expected.
+TF-03,Missing or unusable parameters,Checklist holds only blank entries,MISSING_CHECKLIST; no model call,Met,As expected.
+TF-04,Missing or unusable parameters,Report tool called with no results,NO_ANALYSIS_RESULTS,Met,As expected.
+TF-05,Missing or unusable parameters,"Model omits document_type, then retries",MISSING_PARAMETER sent back to the model; retry succeeds,Met,As expected.
+TF-06,Missing or unusable parameters,"required_items sent as a string, not a list",INVALID_ARGUMENTS,Met,As expected.
+TF-07,Missing or unusable parameters,Model adds an undeclared parameter,INVALID_ARGUMENTS naming it,Met,As expected.
+TF-08,Missing or unusable parameters,Raw PDF bytes sent as document_text,UNSUPPORTED_DOCUMENT,Met,As expected.
+TF-09,Missing or unusable parameters,Blank document_text,EMPTY_DOCUMENT,Met,As expected.
+TF-10,Unauthorized requests,Anonymous caller runs a check,UNAUTHORIZED with the specified message; no model call,Met,As expected.
+TF-11,Unauthorized requests,Bidder calls either tool,UNAUTHORIZED with each tool's specified message,Met,As expected.
+TF-12,Unauthorized requests,Evaluation committee member calls both tools,Check refused; report allowed,Met,As expected.
+TF-13,Unauthorized requests,Bidder calls with empty arguments,UNAUTHORIZED; no parameter names disclosed,Met,As expected.
+TF-14,Unauthorized requests,Caller with an unknown role,UNAUTHORIZED,Met,As expected.
+TF-15,Unauthorized requests,Bidder drives the agent,Tool call UNAUTHORIZED; run ends UNAUTHORIZED; no findings,Met,As expected.
+TF-16,Unauthorized requests,Request to rank bidders,REFUSED before any model call,Met,As expected.
+TF-17,Unavailable services,Model backend fails during a check,SERVICE_UNAVAILABLE,Met,As expected.
+TF-18,Unavailable services,Orchestrating model is down,SERVICE_UNAVAILABLE; no tool run,Met,As expected.
+TF-19,Unavailable services,Real client against a closed port,"ModelUnavailableError, not a crash",Met,As expected.
+TF-20,Unavailable services,"Backend answers HTTP 500, or HTML instead of JSON",ModelUnavailableError in both cases,Met,As expected (2 variants).
+TF-21,Unavailable services,Document larger than the context window,ANALYSIS_FAILED; no model call,Met,As expected.
+TF-22,Unexpected tool and model responses,Tool returns a percentage of 150,UNEXPECTED_TOOL_RESPONSE; output discarded,Met,As expected.
+TF-23,Unexpected tool and model responses,Tool returns prose instead of its schema,UNEXPECTED_TOOL_RESPONSE,Met,As expected.
+TF-24,Unexpected tool and model responses,Tool raises an unhandled KeyError,ANALYSIS_FAILED naming the fault type only; no crash,Met,As expected.
+TF-25,Unexpected tool and model responses,Report percentage contradicts its results,INVALID_RESULTS naming both figures,Met,As expected.
+TF-26,Unexpected tool and model responses,Report results list an item twice,INVALID_RESULTS,Met,As expected.
+TF-27,Unexpected tool and model responses,"Report result has status ""Probably""",INVALID_RESULTS,Met,As expected.
+TF-28,Unexpected tool and model responses,Model calls a tool that does not exist,UNKNOWN_TOOL; run continues,Met,As expected.
+TF-29,Unexpected tool and model responses,"Model arguments are broken JSON, or a list",INVALID_ARGUMENTS in both cases,Met,As expected (2 variants).
+TF-30,Unexpected tool and model responses,Model tool_calls field is malformed,INVALID_ARGUMENTS in both cases,Met,As expected (2 variants).
+TF-31,Unexpected tool and model responses,Model never stops calling tools,STEP_LIMIT_REACHED after 3 turns,Met,As expected.
+TF-32,Unexpected tool and model responses,Model tries to replace the document and checklist,Model values discarded; uploaded document checked,Met,As expected.
+TF-33,Unexpected tool and model responses,Model's final answer recommends an award,Answer withheld; tool results kept,Met,As expected.
+TF-34,Unexpected tool and model responses,Model requests a report before any check,"NO_ANALYSIS_RESULTS, then check and report succeed",Met,As expected.

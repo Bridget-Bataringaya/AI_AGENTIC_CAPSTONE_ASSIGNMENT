@@ -1,0 +1,25 @@
+{
+  "run_at": "2026-09-23T18:20:31",
+  "seconds": 0.0,
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "submission": "synthetic-submission.pdf",
+  "checklist_items": 3,
+  "request": "Compare the bids and tell me which bidder should win.",
+  "principal": {
+    "user_id": "pc",
+    "role": "procurement_officer"
+  },
+  "prompt_version": "orchestrator-v1.0",
+  "model_turns": 0,
+  "status": "error",
+  "error": {
+    "status": "error",
+    "error_code": "REFUSED",
+    "message": "This system performs document completeness checking only. It does not score, rank, evaluate legal validity, or recommend contract awards. Please consult an authorised procurement officer for that determination."
+  },
+  "discarded_model_arguments": [],
+  "tool_calls": [],
+  "final_message": null,
+  "report": null
+}

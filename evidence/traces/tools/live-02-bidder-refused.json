@@ -1,0 +1,46 @@
+{
+  "run_at": "2026-09-23T18:38:26",
+  "seconds": 68.7,
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "submission": "synthetic-submission.pdf",
+  "checklist_items": 3,
+  "request": "Check this document for completeness and give me the report.",
+  "principal": {
+    "user_id": "pc",
+    "role": "bidder"
+  },
+  "prompt_version": "orchestrator-v1.0",
+  "model_turns": 2,
+  "status": "error",
+  "error": {
+    "status": "error",
+    "error_code": "UNAUTHORIZED",
+    "message": "You do not have permission to analyse this procurement document."
+  },
+  "discarded_model_arguments": [],
+  "tool_calls": [
+    {
+      "tool": "check_document_completeness",
+      "arguments": {
+        "document_type": "Bid Document",
+        "document_text": "[PAGE 1]\nSECTION 1 - BID SUBMISSION COVER\nTender Reference: SYN/WORKS/2026/014\nProcuring Entity: Synthetic District Local Government (illustrative only)\nBidder: Kavuma Civil Works Limited (fictional e... (2983 characters)",
+        "required_items": [
+          "Valid tax clearance certificate from the revenue authority",
+          "Anti-bribery and anti-corruption declaration signed by the bidder",
+          "Signed conflict of interest declaration"
+        ]
+      },
+      "status": "error",
+      "error_code": "UNAUTHORIZED",
+      "duration_ms": 0,
+      "result": {
+        "status": "error",
+        "error_code": "UNAUTHORIZED",
+        "message": "You do not have permission to analyse this procurement document."
+      }
+    }
+  ],
+  "final_message": "The tool returned an error: \"You do not have permission to analyse this procurement document.\"",
+  "report": null
+}
