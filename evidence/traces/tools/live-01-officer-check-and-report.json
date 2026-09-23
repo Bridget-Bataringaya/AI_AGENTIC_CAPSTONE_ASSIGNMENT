@@ -1,0 +1,59 @@
+{
+  "run_at": "2026-09-23T18:20:05",
+  "seconds": 1052.9,
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "submission": "synthetic-submission.pdf",
+  "checklist_items": 3,
+  "request": "Check this document for completeness and give me the report.",
+  "principal": {
+    "user_id": "pc",
+    "role": "procurement_officer"
+  },
+  "prompt_version": "orchestrator-v1.0",
+  "model_turns": 2,
+  "status": "success",
+  "error": null,
+  "discarded_model_arguments": [],
+  "tool_calls": [
+    {
+      "tool": "check_document_completeness",
+      "arguments": {
+        "document_type": "Bid Document",
+        "document_text": "[PAGE 1]\nSECTION 1 - BID SUBMISSION COVER\nTender Reference: SYN/WORKS/2026/014\nProcuring Entity: Synthetic District Local Government (illustrative only)\nBidder: Kavuma Civil Works Limited (fictional e... (2983 characters)",
+        "required_items": [
+          "Valid tax clearance certificate from the revenue authority",
+          "Anti-bribery and anti-corruption declaration signed by the bidder",
+          "Signed conflict of interest declaration"
+        ]
+      },
+      "status": "success",
+      "error_code": null,
+      "duration_ms": 884756,
+      "result": {
+        "status": "success",
+        "document_type": "Bid Document",
+        "completeness_percentage": 66.7,
+        "results": [
+          {
+            "item": "Valid tax clearance certificate from the revenue authority",
+            "status": "Present",
+            "reason": "Page 3: \"The bidder encloses a Tax Clearance Certificate issued by the national revenue authority, reference TCC/2026/00417, valid from 01 January 2026 to 31 December 2026. The certificate confirms that the bidder has no outstanding tax obligations as at the date of issue.\""
+          },
+          {
+            "item": "Anti-bribery and anti-corruption declaration signed by the bidder",
+            "status": "Missing",
+            "reason": "The model was given all 7 pages of the submission and asked to find this document. It reported that no passage is this document, and returned no page and no quotation. Its match confidence was 0.00. A value of 0.00 means it saw no likely match. With nothing quoted, there was no evidence for the later checks to verify."
+          },
+          {
+            "item": "Signed conflict of interest declaration",
+            "status": "Present",
+            "reason": "Page 7: \"The bidder confirms that no director, officer or shareholder of Kavuma Civil Works Limited holds any interest, direct or indirect, in the Procuring Entity, and that no circumstance exists that would place the bidder in a position of conflict in respect of this procurement. Signed by the Managing...\""
+          }
+        ]
+      }
+    }
+  ],
+  "final_message": "The overall status is: success\nThe completeness percentage is: 66.7\nThe missing item is: Anti-bribery and anti-corruption declaration signed by the bidder\nThe unclear item is: None",
+  "report": null
+}

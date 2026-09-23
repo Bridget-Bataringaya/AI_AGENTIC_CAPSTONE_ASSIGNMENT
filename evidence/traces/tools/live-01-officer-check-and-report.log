@@ -1,0 +1,9 @@
+Agent run on synthetic-submission.pdf: 3 checklist items, 7 page(s), role procurement_officer, model llama3.1:8b.
+Trace written to evidence\traces\tools\live-01-officer-check-and-report.json
+[call 1] check_document_completeness: success (885s)
+
+Agent: The overall status is: success
+The completeness percentage is: 66.7
+The missing item is: Anti-bribery and anti-corruption declaration signed by the bidder
+The unclear item is: None
+exit=0

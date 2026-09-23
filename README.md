@@ -159,6 +159,41 @@ Interactive documentation is then at `http://localhost:8000/docs`.
 | `GET /health` | Confirm the backend and model are reachable |
 | `POST /checklist/parse` | Extract required items so the user can edit them |
 | `POST /check` | Run a completeness check for one submission |
+| `GET /tools` | Each tool's purpose, input and output schema, and permission |
+| `POST /tools/{name}` | Call one tool directly. Needs an `X-API-Key` header |
+| `POST /agent` | Let the model choose and call the tools on one submission. Needs an `X-API-Key` header |
+
+## Tool calling
+
+The agent has two tools, defined in the team's Tool / Function Specification:
+`check_document_completeness` and `generate_completeness_report`. The model proposes
+calls; the application runs them. Every call, from the model, the API or a test,
+goes through one executor (`src/procurecheck/tools/registry.py`) that checks, in
+order, that the tool exists, that the caller may use it, that the arguments match
+the schema, and that the answer matches the schema. Each failure ends in the
+specification's error envelope with a named code, never a crash.
+
+```bash
+python run.py tools
+python run.py agent --submission knowledge/samples/synthetic-submission.pdf
+python run.py agent --submission knowledge/samples/synthetic-submission.pdf --role bidder
+```
+
+The model never sees the document or the checklist. The application binds them to
+the tools, and anything the model writes into those fields is discarded, so text
+inside a submission cannot redirect a check. Every run writes a trace to
+`evidence/traces/tools/`.
+
+Roles decide which tool may run: a `procurement_officer` may check and report, an
+`evaluation_committee` member may only report, a `bidder` or `guest` may do neither.
+Over the API the caller is identified by `X-API-Key`, with keys read from
+`PROCURECHECK_API_KEYS` as `key:role:user` entries, comma separated. With no keys set,
+every tool route refuses.
+
+The design is in `docs/architecture/Tool Calling Implementation.docx`. The failure
+cases (missing parameters, unauthorized requests, unavailable services, unexpected
+responses) are run and tabulated by `python tests/evaluation/run_tool_failure_tests.py`,
+which writes `docs/evaluation/tool-failure-tests.docx`.
 
 ## Searching the corpus
 
@@ -271,6 +306,7 @@ Regenerate the submission with `python knowledge/samples/generate_submission.py`
 | `PROCURECHECK_EMBEDDING_MODEL` | `nomic-embed-text` | Embedding model for corpus search |
 | `PROCURECHECK_INDEX_DIR` | `knowledge/index` | Where the retrieval index is written and read |
 | `PROCURECHECK_RETRIEVAL_MIN_COSINE` | `0.65` | Below this best similarity, a search reports that the corpus holds no evidence |
+| `PROCURECHECK_API_KEYS` | unset | `key:role:user` entries for the tool routes. Unset means every tool route refuses |
 
 ### A note on the context window
 

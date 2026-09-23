@@ -35,6 +35,9 @@ Usage:
                                               Run a completeness check
   python run.py index [--no-embeddings]       Build the retrieval index over the corpus
   python run.py search "QUERY" [--top-k N]    Search the corpus, with sources and a trace
+  python run.py tools                         List the agent's tools and their contracts
+  python run.py agent --submission F [--request TEXT] [--role ROLE]
+                                              Let the model call the tools on one submission
   python run.py evaluate [--no-model]         Run the prompt evaluation cases
   python run.py evaluate-retrieval            Measure retrieval quality on labelled queries
   python run.py test                          Run the unit test suite
@@ -111,7 +114,7 @@ def main(argv: list[str] | None = None) -> int:
         return _run_tests(rest)
     if command == "api":
         return _run_api(rest)
-    if command in ("health", "check", "verify", "index", "search"):
+    if command in ("health", "check", "verify", "index", "search", "tools", "agent"):
         _bootstrap()
         from procurecheck.cli import main as cli_main
 

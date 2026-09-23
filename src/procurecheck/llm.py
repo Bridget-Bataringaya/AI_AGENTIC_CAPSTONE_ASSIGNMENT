@@ -14,7 +14,7 @@ prompts, parameters and refusal behaviour are unchanged.
 from __future__ import annotations
 
 import json
-from typing import Any, Dict, Final, Type, TypeVar
+from typing import Any, Dict, Final, List, Type, TypeVar
 
 import httpx
 from pydantic import BaseModel, ValidationError
@@ -79,16 +79,53 @@ class OllamaClient:
         return {"backend": self._settings.base_url, "model": self._settings.model,
                 "available_models": available}
 
-    def _post(self, payload: Dict[str, Any]) -> str:
+    def _post_message(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         try:
             response = self._client.post(self._settings.chat_endpoint, json=payload)
             response.raise_for_status()
+            body = response.json()
         except httpx.HTTPError as exc:
             raise ModelUnavailableError(
                 f"Model request failed against {self._settings.chat_endpoint}. "
                 f"Underlying error: {exc}"
             ) from exc
-        return response.json().get("message", {}).get("content", "")
+        except json.JSONDecodeError as exc:
+            raise ModelUnavailableError(
+                f"The model backend at {self._settings.chat_endpoint} answered "
+                f"with something other than JSON. Underlying error: {exc}"
+            ) from exc
+        message = body.get("message") if isinstance(body, dict) else None
+        return message if isinstance(message, dict) else {}
+
+    def _post(self, payload: Dict[str, Any]) -> str:
+        return self._post_message(payload).get("content", "")
+
+    def _options(self) -> Dict[str, Any]:
+        return {
+            "temperature": self._settings.temperature,
+            "top_p": self._settings.top_p,
+            "num_predict": self._settings.max_output_tokens,
+            # Always explicit. Ollama otherwise defaults to 4096 tokens and
+            # silently drops the rest of the submission.
+            "num_ctx": self._settings.context_tokens,
+        }
+
+    def chat_with_tools(
+        self, messages: List[Dict[str, Any]], tools: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
+        """One model turn with tools on offer. Returns the assistant message.
+
+        The model only proposes calls. It never runs one: the message comes
+        back to the orchestrator, which validates, authorises and executes
+        each proposed call itself (tools/registry.py).
+        """
+        return self._post_message({
+            "model": self._settings.model,
+            "messages": messages,
+            "tools": tools,
+            "stream": False,
+            "options": self._options(),
+        })
 
     def complete_structured(
         self, system_prompt: str, user_message: str, schema: Type[TModel]
@@ -109,14 +146,7 @@ class OllamaClient:
             "messages": messages,
             "stream": False,
             "format": schema.model_json_schema(),
-            "options": {
-                "temperature": self._settings.temperature,
-                "top_p": self._settings.top_p,
-                "num_predict": self._settings.max_output_tokens,
-                # Always explicit. Ollama otherwise defaults to 4096 tokens and
-                # silently drops the rest of the submission.
-                "num_ctx": self._settings.context_tokens,
-            },
+            "options": self._options(),
         }
 
         last_error: Exception | None = None

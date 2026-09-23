@@ -8,6 +8,8 @@ Usage:
     python -m procurecheck.cli health
     python -m procurecheck.cli index [--no-embeddings]
     python -m procurecheck.cli search "QUERY" [--top-k N] [--mode hybrid|bm25|dense]
+    python -m procurecheck.cli tools
+    python -m procurecheck.cli agent --submission FILE [--request TEXT] [--role ROLE]
 """
 
 from __future__ import annotations
@@ -30,6 +32,7 @@ from .ingestion import (
 from .llm import ModelUnavailableError, OllamaClient
 from .report import to_csv, to_json, to_text
 from .retrieval import commands as retrieval_commands
+from .tools import commands as tool_commands
 
 # Where reports land when the caller does not choose a path. Named after
 # the submission so that checking a second document cannot silently
@@ -66,6 +69,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
 
     retrieval_commands.add_parsers(subparsers)
+    tool_commands.add_parsers(subparsers)
 
     check = subparsers.add_parser("check", help="Run a completeness check")
     check.add_argument(
@@ -288,6 +292,12 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if args.command == "search":
         return retrieval_commands.run_search(args, settings)
+
+    if args.command == "tools":
+        return tool_commands.run_tools()
+
+    if args.command == "agent":
+        return tool_commands.run_agent(args, settings)
 
     overrides = {}
     if getattr(args, "strategy", None):
