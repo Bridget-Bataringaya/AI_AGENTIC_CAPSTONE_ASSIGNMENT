@@ -28,7 +28,13 @@ from typing import Any, Callable, Dict, Final, List, Mapping, Optional, Tuple, T
 from pydantic import BaseModel, ValidationError
 
 from ..llm import ModelUnavailableError
-from .authorization import PERMISSION_ANALYSE, PERMISSION_REPORT, Principal, is_permitted
+from .authorization import (
+    PERMISSION_ANALYSE,
+    PERMISSION_REPORT,
+    PERMISSION_TICKET,
+    Principal,
+    is_permitted,
+)
 from .completeness import (
     TOOL_CHECK,
     TOOL_REPORT,
@@ -45,6 +51,7 @@ from .contracts import (
     ToolError,
     ToolFailure,
 )
+from .tickets import TOOL_TICKET, CreateTicketInput, CreateTicketOutput, create_review_ticket
 
 MISSING_ERROR_TYPE: Final[str] = "missing"
 
@@ -76,6 +83,10 @@ class ToolSpec:
     # The code for arguments that are present but malformed. The report tool
     # uses the specification's INVALID_RESULTS, since its arguments are results.
     invalid_arguments_code: ErrorCode = ErrorCode.INVALID_ARGUMENTS
+    # False for a tool only the application may call, such as
+    # create_review_ticket. It is then never offered to the model, and the
+    # tool-calling agent refuses it if the model names it anyway.
+    offered_to_model: bool = True
 
     def model_parameters(self) -> Dict[str, Any]:
         """The input JSON schema with bound fields removed, for the model."""
@@ -110,6 +121,7 @@ class ToolSpec:
             "input_schema": self.input_model.model_json_schema(),
             "output_schema": self.output_model.model_json_schema(),
             "bound_by_application": list(self.bound_fields),
+            "offered_to_model": self.offered_to_model,
         }
 
 
@@ -185,7 +197,8 @@ class ToolRegistry:
         return self.specs.get(name)
 
     def definitions(self) -> List[Dict[str, Any]]:
-        return [spec.definition() for spec in self.specs.values()]
+        """The tools the model may be offered: application-only tools are left out."""
+        return [spec.definition() for spec in self.specs.values() if spec.offered_to_model]
 
     def names(self) -> List[str]:
         return list(self.specs)
@@ -259,7 +272,7 @@ class ToolExecutor:
 
 
 def default_registry() -> ToolRegistry:
-    """The two tools from the Tool / Function Specification."""
+    """The two tools from the Tool / Function Specification, and the ticket tool."""
     registry = ToolRegistry()
     registry.register(ToolSpec(
         name=TOOL_CHECK,
@@ -294,5 +307,20 @@ def default_registry() -> ToolRegistry:
             "document_name", "document_type", "completeness_percentage", "completeness_results",
         ),
         invalid_arguments_code=ErrorCode.INVALID_RESULTS,
+    ))
+    registry.register(ToolSpec(
+        name=TOOL_TICKET,
+        description=(
+            "Open a draft review ticket in the session's review queue for a "
+            "checklist item the check could not decide, so a procurement officer "
+            "sees it. The ticket decides nothing and cannot be resolved by the agent."
+        ),
+        input_model=CreateTicketInput,
+        output_model=CreateTicketOutput,
+        permission=PERMISSION_TICKET,
+        handler=create_review_ticket,
+        failure_code=ErrorCode.SERVICE_UNAVAILABLE,
+        unauthorized_message="You do not have permission to open review tickets.",
+        offered_to_model=False,
     ))
     return registry

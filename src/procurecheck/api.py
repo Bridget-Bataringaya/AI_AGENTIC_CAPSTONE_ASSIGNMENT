@@ -16,6 +16,7 @@ from fastapi import Body, Depends, FastAPI, File, Form, Header, HTTPException, U
 from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import BaseModel, Field
 
+from . import __version__
 from .config import Settings
 from .engine import ContextOverflowError, MatchingEngine
 from .ingestion import (
@@ -40,6 +41,8 @@ from .tools import (
     default_registry,
 )
 from .tools.authorization import ApiKeyError, load_api_keys, principal_for_key
+from .tools.tickets import ReviewQueue
+from .workflow import WorkflowInput, WorkflowRunner
 
 HTTP_OK = 200
 HTTP_BAD_REQUEST = 400
@@ -79,7 +82,7 @@ app = FastAPI(
         "which required items are present, missing, or need human review. "
         "It does not score, rank, evaluate legal validity, or recommend awards."
     ),
-    version="0.1.0",
+    version=__version__,
 )
 
 
@@ -206,11 +209,36 @@ def get_principal(x_api_key: Optional[str] = Header(default=None)) -> Optional[P
     return principal_for_key(x_api_key, keys)
 
 
-def _error_response(error: ToolError, principal: Optional[Principal]) -> JSONResponse:
-    status = TOOL_ERROR_STATUS.get(error.error_code, HTTP_SERVER_ERROR)
+def _error_status(error: ToolError, principal: Optional[Principal]) -> int:
     if error.error_code is ErrorCode.UNAUTHORIZED and principal is None:
-        status = HTTP_UNAUTHENTICATED
-    return JSONResponse(status_code=status, content=error.to_dict())
+        return HTTP_UNAUTHENTICATED
+    return TOOL_ERROR_STATUS.get(error.error_code, HTTP_SERVER_ERROR)
+
+
+def _error_response(
+    error: ToolError, principal: Optional[Principal], body: Optional[Dict[str, Any]] = None
+) -> JSONResponse:
+    """The error envelope, or a full run trace, with the status the error maps to."""
+    content = error.to_dict() if body is None else body
+    return JSONResponse(status_code=_error_status(error, principal), content=content)
+
+
+def _read_uploads(submission: UploadFile, checklist: Optional[UploadFile]):
+    """Parse an uploaded submission and checklist; the files do not outlive the call."""
+    from . import checklists
+
+    with tempfile.TemporaryDirectory() as workspace:
+        directory = Path(workspace)
+        submission_path = _save_upload(submission, directory)
+        checklist_path = (
+            _save_upload(checklist, directory) if checklist else checklists.resolve(checklists.STANDARD)[0]
+        )
+        try:
+            items = parse_checklist(checklist_path)
+            parsed = parse_submission(submission_path)
+        except (UnsupportedDocumentError, EmptyChecklistError, EmptyDocumentError) as exc:
+            raise HTTPException(HTTP_BAD_REQUEST, str(exc)) from exc
+    return submission_path, items, parsed
 
 
 @app.get("/tools")
@@ -248,19 +276,7 @@ def run_agent(
     Returns the full trace: every call the model proposed, what the executor
     did with it, and the final answer.
     """
-    from . import checklists
-
-    with tempfile.TemporaryDirectory() as workspace:
-        directory = Path(workspace)
-        submission_path = _save_upload(submission, directory)
-        checklist_path = (
-            _save_upload(checklist, directory) if checklist else checklists.resolve(checklists.STANDARD)[0]
-        )
-        try:
-            items = parse_checklist(checklist_path)
-            parsed = parse_submission(submission_path)
-        except (UnsupportedDocumentError, EmptyChecklistError, EmptyDocumentError) as exc:
-            raise HTTPException(HTTP_BAD_REQUEST, str(exc)) from exc
+    submission_path, items, parsed = _read_uploads(submission, checklist)
 
     session = AgentSession(
         document_name=submission_path.name,
@@ -272,8 +288,36 @@ def run_agent(
         run = ToolCallingAgent(client, executor).run(request, principal, session)
     trace = run.to_trace()
     if run.error is not None:
-        status = TOOL_ERROR_STATUS.get(run.error.error_code, HTTP_SERVER_ERROR)
-        if run.error.error_code is ErrorCode.UNAUTHORIZED and principal is None:
-            status = HTTP_UNAUTHENTICATED
-        return JSONResponse(status_code=status, content=trace)
+        return _error_response(run.error, principal, trace)
+    return trace
+
+
+@app.post("/workflow")
+def run_workflow(
+    submission: UploadFile = File(..., description="One tender submission"),
+    checklist: Optional[UploadFile] = File(default=None, description="Checklist; bundled standard if omitted"),
+    document_type: str = Form(default="Bid Document"),
+    principal: Optional[Principal] = Depends(get_principal),
+    settings: Settings = Depends(get_settings),
+):
+    """Run the multi-step workflow on one submission, with the default limits.
+
+    Returns the full trace: each iteration's sense, plan, act and observe
+    records, the review tickets opened, the report and the hand-off.
+    """
+    submission_path, items, parsed = _read_uploads(submission, checklist)
+
+    workflow_input = WorkflowInput(
+        submission_id=submission_path.stem,
+        document_name=submission_path.name,
+        document_type=document_type,
+        document_text=parsed.as_marked_text(),
+        required_items=tuple(item.description for item in items),
+    )
+    with OllamaClient(settings) as client:
+        context = ToolContext(settings, client, review_queue=ReviewQueue())
+        run = WorkflowRunner(ToolExecutor(default_registry(), context)).run(workflow_input, principal)
+    trace = {"version": __version__, **run.to_trace()}
+    if run.error is not None:
+        return _error_response(run.error, principal, trace)
     return trace

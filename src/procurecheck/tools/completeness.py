@@ -65,10 +65,15 @@ class ToolContext:
     `model_client` is anything with `complete_structured`, so tests can hand in
     a scripted stub and the service-unavailable path can be exercised without
     stopping a real server.
+
+    `review_queue` is the session's tickets.ReviewQueue. It exists only while a
+    workflow session does; a context without one makes create_review_ticket
+    fail openly rather than pretend to have recorded anything.
     """
 
     settings: Settings
     model_client: Any
+    review_queue: Any = None
 
 
 def percentage(results: Sequence[ItemResult]) -> float:

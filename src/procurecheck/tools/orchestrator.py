@@ -202,6 +202,13 @@ class ToolCallingAgent:
         if call.problem is not None:
             return ToolResult(call.name, call.arguments, error=call.problem)
         spec = self._executor.registry.get(call.name)
+        if spec is not None and not spec.offered_to_model:
+            # An application-only tool the model named anyway. It was never
+            # offered, so to the model it does not exist.
+            return ToolResult(call.name, call.arguments, error=ToolError(
+                error_code=ErrorCode.UNKNOWN_TOOL,
+                message=f"{call.name} is not available to the model.",
+            ))
         bound_names = spec.bound_fields if spec else ()
         overridden = sorted(k for k in call.arguments if k in bound_names)
         state.discarded.extend(f"{call.name}.{k}" for k in overridden)

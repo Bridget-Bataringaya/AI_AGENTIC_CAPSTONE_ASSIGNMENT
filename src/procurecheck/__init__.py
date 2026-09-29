@@ -5,4 +5,5 @@ reports which required items are present, missing, or need human review. It
 never scores, ranks, evaluates legal validity, or recommends a contract award.
 """
 
-__version__ = "0.1.0"
+# Bumped on every change; one line per version in CHANGELOG.md.
+__version__ = "0.2.0"

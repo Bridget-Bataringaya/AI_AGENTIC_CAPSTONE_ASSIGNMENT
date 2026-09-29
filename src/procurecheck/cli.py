@@ -10,6 +10,8 @@ Usage:
     python -m procurecheck.cli search "QUERY" [--top-k N] [--mode hybrid|bm25|dense]
     python -m procurecheck.cli tools
     python -m procurecheck.cli agent --submission FILE [--request TEXT] [--role ROLE]
+    python -m procurecheck.cli workflow --submission FILE [--role ROLE]
+    python -m procurecheck.cli --version
 """
 
 from __future__ import annotations
@@ -19,7 +21,7 @@ import sys
 from pathlib import Path
 from typing import List, Optional
 
-from . import checklists
+from . import __version__, checklists
 from .config import STRATEGY_BATCH, STRATEGY_PER_ITEM, Settings
 from .engine import ContextOverflowError, ItemProgress, MatchingEngine
 from .ingestion import (
@@ -33,6 +35,7 @@ from .llm import ModelUnavailableError, OllamaClient
 from .report import to_csv, to_json, to_text
 from .retrieval import commands as retrieval_commands
 from .tools import commands as tool_commands
+from .workflow import commands as workflow_commands
 
 # Where reports land when the caller does not choose a path. Named after
 # the submission so that checking a second document cannot silently
@@ -55,6 +58,7 @@ def _build_parser() -> argparse.ArgumentParser:
             "recommends an award."
         ),
     )
+    parser.add_argument("--version", action="version", version=f"ProcureCheck {__version__}")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     subparsers.add_parser("health", help="Check that the model backend is reachable")
@@ -70,6 +74,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
     retrieval_commands.add_parsers(subparsers)
     tool_commands.add_parsers(subparsers)
+    workflow_commands.add_parsers(subparsers)
 
     check = subparsers.add_parser("check", help="Run a completeness check")
     check.add_argument(
@@ -298,6 +303,9 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if args.command == "agent":
         return tool_commands.run_agent(args, settings)
+
+    if args.command == "workflow":
+        return workflow_commands.run_workflow(args, settings)
 
     overrides = {}
     if getattr(args, "strategy", None):

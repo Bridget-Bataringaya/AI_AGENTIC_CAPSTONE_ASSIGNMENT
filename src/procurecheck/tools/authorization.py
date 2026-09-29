@@ -17,7 +17,7 @@ step of the preliminary examination.
 Scope note: permissions are per role, not per document. The specification also
 asks that a user be allowed to access the particular document; nothing in the
 application yet records who owns which submission, so that part is not
-enforced and is recorded as open work in docs/architecture/tool-calling.md.
+enforced and is recorded as open work in docs/architecture/Tool Calling Implementation.md.
 """
 
 from __future__ import annotations
@@ -29,6 +29,7 @@ from typing import Dict, Final, FrozenSet, Mapping, Optional
 
 PERMISSION_ANALYSE: Final[str] = "document:analyse"
 PERMISSION_REPORT: Final[str] = "report:generate"
+PERMISSION_TICKET: Final[str] = "review:ticket"
 
 ROLE_PROCUREMENT_OFFICER: Final[str] = "procurement_officer"
 ROLE_EVALUATION_COMMITTEE: Final[str] = "evaluation_committee"
@@ -36,7 +37,7 @@ ROLE_BIDDER: Final[str] = "bidder"
 ROLE_GUEST: Final[str] = "guest"
 
 ROLE_PERMISSIONS: Final[Mapping[str, FrozenSet[str]]] = {
-    ROLE_PROCUREMENT_OFFICER: frozenset({PERMISSION_ANALYSE, PERMISSION_REPORT}),
+    ROLE_PROCUREMENT_OFFICER: frozenset({PERMISSION_ANALYSE, PERMISSION_REPORT, PERMISSION_TICKET}),
     ROLE_EVALUATION_COMMITTEE: frozenset({PERMISSION_REPORT}),
     ROLE_BIDDER: frozenset(),
     ROLE_GUEST: frozenset(),

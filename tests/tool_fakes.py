@@ -121,3 +121,42 @@ def run_agent(turns, principal=OFFICER, client=None, request="Check this bid for
     chat = ScriptedChat(turns)
     agent = ToolCallingAgent(chat, executor(client), max_turns=max_turns)
     return agent.run(request, principal, SESSION), chat
+
+
+class UnclearClient(StubModelClient):
+    """Leaves the bid securing declaration Unclear for its first `unclear_answers` checks.
+
+    After that it answers as StubModelClient does: not present. It stands in
+    for an item whose first answer could not be trusted and whose second can.
+    """
+
+    def __init__(self, unclear_answers: int = 1) -> None:
+        super().__init__()
+        self.unclear_answers = unclear_answers
+        self.bid_security_checks = 0
+
+    def complete_structured(self, system_prompt, user_message, schema):
+        if schema is ClauseVerification and "bid securing" in user_message.split("SUBMISSION TEXT")[0].lower():
+            self.bid_security_checks += 1
+            if self.bid_security_checks <= self.unclear_answers:
+                self.calls += 1
+                return ClauseVerification(
+                    checklist_item_id="REQ-02", clause_title="Bid securing declaration",
+                    is_present=False, confidence_score=0.4, requires_human_review=True,
+                )
+        return super().complete_structured(system_prompt, user_message, schema)
+
+
+class OutageClient(StubModelClient):
+    """Unavailable for the first `outages` structured calls, then answers normally."""
+
+    def __init__(self, outages: int) -> None:
+        super().__init__()
+        self.outages = outages
+
+    def complete_structured(self, system_prompt, user_message, schema):
+        if self.outages > 0:
+            self.outages -= 1
+            self.calls += 1
+            raise ModelUnavailableError("Cannot reach the model backend (test).")
+        return super().complete_structured(system_prompt, user_message, schema)
