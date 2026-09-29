@@ -1,0 +1,41 @@
+ProcureCheck 0.3.1 workflow on synthetic-submission.pdf: 3 checklist items, 7 page(s), role procurement_officer, model llama3.1:8b.
+
+Sign-off needed for publish_completeness_report.
+Add the completeness report for synthetic-submission.pdf (submission synthetic-submission) to the procurement record, where the evaluation committee will work from it.
+  Overall status: Incomplete, 66.7% of items present.
+  Missing: Anti-bribery and anti-corruption declaration signed by the bidder
+  Unclear: none
+Once published it is not overwritten.
+Type APPROVE to sign off, or anything else to decline: Trace written to evidence\traces\workflow\live-01-officer-unattended-publish-refused.json
+[iteration 1] check: success (524s)
+             No check has run. Check all 3 checklist items.
+[iteration 2] generate_report: success (0s)
+             The check is settled. Generate the report.
+[iteration 3] publish_report: error APPROVAL_DENIED (0s)
+             Publishing was asked for. Ask a procurement officer to sign off before the report goes on the record.
+Stopped: not_published. The report was not published: publish_completeness_report was declined. No answer was given, so the action was declined. Nothing was done.
+{
+  "status": "success",
+  "report": {
+    "document_name": "synthetic-submission.pdf",
+    "document_type": "Bid Document",
+    "overall_status": "Incomplete",
+    "completeness_percentage": 66.7,
+    "present_items": [
+      "Valid tax clearance certificate from the revenue authority",
+      "Signed conflict of interest declaration"
+    ],
+    "missing_items": [
+      "Anti-bribery and anti-corruption declaration signed by the bidder"
+    ],
+    "unclear_items": [],
+    "recommendations": [
+      "Locate or request the Anti-bribery and anti-corruption declaration signed by the bidder. The check did not find it in the document."
+    ]
+  }
+}
+
+Hand-off to procurement_officer: The report is ready but was not published: Incomplete, 66.7% of items present. The findings are advisory.
+  - Locate or request: Anti-bribery and anti-corruption declaration signed by the bidder
+  - Sign off and publish the report once it has been reviewed; it is not on the record.
+exit 4
