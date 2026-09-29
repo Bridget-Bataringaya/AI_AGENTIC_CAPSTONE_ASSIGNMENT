@@ -30,8 +30,10 @@ from ..ingestion import (
     parse_submission,
 )
 from ..llm import OllamaClient
+from ..tools.approval import ConsoleApprover
 from ..tools.authorization import ROLE_PERMISSIONS, ROLE_PROCUREMENT_OFFICER, Principal
 from ..tools.completeness import ToolContext
+from ..tools.publishing import ProcurementRecord
 from ..tools.registry import ToolExecutor, default_registry
 from ..tools.tickets import ReviewQueue
 from .limits import (
@@ -51,6 +53,7 @@ DEFAULT_DOCUMENT_TYPE: Final[str] = "Bid Document"
 EXIT_OK = 0
 EXIT_USER_ERROR = 1
 EXIT_BACKEND_ERROR = 2
+EXIT_NOT_PUBLISHED = 4
 
 
 def add_parsers(subparsers: argparse._SubParsersAction) -> None:
@@ -71,6 +74,10 @@ def add_parsers(subparsers: argparse._SubParsersAction) -> None:
                           help="Rounds of re-checking items that came back Unclear")
     workflow.add_argument("--retry-delay", type=float, default=DEFAULT_RETRY_DELAY_SECONDS,
                           help="Seconds to wait before a retry")
+    workflow.add_argument(
+        "--publish", action="store_true",
+        help="Ask for sign-off at the terminal, then publish the report to the procurement record",
+    )
     workflow.add_argument("--trace", type=Path, default=None, help="Where to write the run trace")
 
 
@@ -92,6 +99,8 @@ def _print_run(run: WorkflowRun) -> None:
     print(f"Stopped: {run.stop_reason.value}. {run.stop_detail}")
     if run.report is not None:
         print(json.dumps(run.report.model_dump(mode="json"), indent=2))
+    for note in run.notes:
+        print(f"Note: {note}")
     print(f"\nHand-off to {run.handoff.to}: {run.handoff.reason}")
     for action in run.handoff.actions:
         print(f"  - {action}")
@@ -104,6 +113,7 @@ def run_workflow(args: argparse.Namespace, settings: Settings) -> int:
             max_service_retries=args.max_retries,
             max_recheck_rounds=args.max_rechecks,
             retry_delay_seconds=args.retry_delay,
+            publish=args.publish,
         )
         checklist_path, _label, _is_template = checklists.resolve(args.checklist)
         items = parse_checklist(checklist_path)
@@ -128,7 +138,14 @@ def run_workflow(args: argparse.Namespace, settings: Settings) -> int:
     )
 
     with OllamaClient(settings) as client:
-        context = ToolContext(settings, client, review_queue=ReviewQueue())
+        context = ToolContext(
+            settings, client,
+            review_queue=ReviewQueue(),
+            procurement_record=ProcurementRecord(),
+            # The operator at the terminal is the person asked. A run without
+            # --publish never asks, and a publication is never attempted.
+            approver=ConsoleApprover(principal) if args.publish else None,
+        )
         runner = WorkflowRunner(ToolExecutor(default_registry(), context), limits)
         started = datetime.now()
         run = runner.run(workflow_input, principal)
@@ -154,4 +171,6 @@ def run_workflow(args: argparse.Namespace, settings: Settings) -> int:
         return EXIT_OK
     if run.stop_reason is StopReason.SERVICE_UNAVAILABLE:
         return EXIT_BACKEND_ERROR
+    if run.stop_reason is StopReason.NOT_PUBLISHED:
+        return EXIT_NOT_PUBLISHED
     return EXIT_USER_ERROR

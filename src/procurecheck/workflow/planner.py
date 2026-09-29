@@ -11,6 +11,8 @@ The rules, in order:
 1. After a failed step:
    - UNAUTHORIZED ends the run. Retrying cannot grant a permission.
    - SERVICE_UNAVAILABLE repeats the same step, up to max_service_retries.
+   - A publication that fails or is declined is never retried; the run stops
+     with the report unpublished (not_published).
    - Otherwise the plan changes (re-plan). A failed re-check or failed
      tickets are dropped and the run carries on with what it has; a failed
      check or report ends the run, because there is nothing to carry on with.
@@ -19,7 +21,9 @@ The rules, in order:
    in a call of their own. Only those items can change; the rest are kept.
 4. Items are still Unclear: open a review ticket for each.
 5. No report yet: generate it.
-6. Otherwise stop: the report is ready for the officer.
+6. Publishing was asked for: ask the officer to sign off and publish. The
+   executor holds the call until a person approves it.
+7. Otherwise stop: the report is ready for, or published by, the officer.
 """
 
 from __future__ import annotations
@@ -29,6 +33,7 @@ from typing import Any, Dict, Optional, Sequence, Tuple
 
 from ..tools.completeness import TOOL_CHECK, TOOL_REPORT
 from ..tools.contracts import ErrorCode, ItemResult, ToolError
+from ..tools.publishing import TOOL_PUBLISH
 from ..tools.tickets import REASON_MAX_CHARS, TOOL_TICKET, SuggestedStatus
 from .limits import StopReason, WorkflowLimits
 from .state import Action, WorkflowState
@@ -92,6 +97,14 @@ def _report_call(state: WorkflowState) -> PlannedCall:
     })
 
 
+def _publish_call(state: WorkflowState) -> PlannedCall:
+    assert state.report is not None
+    return PlannedCall(TOOL_PUBLISH, {
+        "submission_id": state.input.submission_id,
+        "report": state.report.report.model_dump(mode="json"),
+    })
+
+
 def _stop(reason: StopReason, why: str, error: Optional[ToolError] = None) -> Decision:
     return Decision(Action.STOP, why, stop_reason=reason, error=error)
 
@@ -100,6 +113,11 @@ def _after_failure(state: WorkflowState, limits: WorkflowLimits, error: ToolErro
     failed = state.last_action
     assert failed is not None
     code = error.error_code
+
+    if failed is Action.PUBLISH:
+        # Never retried: a retry would ask the officer a second time. The
+        # report exists, so the run stops with it, unpublished, and says why.
+        return _stop(StopReason.NOT_PUBLISHED, f"The report was not published: {error.message}", error)
 
     if code is ErrorCode.UNAUTHORIZED:
         return _stop(StopReason.UNAUTHORIZED, f"The caller may not {failed.value}; retrying cannot change that.", error)
@@ -159,4 +177,16 @@ def decide(state: WorkflowState, limits: WorkflowLimits) -> Decision:
     if state.report is None:
         return Decision(Action.REPORT, "The check is settled. Generate the report.", (_report_call(state),))
 
+    if limits.publish and state.record is None and Action.PUBLISH not in state.abandoned:
+        return Decision(
+            Action.PUBLISH,
+            "Publishing was asked for. Ask a procurement officer to sign off before the report goes on the record.",
+            (_publish_call(state),),
+        )
+
+    if state.record is not None:
+        return _stop(
+            StopReason.PUBLISHED,
+            f"The report was signed off by {state.record.approved_by} and published as {state.record.record_id}.",
+        )
     return _stop(StopReason.REPORT_READY, "The report is ready for the procurement officer.")

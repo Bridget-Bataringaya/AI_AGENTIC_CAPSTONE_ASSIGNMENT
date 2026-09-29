@@ -162,11 +162,16 @@ Interactive documentation is then at `http://localhost:8000/docs`.
 | `GET /tools` | Each tool's purpose, input and output schema, and permission |
 | `POST /tools/{name}` | Call one tool directly. Needs an `X-API-Key` header |
 | `POST /agent` | Let the model choose and call the tools on one submission. Needs an `X-API-Key` header |
+| `POST /workflow` | Run the multi-step workflow on one submission and return its trace. Needs an `X-API-Key` header |
 
 ## Tool calling
 
-The agent has two tools, defined in the team's Tool / Function Specification:
-`check_document_completeness` and `generate_completeness_report`. The model proposes
+The agent has four tools. Two are defined in the team's Tool / Function Specification:
+`check_document_completeness` and `generate_completeness_report`. The other two are
+used only by the application and never offered to the model: `create_review_ticket`
+opens a draft ticket for an item the check could not decide, and
+`publish_completeness_report` adds a report to the (simulated) procurement record.
+The model proposes
 calls; the application runs them. Every call, from the model, the API or a test,
 goes through one executor (`src/procurecheck/tools/registry.py`) that checks, in
 order, that the tool exists, that the caller may use it, that the arguments match
@@ -194,6 +199,40 @@ The design is in `docs/architecture/Tool Calling Implementation.docx`. The failu
 cases (missing parameters, unauthorized requests, unavailable services, unexpected
 responses) are run and tabulated by `python tests/evaluation/run_tool_failure_tests.py`,
 which writes `docs/evaluation/tool-failure-tests.docx`.
+
+### Human approval
+
+Publishing a report is the one higher-impact action: the team's AI Boundary Matrix
+says a report may not reach the procurement record without an officer's sign-off.
+The executor therefore holds `publish_completeness_report` until a person with
+sign-off rights approves it, after the permission and argument checks and before
+the tool runs. No approver, a decline, no answer, or a yes from someone without
+sign-off rights all refuse it, and nothing is recorded. Over the API no person is
+present during a request, so a publish call ends as `APPROVAL_REQUIRED` (HTTP 428).
+The design is in `docs/architecture/Human Approval Gate.docx`.
+
+## The workflow
+
+`workflow` runs the whole task on one submission by direct orchestration: the
+application, not the model, decides each next step. Each iteration senses the
+state, plans the next action, acts through the same executor, and observes the
+result. It checks every item, re-checks items that came back Unclear, opens a
+review ticket for any that stay Unclear, generates the report and, with
+`--publish`, asks the officer at the terminal to sign off before publishing.
+It retries once after a model outage, drops a failed optional step and carries
+on, and stops within its iteration limit. Every run ends in a hand-off to a
+procurement officer and writes a trace to `evidence/traces/workflow/`. It exits with 0 when the report is
+ready or published, 1 when refused or failed, 2 when the model server stayed down,
+and 4 when publishing was asked for but not approved. A sign-off is accepted only
+when typed at an interactive terminal; an answer piped in by a script declines.
+
+```bash
+python run.py workflow --submission knowledge/samples/synthetic-submission.pdf
+python run.py workflow --submission knowledge/samples/synthetic-submission.pdf --publish
+python run.py --version
+```
+
+The design is in `docs/architecture/Workflow Implementation.docx`.
 
 ## Searching the corpus
 

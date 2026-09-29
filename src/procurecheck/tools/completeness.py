@@ -68,12 +68,20 @@ class ToolContext:
 
     `review_queue` is the session's tickets.ReviewQueue. It exists only while a
     workflow session does; a context without one makes create_review_ticket
-    fail openly rather than pretend to have recorded anything.
+    fail openly rather than pretend to have recorded anything. The same holds
+    for `procurement_record` and publish_completeness_report.
+
+    `approver` is the person asked before a higher-impact action; without one,
+    such an action cannot run. `approval` is set by the executor, on a copy of
+    the context, for the one call that was approved.
     """
 
     settings: Settings
     model_client: Any
     review_queue: Any = None
+    procurement_record: Any = None
+    approver: Any = None
+    approval: Any = None
 
 
 def percentage(results: Sequence[ItemResult]) -> float:

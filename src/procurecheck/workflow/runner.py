@@ -21,17 +21,21 @@ officer confirms it, resolves the tickets and chases the missing items.
 
 from __future__ import annotations
 
+import logging
 import time
 from dataclasses import dataclass, replace
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from ..tools.authorization import Principal
 from ..tools.contracts import CheckCompletenessOutput, ErrorCode, GenerateReportOutput, ToolError
+from ..tools.publishing import PublishReportOutput
 from ..tools.registry import ToolExecutor, ToolResult
 from ..tools.tickets import CreateTicketOutput
 from .limits import StopReason, WorkflowLimits
 from .planner import Decision, decide
 from .state import Action, WorkflowInput, WorkflowState, observe
+
+logger = logging.getLogger(__name__)
 
 HANDOFF_ROLE = "procurement_officer"
 
@@ -84,13 +88,14 @@ class WorkflowRun:
     principal: Optional[Principal]
     check: Optional[CheckCompletenessOutput] = None
     report: Optional[GenerateReportOutput] = None
+    record: Optional[PublishReportOutput] = None
     tickets: Tuple[CreateTicketOutput, ...] = ()
     notes: Tuple[str, ...] = ()
     error: Optional[ToolError] = None
 
     @property
     def ok(self) -> bool:
-        return self.stop_reason is StopReason.REPORT_READY
+        return self.stop_reason in (StopReason.REPORT_READY, StopReason.PUBLISHED)
 
     @property
     def iterations(self) -> int:
@@ -113,11 +118,12 @@ class WorkflowRun:
             "steps": [s.to_trace() for s in self.steps],
             "tickets": [t.model_dump(mode="json") for t in self.tickets],
             "report": None if self.report is None else self.report.model_dump(mode="json"),
+            "record": None if self.record is None else self.record.model_dump(mode="json"),
         }
 
 
 def _handoff(state: WorkflowState, stop: StopReason, detail: str, limits: WorkflowLimits) -> Handoff:
-    if stop is StopReason.REPORT_READY:
+    if stop in (StopReason.REPORT_READY, StopReason.PUBLISHED, StopReason.NOT_PUBLISHED):
         assert state.report is not None
         body = state.report.report
         ticketed = {t.item_id for t in state.tickets}
@@ -128,10 +134,21 @@ def _handoff(state: WorkflowState, stop: StopReason, detail: str, limits: Workfl
             for item in body.unclear_items
             if state.input.item_id(item) not in ticketed
         ]
-        actions.append("Confirm the report before the submission moves to evaluation.")
+        if state.record is not None:
+            record = state.record
+            actions.append(
+                f"On the procurement record as {record.record_id}, signed off by {record.approved_by}."
+            )
+            lead = "The report is signed off and published"
+        elif stop is StopReason.NOT_PUBLISHED:
+            actions.append("Sign off and publish the report once it has been reviewed; it is not on the record.")
+            lead = "The report is ready but was not published"
+        else:
+            actions.append("Sign off the report before it goes on the procurement record.")
+            lead = "The report is ready"
         return Handoff(
             HANDOFF_ROLE,
-            f"The report is ready: {body.overall_status.value}, "
+            f"{lead}: {body.overall_status.value}, "
             f"{body.completeness_percentage}% of items present. The findings are advisory.",
             tuple(actions),
         )
@@ -143,10 +160,17 @@ def _handoff(state: WorkflowState, stop: StopReason, detail: str, limits: Workfl
             "Start it and run the workflow again; no item has been recorded as checked.",
         ))
     if stop is StopReason.ITERATION_LIMIT:
-        return Handoff(HANDOFF_ROLE, detail, (
+        actions = [
             f"The run used all {limits.max_iterations} iterations before finishing. "
             "Read the trace, then check the remaining steps by hand or run it again with a higher limit.",
-        ))
+        ]
+        if state.report is not None:
+            body = state.report.report
+            actions.append(
+                f"A report was generated before the limit: {body.overall_status.value}, "
+                f"{body.completeness_percentage}% of items present. It is in the trace."
+            )
+        return Handoff(HANDOFF_ROLE, detail, tuple(actions))
     return Handoff(HANDOFF_ROLE, detail, ("Check the submission by hand; the workflow could not finish.",))
 
 
@@ -176,19 +200,44 @@ class WorkflowRunner:
             principal=principal,
             check=state.check,
             report=state.report,
+            record=state.record,
             tickets=state.tickets,
             notes=state.notes,
             error=error,
         )
 
     def run(self, workflow_input: WorkflowInput, principal: Optional[Principal]) -> WorkflowRun:
-        limits = self._limits
-        state = WorkflowState(input=workflow_input)
+        # The latest state is kept outside the loop so that, if the loop
+        # faults, the hand-off still carries whatever the run had found.
+        latest = [WorkflowState(input=workflow_input)]
         steps: List[StepRecord] = []
+        try:
+            return self._loop(latest, steps, principal)
+        except Exception:  # noqa: BLE001 - a fault in the loop must still end in a hand-off
+            logger.exception("Workflow run failed unexpectedly")
+            return self._finish(
+                latest[0], steps, principal, StopReason.TOOL_FAILED,
+                "The workflow failed unexpectedly and was stopped. The steps so far are in the trace.",
+                ToolError(error_code=ErrorCode.ANALYSIS_FAILED, message="The workflow failed unexpectedly."),
+            )
 
+    def _loop(
+        self, latest: List[WorkflowState], steps: List[StepRecord], principal: Optional[Principal]
+    ) -> WorkflowRun:
+        limits = self._limits
+        state = latest[0]
         while True:
             sensed = state.sense()
             decision = decide(state, limits)
+            if decision.abandon is not None:
+                # Recorded before anything else, so a dropped step is noted
+                # even when the decision that follows it is to stop.
+                state = replace(
+                    state,
+                    last_error=None,
+                    abandoned=state.abandoned | {decision.abandon},
+                    notes=state.notes + (decision.reason,),
+                )
             if decision.action is Action.STOP:
                 assert decision.stop_reason is not None
                 return self._finish(state, steps, principal, decision.stop_reason,
@@ -205,12 +254,6 @@ class WorkflowRunner:
                     f"The plan needed {', '.join(unapproved)}, which is not an approved tool.",
                 )
 
-            if decision.abandon is not None:
-                state = replace(
-                    state,
-                    abandoned=state.abandoned | {decision.abandon},
-                    notes=state.notes + (decision.reason,),
-                )
             if decision.retry:
                 self._sleep(limits.retry_delay_seconds)
 
@@ -218,4 +261,5 @@ class WorkflowRunner:
                 self._executor.execute(call.tool, call.arguments, principal) for call in decision.calls
             )
             state = observe(state, decision.action, results, decision.retry)
+            latest[0] = state
             steps.append(StepRecord(len(steps) + 1, sensed, decision, results))

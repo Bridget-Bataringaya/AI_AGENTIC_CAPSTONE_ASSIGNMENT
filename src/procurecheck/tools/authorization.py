@@ -30,6 +30,10 @@ from typing import Dict, Final, FrozenSet, Mapping, Optional
 PERMISSION_ANALYSE: Final[str] = "document:analyse"
 PERMISSION_REPORT: Final[str] = "report:generate"
 PERMISSION_TICKET: Final[str] = "review:ticket"
+PERMISSION_PUBLISH: Final[str] = "report:publish"
+# Held by whoever may approve a higher-impact action. The Boundary Matrix
+# gives report sign-off to an authorised procurement officer only.
+PERMISSION_SIGN_OFF: Final[str] = "report:sign_off"
 
 ROLE_PROCUREMENT_OFFICER: Final[str] = "procurement_officer"
 ROLE_EVALUATION_COMMITTEE: Final[str] = "evaluation_committee"
@@ -37,7 +41,9 @@ ROLE_BIDDER: Final[str] = "bidder"
 ROLE_GUEST: Final[str] = "guest"
 
 ROLE_PERMISSIONS: Final[Mapping[str, FrozenSet[str]]] = {
-    ROLE_PROCUREMENT_OFFICER: frozenset({PERMISSION_ANALYSE, PERMISSION_REPORT, PERMISSION_TICKET}),
+    ROLE_PROCUREMENT_OFFICER: frozenset({
+        PERMISSION_ANALYSE, PERMISSION_REPORT, PERMISSION_TICKET, PERMISSION_PUBLISH, PERMISSION_SIGN_OFF,
+    }),
     ROLE_EVALUATION_COMMITTEE: frozenset({PERMISSION_REPORT}),
     ROLE_BIDDER: frozenset(),
     ROLE_GUEST: frozenset(),

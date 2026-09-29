@@ -10,6 +10,7 @@ from procurecheck.config import Settings
 from procurecheck.llm import ModelUnavailableError
 from procurecheck.tools import (
     TOOL_CHECK,
+    TOOL_PUBLISH,
     TOOL_REPORT,
     TOOL_TICKET,
     ReviewQueue,
@@ -93,7 +94,7 @@ class TestHappyPath:
         assert first["sense"]["checked"] is False
         assert first["plan"]["action"] == "check" and first["observe"] == ["success"]
         assert trace["orchestration"] == "direct" and trace["stop_reason"] == "report_ready"
-        assert trace["limits"]["approved_tools"] == sorted([TOOL_CHECK, TOOL_REPORT, TOOL_TICKET])
+        assert trace["limits"]["approved_tools"] == sorted([TOOL_CHECK, TOOL_REPORT, TOOL_TICKET, TOOL_PUBLISH])
 
     def test_the_trace_abbreviates_the_document(self):
         long_input = replace(INPUT, document_text=DOCUMENT + " filler" * 100)
@@ -208,6 +209,29 @@ class TestStops:
         assert result.stop_reason is StopReason.TOOL_FAILED
         assert result.error.error_code is ErrorCode.EMPTY_DOCUMENT
         assert len(result.steps) == 1
+
+
+class TestInput:
+    def test_blank_and_repeated_checklist_lines_are_dropped(self):
+        messy = replace(INPUT, required_items=(" Bid securing declaration ", "", "bid securing declaration", ITEMS[0]))
+        assert messy.required_items == ("Bid securing declaration", ITEMS[0])
+        assert messy.item_id("BID SECURING DECLARATION") == "REQ-01"
+
+    def test_a_repeated_line_no_longer_breaks_the_report(self):
+        result = run(workflow_input=replace(INPUT, required_items=(*ITEMS, ITEMS[1])))
+        assert result.ok and len(result.check.results) == 2
+
+    def test_a_fault_inside_the_loop_ends_as_a_tool_failure_with_a_handoff(self, monkeypatch):
+        import procurecheck.workflow.runner as runner_module
+
+        def broken(*_args):
+            raise RuntimeError("bug (test)")
+
+        monkeypatch.setattr(runner_module, "observe", broken)
+        result = run()
+        assert result.stop_reason is StopReason.TOOL_FAILED
+        assert result.handoff.to == "procurement_officer"
+        assert "bug (test)" not in result.to_trace()["stop_detail"]
 
 
 class TestPlanner:

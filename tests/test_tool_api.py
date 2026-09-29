@@ -6,7 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from procurecheck import api
-from procurecheck.tools import TOOL_CHECK, TOOL_REPORT, TOOL_TICKET
+from procurecheck.tools import TOOL_CHECK, TOOL_PUBLISH, TOOL_REPORT, TOOL_TICKET
 
 from tool_fakes import DOCUMENT, FINAL, ITEMS, FakeOllama, tool_call
 
@@ -35,7 +35,7 @@ def post_tool(client, name, arguments, key=OFFICER_KEY):
 
 def test_tools_are_listed_with_their_contracts(client):
     listed = client.get("/tools").json()
-    assert [t["name"] for t in listed] == [TOOL_CHECK, TOOL_REPORT, TOOL_TICKET]
+    assert [t["name"] for t in listed] == [TOOL_CHECK, TOOL_REPORT, TOOL_TICKET, TOOL_PUBLISH]
     assert all({"input_schema", "output_schema", "permission"} <= set(t) for t in listed)
 
 

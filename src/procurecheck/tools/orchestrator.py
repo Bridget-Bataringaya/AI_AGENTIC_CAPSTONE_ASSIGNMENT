@@ -20,6 +20,7 @@ Four things the model cannot do, however it is prompted:
 from __future__ import annotations
 
 import json
+import logging
 from dataclasses import dataclass, field, replace
 from typing import Any, Dict, Final, List, Mapping, Optional, Protocol, Tuple
 
@@ -35,6 +36,8 @@ from .contracts import (
     ToolError,
 )
 from .registry import ToolExecutor, ToolResult
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_MAX_TURNS: Final[int] = 5
 ROLE_SYSTEM: Final[str] = "system"
@@ -256,10 +259,11 @@ class ToolCallingAgent:
         for turn in range(1, self._max_turns + 1):
             try:
                 message = self._model.chat_with_tools(messages, tools)
-            except ModelUnavailableError as exc:
+            except ModelUnavailableError:
+                logger.warning("Agent run: model backend unavailable", exc_info=True)
                 return self._finish(request, principal, state, turn, error=ToolError(
                     error_code=ErrorCode.SERVICE_UNAVAILABLE,
-                    message=f"The model backend is unavailable, so no tool was chosen. {exc}",
+                    message="The model backend is unavailable, so no tool was chosen. Start it and try again.",
                 ))
 
             calls = parse_tool_calls(message)

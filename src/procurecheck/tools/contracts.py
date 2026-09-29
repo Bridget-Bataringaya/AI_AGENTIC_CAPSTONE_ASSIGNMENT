@@ -58,6 +58,10 @@ class ErrorCode(str, Enum):
     UNEXPECTED_TOOL_RESPONSE = "UNEXPECTED_TOOL_RESPONSE"
     STEP_LIMIT_REACHED = "STEP_LIMIT_REACHED"
     REFUSED = "REFUSED"
+    # Added with the human approval gate (Week 4, 123tcvwfnzg).
+    APPROVAL_REQUIRED = "APPROVAL_REQUIRED"
+    APPROVAL_DENIED = "APPROVAL_DENIED"
+    ALREADY_PUBLISHED = "ALREADY_PUBLISHED"
 
 
 class ToolError(BaseModel):

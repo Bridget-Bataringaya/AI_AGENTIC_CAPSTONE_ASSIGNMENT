@@ -8,7 +8,7 @@ import pytest
 
 from procurecheck.cli import main
 from procurecheck.llm import ModelUnavailableError
-from procurecheck.tools import TOOL_CHECK, TOOL_REPORT, TOOL_TICKET
+from procurecheck.tools import TOOL_CHECK, TOOL_PUBLISH, TOOL_REPORT, TOOL_TICKET
 from procurecheck.tools import commands
 
 from tool_fakes import DOCUMENT, FINAL, ITEMS, FakeOllama, tool_call
@@ -32,7 +32,7 @@ def agent(files, *extra):
 
 def test_tools_command_prints_every_contract(capsys):
     assert main(["tools"]) == 0
-    assert [t["name"] for t in json.loads(capsys.readouterr().out)] == [TOOL_CHECK, TOOL_REPORT, TOOL_TICKET]
+    assert [t["name"] for t in json.loads(capsys.readouterr().out)] == [TOOL_CHECK, TOOL_REPORT, TOOL_TICKET, TOOL_PUBLISH]
 
 
 def test_agent_writes_a_trace_and_prints_the_report(files, capsys):

@@ -49,7 +49,19 @@ HTTP_BAD_REQUEST = 400
 HTTP_UNAUTHENTICATED = 401
 HTTP_FORBIDDEN = 403
 HTTP_NOT_FOUND = 404
+HTTP_CONFLICT = 409
 HTTP_UNPROCESSABLE = 422
+HTTP_PRECONDITION_REQUIRED = 428
+HTTP_TOO_LARGE = 413
+
+# Larger than any real submission bundle seen so far; it bounds what one
+# request can make the server read into memory and write to disk.
+MAX_UPLOAD_BYTES = 50 * 1024 * 1024
+ANONYMOUS_REFUSAL = {
+    "status": "error",
+    "error_code": "UNAUTHORIZED",
+    "message": "An X-API-Key header identifying the caller is required.",
+}
 HTTP_SERVER_ERROR = 500
 HTTP_BAD_GATEWAY = 502
 HTTP_SERVICE_UNAVAILABLE = 503
@@ -59,6 +71,9 @@ HTTP_SERVICE_UNAVAILABLE = 503
 # kind of failure to handle without parsing it.
 TOOL_ERROR_STATUS: Dict[ErrorCode, int] = {
     ErrorCode.UNAUTHORIZED: HTTP_FORBIDDEN,
+    ErrorCode.APPROVAL_REQUIRED: HTTP_PRECONDITION_REQUIRED,
+    ErrorCode.APPROVAL_DENIED: HTTP_FORBIDDEN,
+    ErrorCode.ALREADY_PUBLISHED: HTTP_CONFLICT,
     ErrorCode.UNKNOWN_TOOL: HTTP_NOT_FOUND,
     ErrorCode.MISSING_PARAMETER: HTTP_UNPROCESSABLE,
     ErrorCode.INVALID_ARGUMENTS: HTTP_UNPROCESSABLE,
@@ -105,9 +120,20 @@ class OverrideRequest(BaseModel):
 def _save_upload(upload: UploadFile, directory: Path) -> Path:
     if not upload.filename:
         raise HTTPException(HTTP_BAD_REQUEST, "The uploaded file has no filename.")
+    content = upload.file.read(MAX_UPLOAD_BYTES + 1)
+    if len(content) > MAX_UPLOAD_BYTES:
+        raise HTTPException(
+            HTTP_TOO_LARGE, f"The uploaded file is larger than {MAX_UPLOAD_BYTES // (1024 * 1024)} MB."
+        )
     destination = directory / Path(upload.filename).name
-    destination.write_bytes(upload.file.read())
+    destination.write_bytes(content)
     return destination
+
+
+def _require_identity(principal: Optional[Principal]) -> None:
+    """Refuse an anonymous caller before any upload is read or parsed."""
+    if principal is None:
+        raise HTTPException(HTTP_UNAUTHENTICATED, detail=ANONYMOUS_REFUSAL)
 
 
 @app.get("/health")
@@ -276,6 +302,7 @@ def run_agent(
     Returns the full trace: every call the model proposed, what the executor
     did with it, and the final answer.
     """
+    _require_identity(principal)
     submission_path, items, parsed = _read_uploads(submission, checklist)
 
     session = AgentSession(
@@ -305,6 +332,7 @@ def run_workflow(
     Returns the full trace: each iteration's sense, plan, act and observe
     records, the review tickets opened, the report and the hand-off.
     """
+    _require_identity(principal)
     submission_path, items, parsed = _read_uploads(submission, checklist)
 
     workflow_input = WorkflowInput(

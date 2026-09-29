@@ -8,10 +8,13 @@ checks, so no route into a tool can skip one:
 2. the caller must hold the tool's permission, else UNAUTHORIZED
 3. the arguments must match the input schema,  else MISSING_PARAMETER or
                                                     INVALID_ARGUMENTS
-4. the tool runs; a declared failure keeps its own code, a backend outage
+4. a higher-impact tool needs a person's sign-off,
+                                               else APPROVAL_REQUIRED or
+                                                    APPROVAL_DENIED
+5. the tool runs; a declared failure keeps its own code, a backend outage
    becomes SERVICE_UNAVAILABLE, anything else becomes the tool's own generic
    failure code (ANALYSIS_FAILED, REPORT_GENERATION_FAILED)
-5. the answer must match the output schema,    else UNEXPECTED_TOOL_RESPONSE
+6. the answer must match the output schema,    else UNEXPECTED_TOOL_RESPONSE
 
 Authorization runs before argument validation on purpose: a caller who may not
 use a tool learns nothing about its parameters by probing it.
@@ -22,7 +25,7 @@ from __future__ import annotations
 import copy
 import logging
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Callable, Dict, Final, List, Mapping, Optional, Tuple, Type
 
 from pydantic import BaseModel, ValidationError
@@ -30,6 +33,7 @@ from pydantic import BaseModel, ValidationError
 from ..llm import ModelUnavailableError
 from .authorization import (
     PERMISSION_ANALYSE,
+    PERMISSION_PUBLISH,
     PERMISSION_REPORT,
     PERMISSION_TICKET,
     Principal,
@@ -50,6 +54,14 @@ from .contracts import (
     GenerateReportOutput,
     ToolError,
     ToolFailure,
+)
+from .approval import ApprovalDecision, ApprovalRequest
+from .publishing import (
+    TOOL_PUBLISH,
+    PublishReportInput,
+    PublishReportOutput,
+    publish_completeness_report,
+    summarise,
 )
 from .tickets import TOOL_TICKET, CreateTicketInput, CreateTicketOutput, create_review_ticket
 
@@ -87,6 +99,10 @@ class ToolSpec:
     # create_review_ticket. It is then never offered to the model, and the
     # tool-calling agent refuses it if the model names it anyway.
     offered_to_model: bool = True
+    # A higher-impact action: the executor asks a person before it runs.
+    # `summarise` turns the validated arguments into the question they see.
+    requires_approval: bool = False
+    summarise: Optional[Callable[[Any], str]] = None
 
     def model_parameters(self) -> Dict[str, Any]:
         """The input JSON schema with bound fields removed, for the model."""
@@ -122,6 +138,7 @@ class ToolSpec:
             "output_schema": self.output_model.model_json_schema(),
             "bound_by_application": list(self.bound_fields),
             "offered_to_model": self.offered_to_model,
+            "requires_approval": self.requires_approval,
         }
 
 
@@ -134,6 +151,7 @@ class ToolResult:
     output: Optional[BaseModel] = None
     error: Optional[ToolError] = None
     duration_ms: int = 0
+    approval: Optional[ApprovalDecision] = None
 
     @property
     def ok(self) -> bool:
@@ -153,6 +171,7 @@ class ToolResult:
             "status": "success" if self.ok else "error",
             "error_code": None if self.error is None else self.error.error_code.value,
             "duration_ms": self.duration_ms,
+            "approval": None if self.approval is None else self.approval.to_trace(),
             "result": self.payload(),
         }
 
@@ -218,9 +237,11 @@ class ToolExecutor:
     ) -> ToolResult:
         started = time.perf_counter()
 
+        approval: Optional[ApprovalDecision] = None
+
         def finish(output: Optional[BaseModel] = None, error: Optional[ToolError] = None) -> ToolResult:
             elapsed = int((time.perf_counter() - started) * 1000)
-            return ToolResult(name, dict(arguments), output, error, elapsed)
+            return ToolResult(name, dict(arguments), output, error, elapsed, approval)
 
         spec = self._registry.get(name)
         if spec is None:
@@ -237,14 +258,24 @@ class ToolExecutor:
         except ValidationError as exc:
             return finish(error=_argument_error(spec, exc))
 
+        context = self._context
+        if spec.requires_approval:
+            approval, refusal = self._approve(spec, args, principal)
+            if refusal is not None:
+                return finish(error=refusal)
+            context = replace(context, approval=approval)
+
         try:
-            raw = spec.handler(args, self._context)
+            raw = spec.handler(args, context)
         except ToolFailure as failure:
             return finish(error=failure.to_error())
-        except ModelUnavailableError as exc:
+        except ModelUnavailableError:
+            # The detail names the backend address and the network error; it
+            # belongs in the server log, not in a response.
+            logger.warning("Tool %s: model backend unavailable", name, exc_info=True)
             return finish(error=ToolError(
                 error_code=ErrorCode.SERVICE_UNAVAILABLE,
-                message=f"The model backend is unavailable, so {name} could not run. {exc}",
+                message=f"The model backend is unavailable, so {name} could not run. Start it and try again.",
             ))
         except Exception as exc:  # noqa: BLE001 - any other fault must not escape as a crash
             # The exception text can carry internals (paths, document text), so
@@ -270,9 +301,46 @@ class ToolExecutor:
             ))
         return finish(output=output)
 
+    def _approve(
+        self, spec: ToolSpec, args: BaseModel, principal: Optional[Principal]
+    ) -> Tuple[Optional[ApprovalDecision], Optional[ToolError]]:
+        """Ask a person. Every path that is not a clear, authorised yes refuses."""
+        approver = self._context.approver
+        if approver is None:
+            return None, ToolError(
+                error_code=ErrorCode.APPROVAL_REQUIRED,
+                message=(
+                    f"{spec.name} is a higher-impact action and needs a procurement officer's "
+                    "sign-off, but no one is available to give it. Nothing was done."
+                ),
+            )
+        summary = spec.summarise(args) if spec.summarise else f"Run {spec.name}."
+        try:
+            decision = approver.decide(ApprovalRequest(spec.name, summary, principal))
+        except Exception:  # noqa: BLE001 - an approver that breaks has not approved
+            logger.exception("Approval request for %s failed", spec.name)
+            return None, ToolError(
+                error_code=ErrorCode.APPROVAL_REQUIRED,
+                message=f"The sign-off request for {spec.name} could not be completed. Nothing was done.",
+            )
+        if not decision.approved:
+            return decision, ToolError(
+                error_code=ErrorCode.APPROVAL_DENIED,
+                message=f"{spec.name} was declined. {decision.note} Nothing was done.",
+            )
+        if not decision.may_sign_off:
+            return decision, ToolError(
+                error_code=ErrorCode.APPROVAL_DENIED,
+                message=(
+                    f"The approval for {spec.name} came from someone who may not sign off "
+                    "reports, so it does not count. Nothing was done."
+                ),
+            )
+        return decision, None
+
 
 def default_registry() -> ToolRegistry:
-    """The two tools from the Tool / Function Specification, and the ticket tool."""
+    """The specification's two tools, the ticket tool and the publishing tool."""
     registry = ToolRegistry()
     registry.register(ToolSpec(
         name=TOOL_CHECK,
@@ -322,5 +390,22 @@ def default_registry() -> ToolRegistry:
         failure_code=ErrorCode.SERVICE_UNAVAILABLE,
         unauthorized_message="You do not have permission to open review tickets.",
         offered_to_model=False,
+    ))
+    registry.register(ToolSpec(
+        name=TOOL_PUBLISH,
+        description=(
+            "Add a signed-off completeness report to the procurement record, where "
+            "the evaluation committee works from it. Runs only after a procurement "
+            "officer approves it; a published report is never overwritten."
+        ),
+        input_model=PublishReportInput,
+        output_model=PublishReportOutput,
+        permission=PERMISSION_PUBLISH,
+        handler=publish_completeness_report,
+        failure_code=ErrorCode.REPORT_GENERATION_FAILED,
+        unauthorized_message="You do not have permission to publish completeness reports.",
+        offered_to_model=False,
+        requires_approval=True,
+        summarise=summarise,
     ))
     return registry

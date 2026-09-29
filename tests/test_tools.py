@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import pytest
 
-from procurecheck.tools import TOOL_CHECK, TOOL_REPORT, TOOL_TICKET, default_registry
+from procurecheck.tools import TOOL_CHECK, TOOL_PUBLISH, TOOL_REPORT, TOOL_TICKET, default_registry
 from procurecheck.tools.authorization import (
     ApiKeyError,
     PERMISSION_ANALYSE,
@@ -128,7 +128,7 @@ class TestGenerateCompletenessReport:
 
 class TestRegistry:
     def test_every_specified_tool_is_registered(self):
-        assert default_registry().names() == [TOOL_CHECK, TOOL_REPORT, TOOL_TICKET]
+        assert default_registry().names() == [TOOL_CHECK, TOOL_REPORT, TOOL_TICKET, TOOL_PUBLISH]
 
     def test_the_ticket_tool_is_never_offered_to_the_model(self):
         offered = [d["function"]["name"] for d in default_registry().definitions()]

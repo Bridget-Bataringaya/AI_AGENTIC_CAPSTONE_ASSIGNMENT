@@ -104,9 +104,71 @@ def test_workflow_route_refuses_a_bidder_with_403(client, tmp_path):
     assert response.json()["stop_reason"] == "unauthorized"
 
 
-def test_workflow_route_without_a_key_is_401(client, tmp_path):
-    assert post_workflow(client, tmp_path, None).status_code == 401
+def test_workflow_route_without_a_key_is_401_before_the_upload_is_read(client, tmp_path, monkeypatch):
+    def fail(*_args):
+        raise AssertionError("the upload was read for an anonymous caller")
+
+    monkeypatch.setattr(api, "_read_uploads", fail)
+    response = post_workflow(client, tmp_path, None)
+    assert response.status_code == 401
+    assert response.json()["detail"]["error_code"] == "UNAUTHORIZED"
+
+
+def test_an_oversized_upload_is_refused_with_413(client, tmp_path, monkeypatch):
+    monkeypatch.setattr(api, "MAX_UPLOAD_BYTES", 10)
+    assert post_workflow(client, tmp_path, OFFICER_KEY).status_code == 413
 
 
 def test_the_api_announces_its_version(client):
     assert client.get("/openapi.json").json()["info"]["version"] == __version__
+
+
+class _Terminal:
+    def __init__(self, tty):
+        self.tty = tty
+
+    def isatty(self):
+        return self.tty
+
+
+@pytest.mark.parametrize("answer,stop,exit_code", [
+    ("APPROVE", "published", 0),
+    ("no", "not_published", 4),
+])
+def test_publish_asks_the_officer_at_the_terminal(files, monkeypatch, capsys, answer, stop, exit_code):
+    monkeypatch.setattr("sys.stdin", _Terminal(True))
+    monkeypatch.setattr("builtins.input", lambda _prompt: answer)
+    assert workflow(files, "--publish") == exit_code
+    trace = json.loads(files[2].read_text(encoding="utf-8"))
+    assert trace["stop_reason"] == stop
+    assert "Sign-off needed for publish_completeness_report" in capsys.readouterr().err
+
+
+def test_an_approval_piped_in_by_a_script_does_not_publish(files, monkeypatch):
+    monkeypatch.setattr("sys.stdin", _Terminal(False))
+    monkeypatch.setattr("builtins.input", lambda _prompt: "APPROVE")
+    assert workflow(files, "--publish") == 4
+    trace = json.loads(files[2].read_text(encoding="utf-8"))
+    assert trace["stop_reason"] == "not_published" and trace["record"] is None
+
+
+def test_without_publish_the_officer_is_never_asked(files, monkeypatch):
+    def fail(_prompt):
+        raise AssertionError("the officer was asked without --publish")
+
+    monkeypatch.setattr("builtins.input", fail)
+    assert workflow(files) == 0
+
+
+def test_publishing_through_the_api_needs_a_person_and_is_refused_with_428(client):
+    report = {
+        "document_name": "bid.pdf", "document_type": "Bid Document", "overall_status": "Incomplete",
+        "completeness_percentage": 50.0, "present_items": ["Tax clearance"],
+        "missing_items": ["Bid securing declaration"], "unclear_items": [], "recommendations": [],
+    }
+    response = client.post(
+        "/tools/publish_completeness_report", headers={"X-API-Key": OFFICER_KEY},
+        json={"submission_id": "bid", "report": report},
+    )
+    assert response.status_code == 428
+    assert response.json()["error_code"] == "APPROVAL_REQUIRED"

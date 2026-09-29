@@ -20,6 +20,7 @@ from ..tools.contracts import (
     ToolError,
 )
 from ..tools.registry import ToolResult
+from ..tools.publishing import PublishReportOutput
 from ..tools.tickets import CreateTicketOutput
 
 
@@ -28,6 +29,7 @@ class Action(str, Enum):
     RECHECK = "recheck_unclear"
     OPEN_TICKETS = "open_review_tickets"
     REPORT = "generate_report"
+    PUBLISH = "publish_report"
     STOP = "stop"
 
 
@@ -41,9 +43,23 @@ class WorkflowInput:
     document_text: str
     required_items: Tuple[str, ...]
 
+    def __post_init__(self) -> None:
+        # Blank lines are dropped and a repeated item is kept once, in its
+        # first position. The report tool refuses duplicate items, so a
+        # repeated line would otherwise fail the run after the slow check.
+        seen = set()
+        items = []
+        for raw in self.required_items:
+            item = raw.strip()
+            if item and item.lower() not in seen:
+                seen.add(item.lower())
+                items.append(item)
+        object.__setattr__(self, "required_items", tuple(items))
+
     def item_id(self, description: str) -> str:
         """The checklist identifier, REQ-01 and so on, in checklist order."""
-        return ITEM_ID_TEMPLATE.format(index=self.required_items.index(description) + 1)
+        keys = [item.lower() for item in self.required_items]
+        return ITEM_ID_TEMPLATE.format(index=keys.index(description.strip().lower()) + 1)
 
 
 @dataclass(frozen=True)
@@ -54,6 +70,7 @@ class WorkflowState:
     tickets: Tuple[CreateTicketOutput, ...] = ()
     tickets_opened: bool = False
     report: Optional[GenerateReportOutput] = None
+    record: Optional[PublishReportOutput] = None
     last_action: Optional[Action] = None
     last_error: Optional[ToolError] = None
     consecutive_retries: int = 0
@@ -78,6 +95,7 @@ class WorkflowState:
             "recheck_rounds": self.recheck_rounds,
             "tickets_open": len(self.tickets),
             "report_ready": self.report is not None,
+            "published": self.record is not None,
             "last_error": None if self.last_error is None else self.last_error.error_code.value,
             "consecutive_retries": self.consecutive_retries,
             "abandoned": sorted(a.value for a in self.abandoned),
@@ -128,4 +146,6 @@ def observe(
         return replace(updated, tickets=state.tickets + new, tickets_opened=not errors)
     if action is Action.REPORT and outputs:
         return replace(updated, report=outputs[0])
+    if action is Action.PUBLISH and outputs:
+        return replace(updated, record=outputs[0])
     return updated

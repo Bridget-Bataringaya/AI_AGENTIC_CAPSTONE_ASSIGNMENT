@@ -13,21 +13,24 @@ from enum import Enum
 from typing import Final, FrozenSet
 
 from ..tools.completeness import TOOL_CHECK, TOOL_REPORT
+from ..tools.publishing import TOOL_PUBLISH
 from ..tools.tickets import TOOL_TICKET
 
-# Check, re-check, open tickets and report is four acting iterations. The
-# margin leaves room for one retry of each of two steps after an outage.
-DEFAULT_MAX_ITERATIONS: Final[int] = 6
+# Check, re-check, open tickets, report and publish is five acting
+# iterations. The margin leaves room for retries after an outage.
+DEFAULT_MAX_ITERATIONS: Final[int] = 7
 DEFAULT_MAX_SERVICE_RETRIES: Final[int] = 1
 DEFAULT_MAX_RECHECK_ROUNDS: Final[int] = 1
 DEFAULT_RETRY_DELAY_SECONDS: Final[float] = 5.0
-APPROVED_TOOLS: Final[FrozenSet[str]] = frozenset({TOOL_CHECK, TOOL_TICKET, TOOL_REPORT})
+APPROVED_TOOLS: Final[FrozenSet[str]] = frozenset({TOOL_CHECK, TOOL_TICKET, TOOL_REPORT, TOOL_PUBLISH})
 
 
 class StopReason(str, Enum):
     """Why a run ended. Every one of them hands the case to a person."""
 
     REPORT_READY = "report_ready"
+    PUBLISHED = "published"
+    NOT_PUBLISHED = "not_published"
     UNAUTHORIZED = "unauthorized"
     SERVICE_UNAVAILABLE = "service_unavailable"
     TOOL_FAILED = "tool_failed"
@@ -42,6 +45,10 @@ class WorkflowLimits:
     max_recheck_rounds: int = DEFAULT_MAX_RECHECK_ROUNDS
     retry_delay_seconds: float = DEFAULT_RETRY_DELAY_SECONDS
     approved_tools: FrozenSet[str] = field(default_factory=lambda: APPROVED_TOOLS)
+    # Ask an officer to sign off and publish the report as the last step.
+    # Off by default: publishing is the one higher-impact action, so a run
+    # only attempts it when the caller asks and a person is there to approve.
+    publish: bool = False
 
     def __post_init__(self) -> None:
         if self.max_iterations < 1:
@@ -60,4 +67,5 @@ class WorkflowLimits:
             "max_recheck_rounds": self.max_recheck_rounds,
             "retry_delay_seconds": self.retry_delay_seconds,
             "approved_tools": sorted(self.approved_tools),
+            "publish": self.publish,
         }
