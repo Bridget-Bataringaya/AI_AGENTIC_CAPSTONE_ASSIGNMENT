@@ -1,0 +1,165 @@
+{
+  "version": "0.4.0",
+  "run_at": "2026-10-06T23:05:49",
+  "seconds": 63.4,
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "submission": "synthetic-submission.txt",
+  "submission_id": "SYN-WORKS-2026-014",
+  "checklist_items": 3,
+  "principal": {
+    "user_id": "pc",
+    "role": "procurement_officer"
+  },
+  "orchestration": "direct",
+  "limits": {
+    "max_iterations": 7,
+    "max_service_retries": 1,
+    "max_recheck_rounds": 1,
+    "retry_delay_seconds": 5.0,
+    "approved_tools": [
+      "check_document_completeness",
+      "create_review_ticket",
+      "generate_completeness_report",
+      "publish_completeness_report"
+    ],
+    "publish": false
+  },
+  "iterations": 2,
+  "status": "error",
+  "stop_reason": "service_unavailable",
+  "stop_detail": "check failed with SERVICE_UNAVAILABLE and cannot be worked around.",
+  "error": {
+    "status": "error",
+    "error_code": "SERVICE_UNAVAILABLE",
+    "message": "The model backend is unavailable, so check_document_completeness could not run. Start it and try again."
+  },
+  "handoff": {
+    "to": "procurement_officer",
+    "reason": "check failed with SERVICE_UNAVAILABLE and cannot be worked around.",
+    "actions": [
+      "The model backend stayed unavailable after 1 retry(ies). Start it and run the workflow again; no item has been recorded as checked."
+    ]
+  },
+  "notes": [],
+  "steps": [
+    {
+      "iteration": 1,
+      "sense": {
+        "checked": false,
+        "completeness_percentage": null,
+        "item_counts": {
+          "Present": 0,
+          "Missing": 0,
+          "Unclear": 0
+        },
+        "recheck_rounds": 0,
+        "tickets_open": 0,
+        "report_ready": false,
+        "published": false,
+        "last_error": null,
+        "consecutive_retries": 0,
+        "abandoned": []
+      },
+      "plan": {
+        "action": "check",
+        "reason": "No check has run. Check all 3 checklist items.",
+        "retry": false,
+        "abandoned": null,
+        "stop_reason": null
+      },
+      "act": [
+        {
+          "tool": "check_document_completeness",
+          "arguments": {
+            "document_text": "[PAGE 1]\nSECTION 1 - BID SUBMISSION COVER\nTender Reference: SYN/WORKS/2026/014\nProcuring Entity: Synthetic District Local Government (illustrative only)\nBidder: Kavuma Civil Works Limited (fictional e... (2935 characters)",
+            "document_type": "Bid Document",
+            "required_items": [
+              "Valid tax clearance certificate from the revenue authority",
+              "Anti-bribery and anti-corruption declaration signed by the bidder",
+              "Signed conflict of interest declaration"
+            ]
+          },
+          "status": "error",
+          "error_code": "SERVICE_UNAVAILABLE",
+          "duration_ms": 40715,
+          "approval": null,
+          "result": {
+            "status": "error",
+            "error_code": "SERVICE_UNAVAILABLE",
+            "message": "The model backend is unavailable, so check_document_completeness could not run. Start it and try again."
+          }
+        }
+      ],
+      "observe": [
+        "error SERVICE_UNAVAILABLE"
+      ]
+    },
+    {
+      "iteration": 2,
+      "sense": {
+        "checked": false,
+        "completeness_percentage": null,
+        "item_counts": {
+          "Present": 0,
+          "Missing": 0,
+          "Unclear": 0
+        },
+        "recheck_rounds": 0,
+        "tickets_open": 0,
+        "report_ready": false,
+        "published": false,
+        "last_error": "SERVICE_UNAVAILABLE",
+        "consecutive_retries": 0,
+        "abandoned": []
+      },
+      "plan": {
+        "action": "check",
+        "reason": "check failed with SERVICE_UNAVAILABLE; retry 1 of 1.",
+        "retry": true,
+        "abandoned": null,
+        "stop_reason": null
+      },
+      "act": [
+        {
+          "tool": "check_document_completeness",
+          "arguments": {
+            "document_text": "[PAGE 1]\nSECTION 1 - BID SUBMISSION COVER\nTender Reference: SYN/WORKS/2026/014\nProcuring Entity: Synthetic District Local Government (illustrative only)\nBidder: Kavuma Civil Works Limited (fictional e... (2935 characters)",
+            "document_type": "Bid Document",
+            "required_items": [
+              "Valid tax clearance certificate from the revenue authority",
+              "Anti-bribery and anti-corruption declaration signed by the bidder",
+              "Signed conflict of interest declaration"
+            ]
+          },
+          "status": "error",
+          "error_code": "SERVICE_UNAVAILABLE",
+          "duration_ms": 17620,
+          "approval": null,
+          "result": {
+            "status": "error",
+            "error_code": "SERVICE_UNAVAILABLE",
+            "message": "The model backend is unavailable, so check_document_completeness could not run. Start it and try again."
+          }
+        }
+      ],
+      "observe": [
+        "error SERVICE_UNAVAILABLE"
+      ]
+    }
+  ],
+  "tickets": [],
+  "report": null,
+  "record": null,
+  "memory": {
+    "retention_days": 180,
+    "used_by_planner": false,
+    "recalled": null,
+    "comparison": null,
+    "stored_case_id": null,
+    "notes": [
+      "No earlier check of this submission is remembered.",
+      "The run produced no report, so nothing was remembered."
+    ]
+  }
+}

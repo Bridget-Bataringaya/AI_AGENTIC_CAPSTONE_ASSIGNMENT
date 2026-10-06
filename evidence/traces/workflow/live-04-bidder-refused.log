@@ -1,0 +1,9 @@
+ProcureCheck 0.4.0 workflow on synthetic-submission.txt: 3 checklist items, 1 page(s), role bidder, model llama3.1:8b.
+Case history: off. Nothing is recalled or remembered.
+Trace written to evidence\traces\workflow\live-04-bidder-refused.json
+[iteration 1] check: error UNAUTHORIZED (0s)
+             No check has run. Check all 3 checklist items.
+Stopped: unauthorized. The caller may not check; retrying cannot change that.
+
+Hand-off to procurement_officer: The caller may not check; retrying cannot change that.
+  - Ask a procurement officer to run the workflow.

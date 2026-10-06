@@ -235,6 +235,11 @@ python run.py --version
 
 The design is in `docs/architecture/Workflow Implementation.docx`.
 
+Six recorded runs against the real model, including an outage the run recovered from and one it
+stopped safely on, are set out in `docs/evaluation/workflow-execution-traces.docx`. The recovery
+case is reproduced by `python tests/evaluation/run_outage_recovery.py`, which keeps the model
+server unreachable for the first 15 seconds of a run.
+
 ## Case history (persistent memory)
 
 A check often ends with items missing, the bidder is asked for them, and the bid

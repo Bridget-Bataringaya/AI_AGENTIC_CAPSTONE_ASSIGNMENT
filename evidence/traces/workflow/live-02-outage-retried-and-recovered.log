@@ -1,0 +1,132 @@
+Induced outage: nothing listens on 127.0.0.1:61019 for the first 15 seconds; the workflow waits 45 seconds before its retry.
+ProcureCheck 0.4.0 workflow on synthetic-submission.txt: 3 checklist items, 1 page(s), role procurement_officer, model llama3.1:8b.
+Case history: off. Nothing is recalled or remembered.
+Tool check_document_completeness: model backend unavailable
+Traceback (most recent call last):
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\.venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\.venv\Lib\site-packages\httpx\_transports\default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+        pool_request.request
+    )
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 101, in handle_request
+    raise exc
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 78, in handle_request
+    stream = self._connect(request)
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 124, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\.venv\Lib\site-packages\httpcore\_backends\sync.py", line 207, in connect_tcp
+    with map_exceptions(exc_map):
+         ~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\pc\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\.venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\llm.py", line 84, in _post_message
+    response = self._client.post(self._settings.chat_endpoint, json=payload)
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\.venv\Lib\site-packages\httpx\_client.py", line 1144, in post
+    return self.request(
+           ~~~~~~~~~~~~^
+        "POST",
+        ^^^^^^^
+    ...<11 lines>...
+        extensions=extensions,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\.venv\Lib\site-packages\httpx\_client.py", line 825, in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\.venv\Lib\site-packages\httpx\_client.py", line 914, in send
+    response = self._send_handling_auth(
+        request,
+    ...<2 lines>...
+        history=[],
+    )
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\.venv\Lib\site-packages\httpx\_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+        request,
+        follow_redirects=follow_redirects,
+        history=history,
+    )
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\.venv\Lib\site-packages\httpx\_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\.venv\Lib\site-packages\httpx\_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\.venv\Lib\site-packages\httpx\_transports\default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\pc\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\.venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\tools\registry.py", line 269, in execute
+    raw = spec.handler(args, context)
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\tools\completeness.py", line 153, in check_document_completeness
+    outcome = engine.analyse(items, submission)
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\engine.py", line 403, in analyse
+    verifications = self._run_per_item(
+        items, submission_text, submission, haystack, on_progress
+    )
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\engine.py", line 432, in _run_per_item
+    raw = self._client.complete_structured(
+        system_prompt, user_message, ClauseVerification
+    )
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\llm.py", line 163, in complete_structured
+    raw = self._post(payload)
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\llm.py", line 101, in _post
+    return self._post_message(payload).get("content", "")
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\llm.py", line 88, in _post_message
+    raise ModelUnavailableError(
+    ...<2 lines>...
+    ) from exc
+procurecheck.llm.ModelUnavailableError: Model request failed against http://127.0.0.1:61019/api/chat. Underlying error: [WinError 10061] No connection could be made because the target machine actively refused it
+Trace written to D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\evidence\traces\workflow\live-02-outage-retried-and-recovered.json
+[iteration 1] check: error SERVICE_UNAVAILABLE (2s)
+             No check has run. Check all 3 checklist items.
+[iteration 2] check: success (576s)
+             check failed with SERVICE_UNAVAILABLE; retry 1 of 1.
+[iteration 3] generate_report: success (0s)
+             The check is settled. Generate the report.
+Stopped: report_ready. The report is ready for the procurement officer.
+{
+  "status": "success",
+  "report": {
+    "document_name": "synthetic-submission.txt",
+    "document_type": "Bid Document",
+    "overall_status": "Incomplete",
+    "completeness_percentage": 66.7,
+    "present_items": [
+      "Valid tax clearance certificate from the revenue authority",
+      "Signed conflict of interest declaration"
+    ],
+    "missing_items": [
+      "Anti-bribery and anti-corruption declaration signed by the bidder"
+    ],
+    "unclear_items": [],
+    "recommendations": [
+      "Locate or request the Anti-bribery and anti-corruption declaration signed by the bidder. The check did not find it in the document."
+    ]
+  }
+}
+
+Hand-off to procurement_officer: The report is ready: Incomplete, 66.7% of items present. The findings are advisory.
+  - Locate or request: Anti-bribery and anti-corruption declaration signed by the bidder
+  - Sign off the report before it goes on the procurement record.
