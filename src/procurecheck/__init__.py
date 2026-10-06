@@ -6,4 +6,4 @@ never scores, ranks, evaluates legal validity, or recommends a contract award.
 """
 
 # Bumped on every change; one line per version in CHANGELOG.md.
-__version__ = "0.4.2"
+__version__ = "0.4.3"

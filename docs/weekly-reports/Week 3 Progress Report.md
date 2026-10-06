@@ -4,26 +4,10 @@ subtitle: Controlled Corpus, Retrieval and Grounding
 line: **Public Procurement Document-Completeness Agent (ProcureCheck)**
 line: BSE4104 AI-Native and Agentic Engineering Capstone
 line: Group H (Evening)
+line: Jonathan Katongole, Makmot Johnson, Isaac Mwesigwa, Bataringaya Bridget
 line: School of Computing and Informatics Technology, Makerere University
 line: Reporting period: 16 to 22 September 2026
 ---
-
-# Declaration
-
-The members of Group H (Evening) declare that this report is their own work. It has not been submitted for any other course or award. Work by other authors has been cited where it was used.
-
-- Jonathan Katongole
-- Makmot Johnson
-- Isaac Mwesigwa
-- Bataringaya Bridget
-
-# Dedication
-
-This report is dedicated to the procurement officers whose careful checking this project aims to support.
-
-# Acknowledgement
-
-The group thanks the BSE4104 course lecturer for the weekly structure and the document format that guided this work. Bataringaya Bridget is thanked for assembling the controlled corpus of procurement documents. Isaac Mwesigwa is thanked for the context construction specification. Isaac Mwesigwa and Bataringaya Bridget are thanked for the retrieval failure analysis. Makmot Johnson is thanked for writing the sixteen RAG test questions. Jonathan Katongole is thanked for building the ingestion, indexing and search pipeline and running the evaluations.
 
 [[TOC]]
 
@@ -50,6 +34,8 @@ The objectives for Week 3 were:
 3. To construct model context from retrieved evidence and show sources in the response or trace.
 4. To create at least 15 RAG test questions covering answerable, partially answerable and unanswerable cases.
 5. To document at least three retrieval or grounding failures and their causes.
+
+The work was shared as follows. Bataringaya Bridget assembled the controlled corpus of procurement documents. Isaac Mwesigwa wrote the context construction specification. Isaac Mwesigwa and Bataringaya Bridget wrote the retrieval failure analysis. Makmot Johnson wrote the sixteen RAG test questions. Jonathan Katongole built the ingestion, indexing and search pipeline and ran the evaluations.
 
 # 2. Background
 

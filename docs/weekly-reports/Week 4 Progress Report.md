@@ -4,26 +4,10 @@ subtitle: Tools, Tool Calling and Human Approval
 line: **Public Procurement Document-Completeness Agent (ProcureCheck)**
 line: BSE4104 AI-Native and Agentic Engineering Capstone
 line: Group H (Evening)
+line: Jonathan Katongole, Makmot Johnson, Isaac Mwesigwa, Bataringaya Bridget
 line: School of Computing and Informatics Technology, Makerere University
 line: Reporting period: 23 to 29 September 2026
 ---
-
-# Declaration
-
-The members of Group H (Evening) declare that this report is their own work. It has not been submitted for any other course or award. Work by other authors has been cited where it was used.
-
-- Jonathan Katongole
-- Makmot Johnson
-- Isaac Mwesigwa
-- Bataringaya Bridget
-
-# Dedication
-
-This report is dedicated to the procurement officers whose careful checking this project aims to support.
-
-# Acknowledgement
-
-The group thanks the BSE4104 course lecturer for the weekly structure and the document format that guided this work. Bataringaya Bridget is thanked for the tool specification that defined the first two tools. Makmot Johnson is thanked for the specification of the review ticket tool. Jonathan Katongole is thanked for implementing the tools, the tool-calling layer, the review ticket tool and the human approval gate, and for running the failure tests.
 
 [[TOC]]
 
@@ -46,6 +30,8 @@ The objectives for Week 4 were:
 3. To provide at least one tool that retrieves current application data or performs a low-risk simulated side effect.
 4. To add human approval before any higher-impact action.
 5. To test missing parameters, unauthorized requests, unavailable services and unexpected tool responses.
+
+The work was shared as follows. Bataringaya Bridget wrote the tool specification that defined the first two tools. Makmot Johnson specified the review ticket tool. Jonathan Katongole implemented the tools, the tool-calling layer, the review ticket tool and the human approval gate. He also ran the failure tests.
 
 # 2. Background
 

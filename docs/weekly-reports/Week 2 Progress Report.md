@@ -4,26 +4,10 @@ subtitle: Model Baseline, Prompt Specification and Test Case Evaluation
 line: **Public Procurement Document-Completeness Agent (ProcureCheck)**
 line: BSE4104 AI-Native and Agentic Engineering Capstone
 line: Group H (Evening)
+line: Jonathan Katongole, Makmot Johnson, Isaac Mwesigwa, Bataringaya Bridget
 line: School of Computing and Informatics Technology, Makerere University
 line: Reporting period: 11 to 16 September 2026
 ---
-
-# Declaration
-
-The members of Group H (Evening) declare that this report is their own work. It has not been submitted for any other course or award. Work by other authors has been cited where it was used.
-
-- Jonathan Katongole
-- Makmot Johnson
-- Isaac Mwesigwa
-- Bataringaya Bridget
-
-# Dedication
-
-This report is dedicated to the procurement officers whose careful checking this project aims to support.
-
-# Acknowledgement
-
-The group thanks the BSE4104 course lecturer for the weekly structure and the document format that guided this work. Isaac Mwesigwa is thanked for the model selection study that fixed the model and its settings. Makmot Johnson is thanked for the prompt iteration record that first predicted the missing-item failure. Bataringaya Bridget is thanked for writing the ten test cases before the model was integrated. Jonathan Katongole is thanked for integrating the model and running the evaluations.
 
 [[TOC]]
 
@@ -48,6 +32,8 @@ The objectives for Week 2 were:
 3. To specify the prompt's role, task, context, constraints, output format and failure behaviour.
 4. To compare at least two meaningful prompt iterations.
 5. To verify system behaviour against at least ten test cases, recording expected against actual behaviour.
+
+The work was shared as follows. Isaac Mwesigwa carried out the model selection study that fixed the model and its settings. Makmot Johnson kept the prompt iteration record that first predicted the missing-item failure. Bataringaya Bridget wrote the ten test cases before the model was integrated. Jonathan Katongole integrated the model and ran the evaluations.
 
 # 2. Background
 

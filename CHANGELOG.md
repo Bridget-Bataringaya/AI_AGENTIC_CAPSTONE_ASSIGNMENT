@@ -2,6 +2,7 @@
 
 One line per version, newest first. The version is printed by `python run.py --version`, written into every workflow trace and served by the API.
 
+- 0.4.3: Weeks 2 to 4 progress reports rebuilt without the declaration, dedication and acknowledgement pages; member names moved to the title page and the division of work into the introduction. Documentation only.
 - 0.4.2: Week 5 progress report added (`docs/weekly-reports/`). Documentation only.
 - 0.4.1: Week 5 execution traces: `tests/evaluation/run_outage_recovery.py` captures a failure-and-recovery run against the real model; six recorded traces in `evidence/traces/`, set out in `docs/evaluation/workflow-execution-traces`. No change to the application's behaviour.
 - 0.4.0: Week 6 persistent memory: case history. Each workflow run that reaches a report remembers the submission's item statuses (never its text) in a local SQLite store; the next run of the same submission ends with what changed since. Recalled outside the loop, so it reaches no decision, prompt or status. `--submission-id` and `--no-memory` on `workflow`; `memory list|show|forget|purge`; officer-only read, write and delete permissions; 180-day retention by default; synthetic resubmission sample.
