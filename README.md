@@ -53,6 +53,7 @@ AI Boundary Matrix and User Stories AC6 to AC9.
 | `knowledge/samples/` | Synthetic checklist and submission for testing |
 | `knowledge/corpus/` | The controlled corpus: 30 PPDA documents and 5 synthetic bids, with provenance |
 | `knowledge/index/` | The retrieval index, built locally and not committed |
+| `data/memory/` | The case history store, written locally and not committed |
 | `evidence/` | Screenshots, traces, demo recordings |
 | `tests/` | Test suite |
 
@@ -234,6 +235,41 @@ python run.py --version
 
 The design is in `docs/architecture/Workflow Implementation.docx`.
 
+## Case history (persistent memory)
+
+A check often ends with items missing, the bidder is asked for them, and the bid
+comes back. Every `workflow` run that reaches a report therefore remembers the
+submission's result, and the next run of the same submission ends with what
+changed: which items are now present, which are still missing, and whether
+anything that was present has gone.
+
+```bash
+python run.py workflow --submission knowledge/samples/synthetic-submission.txt --submission-id SYN-WORKS-2026-014
+python run.py workflow --submission knowledge/samples/synthetic-resubmission.txt --submission-id SYN-WORKS-2026-014
+python run.py memory list
+python run.py memory show --submission-id SYN-WORKS-2026-014
+python run.py memory forget --submission-id SYN-WORKS-2026-014
+python run.py memory purge
+```
+
+What it keeps is each item's status, the percentage, a fingerprint of the text,
+who ran the check and when. It keeps no document text, no quotation and none of
+the model's reasons. `--submission-id` ties a resubmission under another
+filename to its case; without it the filename is used.
+
+Memory informs the officer and decides nothing. The earlier check is recalled
+before the loop and compared only after the loop has stopped, so it reaches no
+planning decision, no prompt and no status: every item is checked afresh. When
+the text is identical and the answer still differs, the comparison says so and
+asks for a check by hand.
+
+Only a procurement officer may read, write or delete history. Records are
+deleted after 180 days (`PROCURECHECK_MEMORY_RETENTION_DAYS`), `forget` deletes
+one submission's records after the operator types its id, and
+`PROCURECHECK_MEMORY=off` or `--no-memory` keeps nothing. A store that cannot be
+read costs the run its comparison and nothing else. The design is in
+`docs/architecture/Persistent Memory Implementation.docx`.
+
 ## Searching the corpus
 
 The team's controlled corpus lives in `knowledge/corpus/`: 30 public PPDA documents
@@ -345,6 +381,9 @@ Regenerate the submission with `python knowledge/samples/generate_submission.py`
 | `PROCURECHECK_EMBEDDING_MODEL` | `nomic-embed-text` | Embedding model for corpus search |
 | `PROCURECHECK_INDEX_DIR` | `knowledge/index` | Where the retrieval index is written and read |
 | `PROCURECHECK_RETRIEVAL_MIN_COSINE` | `0.65` | Below this best similarity, a search reports that the corpus holds no evidence |
+| `PROCURECHECK_MEMORY` | `on` | Remember each finished workflow check so the next one can show what changed. `off` keeps nothing |
+| `PROCURECHECK_MEMORY_DIR` | `data/memory` | Where the case history store is kept |
+| `PROCURECHECK_MEMORY_RETENTION_DAYS` | `180` | Records older than this are deleted |
 | `PROCURECHECK_API_KEYS` | unset | `key:role:user` entries for the tool routes. Unset means every tool route refuses |
 
 ### A note on the context window

@@ -30,3 +30,9 @@ def settings():
     from procurecheck.config import Settings
 
     return Settings()
+
+
+@pytest.fixture(autouse=True)
+def isolated_case_history(tmp_path, monkeypatch):
+    """Case history is on by default; no test may write to the real store."""
+    monkeypatch.setenv("PROCURECHECK_MEMORY_DIR", str(tmp_path / "case-history"))

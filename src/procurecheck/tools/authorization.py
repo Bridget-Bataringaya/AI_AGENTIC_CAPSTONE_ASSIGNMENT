@@ -34,6 +34,14 @@ PERMISSION_PUBLISH: Final[str] = "report:publish"
 # Held by whoever may approve a higher-impact action. The Boundary Matrix
 # gives report sign-off to an authorised procurement officer only.
 PERMISSION_SIGN_OFF: Final[str] = "report:sign_off"
+# Case history (Week 6): the earlier checks of a submission, kept between
+# runs. Read, write and delete are separate so a role can be given one
+# without the others. Only a procurement officer holds them: the history is
+# working material for the officer who chases missing items, and the
+# committee works from the published report instead.
+PERMISSION_HISTORY_READ: Final[str] = "case_history:read"
+PERMISSION_HISTORY_WRITE: Final[str] = "case_history:write"
+PERMISSION_HISTORY_DELETE: Final[str] = "case_history:delete"
 
 ROLE_PROCUREMENT_OFFICER: Final[str] = "procurement_officer"
 ROLE_EVALUATION_COMMITTEE: Final[str] = "evaluation_committee"
@@ -43,6 +51,7 @@ ROLE_GUEST: Final[str] = "guest"
 ROLE_PERMISSIONS: Final[Mapping[str, FrozenSet[str]]] = {
     ROLE_PROCUREMENT_OFFICER: frozenset({
         PERMISSION_ANALYSE, PERMISSION_REPORT, PERMISSION_TICKET, PERMISSION_PUBLISH, PERMISSION_SIGN_OFF,
+        PERMISSION_HISTORY_READ, PERMISSION_HISTORY_WRITE, PERMISSION_HISTORY_DELETE,
     }),
     ROLE_EVALUATION_COMMITTEE: frozenset({PERMISSION_REPORT}),
     ROLE_BIDDER: frozenset(),

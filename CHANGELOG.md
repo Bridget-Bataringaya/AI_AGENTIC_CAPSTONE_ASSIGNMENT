@@ -2,6 +2,7 @@
 
 One line per version, newest first. The version is printed by `python run.py --version`, written into every workflow trace and served by the API.
 
+- 0.4.0: Week 6 persistent memory: case history. Each workflow run that reaches a report remembers the submission's item statuses (never its text) in a local SQLite store; the next run of the same submission ends with what changed since. Recalled outside the loop, so it reaches no decision, prompt or status. `--submission-id` and `--no-memory` on `workflow`; `memory list|show|forget|purge`; officer-only read, write and delete permissions; 180-day retention by default; synthetic resubmission sample.
 - 0.3.1: Review fixes: the publish handler also checks sign-off rights; a declined or failed publication stops as not_published (exit 4) and is never retried; piped input never counts as sign-off; control characters are stripped from the sign-off prompt; backend details stay in the log; anonymous API calls are refused before uploads are read, and uploads are capped at 50 MB; the checklist is de-duplicated; a fault in the loop ends as tool_failed.
 - 0.3.0: Human approval before a higher-impact action: the executor holds publish_completeness_report until a procurement officer signs off; simulated procurement record; `workflow --publish`; dropped steps are noted even when the run then stops.
 - 0.2.0: Week 5 multi-step workflow by direct orchestration (`workflow` command, POST /workflow); create_review_ticket tool implemented to the Third Tool Specification; `--version` flag.

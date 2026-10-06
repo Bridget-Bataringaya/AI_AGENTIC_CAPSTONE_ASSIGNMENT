@@ -27,6 +27,7 @@ from .ingestion import (
     parse_submission,
 )
 from .llm import ModelUnavailableError, OllamaClient
+from .memory import CaseHistoryStore, CaseMemory, resolve_store_path, validate_submission_id
 from .models import ChecklistItem, ItemStatus
 from .report import to_csv, to_dict
 from .safety import MultipleSubmissionsError, assert_single_submission
@@ -324,19 +325,32 @@ def run_workflow(
     submission: UploadFile = File(..., description="One tender submission"),
     checklist: Optional[UploadFile] = File(default=None, description="Checklist; bundled standard if omitted"),
     document_type: str = Form(default="Bid Document"),
+    submission_id: Optional[str] = Form(
+        default=None,
+        description="The case this file belongs to; the filename without its extension if omitted",
+    ),
     principal: Optional[Principal] = Depends(get_principal),
     settings: Settings = Depends(get_settings),
 ):
     """Run the multi-step workflow on one submission, with the default limits.
 
     Returns the full trace: each iteration's sense, plan, act and observe
-    records, the review tickets opened, the report and the hand-off.
+    records, the review tickets opened, the report, the hand-off and, when
+    case history is on, the comparison with the earlier check.
     """
     _require_identity(principal)
     submission_path, items, parsed = _read_uploads(submission, checklist)
+    try:
+        case_id = validate_submission_id(submission_id or submission_path.stem)
+    except ValueError as exc:
+        raise HTTPException(HTTP_BAD_REQUEST, str(exc)) from exc
+    memory = None
+    if settings.memory_enabled:
+        store = CaseHistoryStore(resolve_store_path(settings.memory_dir), settings.memory_retention_days)
+        memory = CaseMemory(store, __version__)
 
     workflow_input = WorkflowInput(
-        submission_id=submission_path.stem,
+        submission_id=case_id,
         document_name=submission_path.name,
         document_type=document_type,
         document_text=parsed.as_marked_text(),
@@ -344,7 +358,8 @@ def run_workflow(
     )
     with OllamaClient(settings) as client:
         context = ToolContext(settings, client, review_queue=ReviewQueue())
-        run = WorkflowRunner(ToolExecutor(default_registry(), context)).run(workflow_input, principal)
+        runner = WorkflowRunner(ToolExecutor(default_registry(), context), memory=memory)
+        run = runner.run(workflow_input, principal)
     trace = {"version": __version__, **run.to_trace()}
     if run.error is not None:
         return _error_response(run.error, principal, trace)

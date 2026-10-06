@@ -19,6 +19,10 @@ submission hides:
     long-submission.pdf         large enough to exceed the configured context
                                 budget, so the refusal path is exercised rather
                                 than assumed.
+    synthetic-resubmission.txt  the plain-text submission again, with the
+                                anti-bribery declaration it was missing added
+                                as a new section. The second check of the case
+                                history demonstration (Week 6).
 
 All content is synthetic: no real bidder, no real procuring entity, no
 confidential information, per the Project Charter's data-access constraint.
@@ -135,6 +139,27 @@ def build_txt() -> Path:
     return destination
 
 
+RESUBMISSION_SECTION = (
+    "SECTION 8 - ANTI-BRIBERY AND ANTI-CORRUPTION DECLARATION",
+    "Supplied on 02 April 2026 in response to the Procuring Entity's request\n"
+    "for a document missing from the bid as first submitted.\n\n"
+    "Kavuma Civil Works Limited declares that neither the company nor any of\n"
+    "its directors, officers, employees or agents has offered, given or agreed\n"
+    "to give any bribe, gratuity, commission or other inducement to any person\n"
+    "in connection with this procurement, and that the company will comply\n"
+    "with the anti-corruption laws in force throughout the tender and any\n"
+    "resulting contract. Signed by the Managing Director, 02 April 2026.",
+)
+
+
+def build_resubmission() -> Path:
+    """The bid as resubmitted after the officer asked for a missing document."""
+    destination = HERE / "synthetic-resubmission.txt"
+    heading, body = RESUBMISSION_SECTION
+    destination.write_text(f"{_plain_text()}\n\n{heading}\n{body}\n", encoding="utf-8")
+    return destination
+
+
 def build_scanned() -> Path:
     """Render the text to images, then rebuild a PDF with no text layer.
 
@@ -189,6 +214,7 @@ def build_all() -> List[Path]:
     return [
         build_docx(),
         build_txt(),
+        build_resubmission(),
         build_scanned(),
         build_no_items(),
         build_long(),

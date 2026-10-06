@@ -87,6 +87,20 @@ DEFAULT_ADJUDICATION_CONFLICT_SCORE: Final[float] = 0.60
 # PROCURECHECK_WORD_COPY=off to produce the PDF alone.
 DEFAULT_WORD_COPY: Final[bool] = True
 
+# Case history: the one thing kept between runs (see memory/store.py).
+#
+# On by default, because a re-check of a resubmitted bid is only useful to the
+# officer when it can be set beside the earlier one. It holds no document text
+# and no quotations, only each item's status. Set PROCURECHECK_MEMORY=off to
+# keep nothing.
+#
+# 180 days is the implementation's default, long enough to cover one tender
+# from first submission to award with margin. The team's own retention period
+# is a separate Week 6 task (ClickUp 123tcvwkyvk); it is this one setting.
+DEFAULT_MEMORY_ENABLED: Final[bool] = True
+DEFAULT_MEMORY_DIR: Final[str] = "data/memory"
+DEFAULT_MEMORY_RETENTION_DAYS: Final[int] = 180
+
 _TRUE_VALUES: Final[frozenset] = frozenset({"1", "true", "yes", "on"})
 _FALSE_VALUES: Final[frozenset] = frozenset({"0", "false", "no", "off"})
 
@@ -151,6 +165,9 @@ class Settings:
     adjudicator_prompt_version: str = DEFAULT_ADJUDICATOR_PROMPT_VERSION
     adjudication_conflict_score: float = DEFAULT_ADJUDICATION_CONFLICT_SCORE
     word_copy: bool = DEFAULT_WORD_COPY
+    memory_enabled: bool = DEFAULT_MEMORY_ENABLED
+    memory_dir: str = DEFAULT_MEMORY_DIR
+    memory_retention_days: int = DEFAULT_MEMORY_RETENTION_DAYS
 
     def __post_init__(self) -> None:
         if not 0.0 <= self.temperature <= 2.0:
@@ -163,6 +180,8 @@ class Settings:
             raise ValueError("max_output_tokens must be positive")
         if self.context_tokens <= self.max_output_tokens:
             raise ValueError("context_tokens must exceed max_output_tokens")
+        if self.memory_retention_days < 1:
+            raise ValueError("memory_retention_days must be at least 1")
         if self.strategy not in (STRATEGY_PER_ITEM, STRATEGY_BATCH):
             raise ValueError(
                 f"strategy must be {STRATEGY_PER_ITEM!r} or {STRATEGY_BATCH!r}"
@@ -235,6 +254,11 @@ class Settings:
                 DEFAULT_ADJUDICATION_CONFLICT_SCORE,
             ),
             word_copy=_env_bool("PROCURECHECK_WORD_COPY", DEFAULT_WORD_COPY),
+            memory_enabled=_env_bool("PROCURECHECK_MEMORY", DEFAULT_MEMORY_ENABLED),
+            memory_dir=_env_str("PROCURECHECK_MEMORY_DIR", DEFAULT_MEMORY_DIR),
+            memory_retention_days=_env_int(
+                "PROCURECHECK_MEMORY_RETENTION_DAYS", DEFAULT_MEMORY_RETENTION_DAYS
+            ),
         )
 
     @property

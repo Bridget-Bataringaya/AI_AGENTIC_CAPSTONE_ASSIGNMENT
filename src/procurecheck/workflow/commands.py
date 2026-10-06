@@ -1,6 +1,7 @@
 """The `workflow` command.
 
     python run.py workflow --submission FILE [--checklist FILE|standard]
+                           [--submission-id ID] [--no-memory]
 
 Runs the multi-step workflow on one submission and writes the full trace, one
 record per Sense, Plan, Act and Observe iteration, to evidence/traces/workflow/.
@@ -17,7 +18,7 @@ import re
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Final
+from typing import Final, Optional
 
 from .. import __version__, checklists
 from ..checklists import REPO_ROOT
@@ -30,6 +31,7 @@ from ..ingestion import (
     parse_submission,
 )
 from ..llm import OllamaClient
+from ..memory import CaseHistoryStore, CaseMemory, resolve_store_path, validate_submission_id
 from ..tools.approval import ConsoleApprover
 from ..tools.authorization import ROLE_PERMISSIONS, ROLE_PROCUREMENT_OFFICER, Principal
 from ..tools.completeness import ToolContext
@@ -78,6 +80,15 @@ def add_parsers(subparsers: argparse._SubParsersAction) -> None:
         "--publish", action="store_true",
         help="Ask for sign-off at the terminal, then publish the report to the procurement record",
     )
+    workflow.add_argument(
+        "--submission-id", default=None,
+        help="The case this file belongs to, so a resubmission under another filename is "
+             "matched to its earlier check. Defaults to the filename without its extension",
+    )
+    workflow.add_argument(
+        "--no-memory", action="store_true",
+        help="Do not recall an earlier check of this submission, and do not remember this one",
+    )
     workflow.add_argument("--trace", type=Path, default=None, help="Where to write the run trace")
 
 
@@ -104,6 +115,17 @@ def _print_run(run: WorkflowRun) -> None:
     print(f"\nHand-off to {run.handoff.to}: {run.handoff.reason}")
     for action in run.handoff.actions:
         print(f"  - {action}")
+    if run.memory is not None:
+        print("\nCase history:")
+        for line in run.memory.lines():
+            print(f"  - {line}")
+
+
+def _case_memory(args: argparse.Namespace, settings: Settings) -> Optional[CaseMemory]:
+    if args.no_memory or not settings.memory_enabled:
+        return None
+    store = CaseHistoryStore(resolve_store_path(settings.memory_dir), settings.memory_retention_days)
+    return CaseMemory(store, __version__)
 
 
 def run_workflow(args: argparse.Namespace, settings: Settings) -> int:
@@ -115,6 +137,7 @@ def run_workflow(args: argparse.Namespace, settings: Settings) -> int:
             retry_delay_seconds=args.retry_delay,
             publish=args.publish,
         )
+        submission_id = validate_submission_id(args.submission_id or args.submission.stem)
         checklist_path, _label, _is_template = checklists.resolve(args.checklist)
         items = parse_checklist(checklist_path)
         parsed = parse_submission(args.submission)
@@ -124,7 +147,7 @@ def run_workflow(args: argparse.Namespace, settings: Settings) -> int:
         return EXIT_USER_ERROR
 
     workflow_input = WorkflowInput(
-        submission_id=args.submission.stem,
+        submission_id=submission_id,
         document_name=args.submission.name,
         document_type=args.document_type,
         document_text=parsed.as_marked_text(),
@@ -134,6 +157,13 @@ def run_workflow(args: argparse.Namespace, settings: Settings) -> int:
     print(
         f"ProcureCheck {__version__} workflow on {args.submission.name}: {len(items)} checklist items, "
         f"{parsed.page_count} page(s), role {args.role}, model {settings.model}.",
+        file=sys.stderr,
+    )
+    memory = _case_memory(args, settings)
+    print(
+        "Case history: off. Nothing is recalled or remembered." if memory is None else
+        f"Case history: on for submission {submission_id}. Statuses only, kept "
+        f"{settings.memory_retention_days} days; --no-memory turns it off.",
         file=sys.stderr,
     )
 
@@ -146,7 +176,7 @@ def run_workflow(args: argparse.Namespace, settings: Settings) -> int:
             # --publish never asks, and a publication is never attempted.
             approver=ConsoleApprover(principal) if args.publish else None,
         )
-        runner = WorkflowRunner(ToolExecutor(default_registry(), context), limits)
+        runner = WorkflowRunner(ToolExecutor(default_registry(), context), limits, memory=memory)
         started = datetime.now()
         run = runner.run(workflow_input, principal)
         seconds = (datetime.now() - started).total_seconds()
@@ -160,6 +190,7 @@ def run_workflow(args: argparse.Namespace, settings: Settings) -> int:
         "model": settings.model,
         "pipeline": settings.pipeline_label,
         "submission": args.submission.name,
+        "submission_id": submission_id,
         "checklist_items": len(items),
         **run.to_trace(),
     }

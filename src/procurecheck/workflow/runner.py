@@ -17,6 +17,10 @@ max_iterations acting iterations whatever the plan says.
 
 Every run ends in a hand-off to a person. A finished report is advisory: the
 officer confirms it, resolves the tickets and chases the missing items.
+
+Case history (Week 6) sits outside the loop. The earlier check is recalled
+before the loop starts and set beside the new one only after the loop has
+ended, so nothing remembered can reach the planner, a prompt or a status.
 """
 
 from __future__ import annotations
@@ -26,6 +30,7 @@ import time
 from dataclasses import dataclass, replace
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
+from ..memory.recall import CaseMemory, MemoryReport, Recall
 from ..tools.authorization import Principal
 from ..tools.contracts import CheckCompletenessOutput, ErrorCode, GenerateReportOutput, ToolError
 from ..tools.publishing import PublishReportOutput
@@ -92,6 +97,7 @@ class WorkflowRun:
     tickets: Tuple[CreateTicketOutput, ...] = ()
     notes: Tuple[str, ...] = ()
     error: Optional[ToolError] = None
+    memory: Optional[MemoryReport] = None
 
     @property
     def ok(self) -> bool:
@@ -119,6 +125,7 @@ class WorkflowRun:
             "tickets": [t.model_dump(mode="json") for t in self.tickets],
             "report": None if self.report is None else self.report.model_dump(mode="json"),
             "record": None if self.record is None else self.record.model_dump(mode="json"),
+            "memory": None if self.memory is None else self.memory.to_trace(),
         }
 
 
@@ -180,10 +187,12 @@ class WorkflowRunner:
         executor: ToolExecutor,
         limits: Optional[WorkflowLimits] = None,
         sleep: Callable[[float], None] = time.sleep,
+        memory: Optional[CaseMemory] = None,
     ) -> None:
         self._executor = executor
         self._limits = limits or WorkflowLimits()
         self._sleep = sleep
+        self._memory = memory
 
     def _finish(
         self, state: WorkflowState, steps: List[StepRecord], principal: Optional[Principal],
@@ -207,6 +216,23 @@ class WorkflowRunner:
         )
 
     def run(self, workflow_input: WorkflowInput, principal: Optional[Principal]) -> WorkflowRun:
+        memory = self._memory
+        recalled = Recall() if memory is None else memory.recall(workflow_input.submission_id, principal)
+        run = self._run_loop(workflow_input, principal)
+        if memory is None:
+            return run
+        return replace(run, memory=memory.conclude(
+            recalled,
+            submission_id=workflow_input.submission_id,
+            document_name=workflow_input.document_name,
+            document_text=workflow_input.document_text,
+            principal=principal,
+            check=run.check,
+            report=run.report,
+            stop_reason=run.stop_reason.value,
+        ))
+
+    def _run_loop(self, workflow_input: WorkflowInput, principal: Optional[Principal]) -> WorkflowRun:
         # The latest state is kept outside the loop so that, if the loop
         # faults, the hand-off still carries whatever the run had found.
         latest = [WorkflowState(input=workflow_input)]
