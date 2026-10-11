@@ -1,0 +1,5 @@
+{
+  "python.analysis.extraPaths": ["src", "tests/evaluation"],
+  "python.testing.pytestArgs": ["tests"],
+  "python.testing.pytestEnabled": true
+}

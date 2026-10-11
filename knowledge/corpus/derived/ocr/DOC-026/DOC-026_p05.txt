@@ -1,0 +1,37 @@
+Guideline Subject: PPDA (Electronic Government Procurement) Guideline
+1.0
+1.1
+1.2
+2.0
+PART I - PRELIMINARY
+Application
+The Guideline shall apply to procurement and disposal processes
+conducted by procuring and disposing entities enrolled on the Electronic
+Government Procurement System.
+Deviation from use of the e-GP System shall be effected only after the prior
+written approval of Ministry responsible for finance.
+Interpretation
+In this Guideline unless the context otherwise requires -
+"Authority" means the Public Procurement and Disposal of Public Assets Authority.
+"day" means working day.
+"e-Government Procurement (e-GP)" means the use of information and
+communication technology especially internet to conduct an end-to-end
+government procurement and disposal process online with processes including
+planning, initiation, bidding, evaluation, award, contract management, invoicing,
+payment and reporting.
+'e-Government Procurement System" means to a web-based tool used to carry
+out electronic procurement and disposal.
+'electronic signature" or "e-Signature't means a signature in electronic form
+attached to or logically associated with an electronic record, in the form of
+electronic symbol or a process or a set of codes attached to or logically associated
+with documents, and executed, adopted or agreed upon by a person with the intent
+to sign the documents and is equivalent to the physical handwritten signature. An
+electronic signature is intended to provide a secure and accurate identification
+method for the signatory to provide a seamless transaction.
+"electronic" means any electrical, digital, magnetic, optical, electromagnetic or
+other form of technology that entails capabilities similar to these technologies.
+"malware" means any form of hostile or intrusive software, including but not limited
+to computer viruses, worms, trojan horses, ransomware, spyware, adware,
+scareware, or other malicious programs. It includes executable code, scripts,
+active content, and other software;
+Page 3 of 18

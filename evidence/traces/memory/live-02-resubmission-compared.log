@@ -1,0 +1,38 @@
+ProcureCheck 0.4.0 workflow on synthetic-resubmission.txt: 3 checklist items, 1 page(s), role procurement_officer, model llama3.1:8b.
+Case history: on for submission SYN-WORKS-2026-014. Statuses only, kept 180 days; --no-memory turns it off.
+Trace written to evidence\traces\memory\live-02-resubmission-compared.json
+[iteration 1] check: success (673s)
+             No check has run. Check all 3 checklist items.
+[iteration 2] generate_report: success (0s)
+             The check is settled. Generate the report.
+Stopped: report_ready. The report is ready for the procurement officer.
+{
+  "status": "success",
+  "report": {
+    "document_name": "synthetic-resubmission.txt",
+    "document_type": "Bid Document",
+    "overall_status": "Complete",
+    "completeness_percentage": 100.0,
+    "present_items": [
+      "Valid tax clearance certificate from the revenue authority",
+      "Anti-bribery and anti-corruption declaration signed by the bidder",
+      "Signed conflict of interest declaration"
+    ],
+    "missing_items": [],
+    "unclear_items": [],
+    "recommendations": [
+      "Every required item was found. This confirms completeness only; it is not an evaluation of the bid."
+    ]
+  }
+}
+
+Hand-off to procurement_officer: The report is ready: Complete, 100.0% of items present. The findings are advisory.
+  - Sign off the report before it goes on the procurement record.
+
+Case history:
+  - Earlier check: 2026-10-06 20:22 UTC by pc, Incomplete, 66.7% of items present (ProcureCheck 0.4.0).
+  - The document text has changed since then.
+  - Now present, was Missing: Anti-bribery and anti-corruption declaration signed by the bidder
+  - Present both times: 2 item(s).
+  - This comparison is advisory. Every item was checked afresh, and the earlier result changed no status.
+  - This check was remembered as case 2 and is kept for 180 days.

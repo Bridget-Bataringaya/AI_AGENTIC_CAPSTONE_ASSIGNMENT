@@ -1,0 +1,44 @@
+13.10
+13.11
+13.12
+14.0
+15.0
+15.1
+15.2
+15.3
+15.4
+15.5
+15.6
+15.7
+A PDE shall accept only those bids in electronic format in the e-GP System
+received within the bid submission deadline and shall issue an electronic
+receipt of bids submitted indicating the date and time of receipt.
+A provider shall submit original hard copies of the bid securities to the entity
+where applicable within the time of bid submission. Where electronic
+versions of bid securities and powers of attorney are issued, these shall be
+submitted on the e-GP System.
+Where there are System failures before the time of bid submission, the
+entity shall extend the submission time by a maximum of 48 hours from the
+time the System is restored.
+Extension of Bid Validity period
+Within 15 working days prior to the expiry of the bid validity period, alert
+notifications shall be sent to the bidders to extend their bid validity period
+and to Head Procurement and Disposal Unit to request bidders to extend
+their bid validity period.
+Opening of Bids
+Online submissions shall be kept encrypted in the e-GP System database.
+The encrypted bids shall not be accessible to any person until the day and
+time of bid opening indicated in the invitation notice or bidding document in
+accordance with the local time zone.
+The System shall automatically open the bid within two minutes from time
+of bid closure. Bid opening reports shall be generated and published for
+public access in the prescribed template in accordance with the applicable
+Regulations.
+Bid opening information shall be viewed online by bidders.
+All bids shall be readable through open standard interfaces and formats.
+The financial proposals in electronic format shall only be accessed and
+opened after the technical evaluation of the proposals where so required in
+the bidding documents.
+Where the bidding document requires a two-stage bid submission method,
+the financial bids shall remain encrypted during the technical evaluation.
+Page 11 of 18

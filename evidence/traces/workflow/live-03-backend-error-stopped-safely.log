@@ -1,0 +1,87 @@
+ProcureCheck 0.4.0 workflow on synthetic-submission.txt: 3 checklist items, 1 page(s), role procurement_officer, model llama3.1:8b.
+Case history: on for submission SYN-WORKS-2026-014. Statuses only, kept 180 days; --no-memory turns it off.
+Tool check_document_completeness: model backend unavailable
+Traceback (most recent call last):
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\llm.py", line 85, in _post_message
+    response.raise_for_status()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\.venv\Lib\site-packages\httpx\_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Server error '500 Internal Server Error' for url 'http://localhost:11434/api/chat'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\tools\registry.py", line 269, in execute
+    raw = spec.handler(args, context)
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\tools\completeness.py", line 153, in check_document_completeness
+    outcome = engine.analyse(items, submission)
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\engine.py", line 403, in analyse
+    verifications = self._run_per_item(
+        items, submission_text, submission, haystack, on_progress
+    )
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\engine.py", line 432, in _run_per_item
+    raw = self._client.complete_structured(
+        system_prompt, user_message, ClauseVerification
+    )
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\llm.py", line 163, in complete_structured
+    raw = self._post(payload)
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\llm.py", line 101, in _post
+    return self._post_message(payload).get("content", "")
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\llm.py", line 88, in _post_message
+    raise ModelUnavailableError(
+    ...<2 lines>...
+    ) from exc
+procurecheck.llm.ModelUnavailableError: Model request failed against http://localhost:11434/api/chat. Underlying error: Server error '500 Internal Server Error' for url 'http://localhost:11434/api/chat'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500
+Tool check_document_completeness: model backend unavailable
+Traceback (most recent call last):
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\llm.py", line 85, in _post_message
+    response.raise_for_status()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\.venv\Lib\site-packages\httpx\_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Server error '500 Internal Server Error' for url 'http://localhost:11434/api/chat'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\tools\registry.py", line 269, in execute
+    raw = spec.handler(args, context)
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\tools\completeness.py", line 153, in check_document_completeness
+    outcome = engine.analyse(items, submission)
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\engine.py", line 403, in analyse
+    verifications = self._run_per_item(
+        items, submission_text, submission, haystack, on_progress
+    )
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\engine.py", line 432, in _run_per_item
+    raw = self._client.complete_structured(
+        system_prompt, user_message, ClauseVerification
+    )
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\llm.py", line 163, in complete_structured
+    raw = self._post(payload)
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\llm.py", line 101, in _post
+    return self._post_message(payload).get("content", "")
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\src\procurecheck\llm.py", line 88, in _post_message
+    raise ModelUnavailableError(
+    ...<2 lines>...
+    ) from exc
+procurecheck.llm.ModelUnavailableError: Model request failed against http://localhost:11434/api/chat. Underlying error: Server error '500 Internal Server Error' for url 'http://localhost:11434/api/chat'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500
+Trace written to evidence\traces\memory\live-01-first-check.json
+[iteration 1] check: error SERVICE_UNAVAILABLE (41s)
+             No check has run. Check all 3 checklist items.
+[iteration 2] check: error SERVICE_UNAVAILABLE (18s)
+             check failed with SERVICE_UNAVAILABLE; retry 1 of 1.
+Stopped: service_unavailable. check failed with SERVICE_UNAVAILABLE and cannot be worked around.
+
+Hand-off to procurement_officer: check failed with SERVICE_UNAVAILABLE and cannot be worked around.
+  - The model backend stayed unavailable after 1 retry(ies). Start it and run the workflow again; no item has been recorded as checked.
+
+Case history:
+  - No earlier check of this submission is remembered.
+  - The run produced no report, so nothing was remembered.

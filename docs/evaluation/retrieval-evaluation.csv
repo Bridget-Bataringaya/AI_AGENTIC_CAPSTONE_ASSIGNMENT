@@ -1,0 +1,21 @@
+case,kind,query,bm25_rank,dense_rank,hybrid_rank,best_cosine,top_hit,flagged_sufficient
+RC-01,answerable,What form of bid security is required for open domestic bidding for supplies and works?,5,,,0.7952950278466192,"DOC-025, p. 3, PROCUREMENT ANO OISPOSAL",True
+RC-02,answerable,Which steps can be skipped when an entity uses micro procurement?,1,1,1,0.7691221676995758,"DOC-030, p. 17, Part III—Methods of Procurement > 22. Rules for micro procurement.",True
+RC-03,answerable,How does the guideline define aggregated requirements?,8,8,6,0.8064594362287565,"DOC-027, p. 2, GENERAL PROVISIONS ON PROCUREMENT OF AGGREGATED",True
+RC-04,answerable,What does a bidder use to log in to the electronic government procurement system?,3,,2,0.7781274280360079,"DOC-026, p. 13, PART IV - BIDDING AND EVALUATION",True
+RC-05,answerable,"Which procurements are set aside for registered groups of women, youth and persons with disabilities?",1,1,1,0.8604426993242562,"DOC-017, p. 17, STANDARD BIDDING DOCUMENT FOR THE PROCUREMENTS RESERVED FOR REGISTERED ASSOCIATIONS OF WOMEN, YOUTH AND PERSONS WITH DISABILITIES > [Brief Description of the Procurement] - [Procurement Reference number]",True
+RC-06,answerable,"Which documents prove a bidder is eligible, such as a tax clearance certificate and trading licence?",1,2,1,0.8154283755616567,"DOC-009, p. 29, Section 3: Evaluation Methodology and Criteria > Eligibility Criteria",True
+RC-07,answerable,For how long can a provider be suspended after failing a performance securing declaration?,1,5,1,0.748701476093973,"DOC-001, p. 73, Performance Securing Declaration > To:",True
+RC-08,answerable,Which documents were deliberately left out of synthetic submission B?,6,1,4,0.7960321502065101,"DOC-032, Testing Note",True
+RC-09,answerable,Who signed the bid form for Nile Office Solutions?,1,1,1,0.8044964763737706,"DOC-031, 1. Signed Bid Form",True
+RC-10,answerable,How must a power of attorney signed outside Uganda be authenticated?,1,,1,0.7318196193273425,"DOC-014, Section 3: Evaluation Methodology and Criteria > Administrative Compliance Criteria",True
+RC-11,answerable,What planning records must a procuring and disposing entity keep on file?,,1,8,0.7949165598435107,"DOC-028, pp. 1-2, OF PUBLIC ASSETS AUTHORITY",True
+RC-12,answerable,What is the standard notice format announcing the best evaluated bidder for consultancy services?,1,1,1,0.853339570495418,"DOC-029, pp. 5-6, CONSULTANCY SERVICES",True
+RC-13,answerable,Can the entity ask bidders to extend how long their bids remain valid?,1,1,1,0.8005325590585629,"DOC-001, p. 10, General > Bid Validity",True
+RC-14,answerable,"When are bidders treated as having a conflict of interest, for example sharing controlling shareholders?",1,1,1,0.7510281204476323,"DOC-009, p. 5, General > Eligible Bidders",True
+RC-15,answerable,When does a bid securing declaration stop being valid?,,2,5,0.8151418263293212,"DOC-020, p. 11, General > Bid Security or Bid Securing Declaration",True
+OC-01,out-of-corpus,What is the VAT rate on imported cars in Kenya?,,,,0.6222085183964831,"DOC-009, p. 29, Evaluation of Bids > Margin of Preference",False
+OC-02,out-of-corpus,Who won the 2022 FIFA World Cup final?,,,,0.5154741425085868,"DOC-017, Section 7 “Terms and Conditions of the Contract.” > Required standards including World Bank Group EHS Guidelines",False
+OC-03,out-of-corpus,What is the recommended dose of paracetamol for a child?,,,,0.5628167250174478,"DOC-014, Section 7: General Conditions of Contract for the Procurement of Works > Prohibition of Harmful Child Work",False
+OC-04,out-of-corpus,How do I reset a forgotten Gmail password?,,,,0.5494627330039967,"DOC-026, p. 7, PART VI - CONTRACT MANAGEMENT",False
+OC-05,out-of-corpus,What thresholds does Tanzania's PPRA set for consultancy procurement?,,,,0.7605448116133343,"DOC-019, Why Prequalify? > The Use of Pre-qualification",True

@@ -1,0 +1,23 @@
+id,category,description
+STD-01,Legal standing,Bid submission form completed and signed by the authorised signatory
+STD-02,Legal standing,Certificate of incorporation or business registration certificate
+STD-03,Legal standing,Trading licence valid for the current year
+STD-04,Legal standing,Valid tax clearance certificate from the revenue authority
+STD-05,Legal standing,Certificate of non-blacklisting or non-debarment
+STD-06,Legal standing,Power of attorney authorising the signatory of the bid
+STD-07,Legal standing,Registration with the professional or sector regulator governing the works or services
+STD-08,Financial,Audited financial statements for the last two financial years
+STD-09,Financial,Bid security in the form and amount stated in the bidding document
+STD-10,Financial,Banker's reference or evidence of access to a line of credit
+STD-11,Financial,Priced bill of quantities or price schedule
+STD-12,Capacity,Statement of similar works completed or experience record
+STD-13,Capacity,Curricula vitae of the proposed key personnel
+STD-14,Capacity,Schedule of plant and equipment available for the assignment
+STD-15,Capacity,Work programme or methodology statement
+STD-16,Integrity,Anti-bribery and anti-corruption declaration signed by the bidder
+STD-17,Integrity,Signed conflict of interest declaration
+STD-18,Integrity,Beneficial ownership disclosure form
+STD-19,Integrity,Signed code of ethical conduct for bidders
+STD-20,Insurance and compliance,Evidence of professional indemnity or third party liability insurance
+STD-21,Insurance and compliance,Certificate of compliance with statutory social security contributions
+STD-22,Insurance and compliance,Statement of litigation history or pending disputes

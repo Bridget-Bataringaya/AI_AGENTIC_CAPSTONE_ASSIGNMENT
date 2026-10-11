@@ -1,0 +1,225 @@
+{
+  "version": "0.4.0",
+  "run_at": "2026-10-06T23:13:58",
+  "seconds": 507.6,
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "submission": "synthetic-submission.txt",
+  "submission_id": "SYN-WORKS-2026-014",
+  "checklist_items": 3,
+  "principal": {
+    "user_id": "pc",
+    "role": "procurement_officer"
+  },
+  "orchestration": "direct",
+  "limits": {
+    "max_iterations": 7,
+    "max_service_retries": 1,
+    "max_recheck_rounds": 1,
+    "retry_delay_seconds": 5.0,
+    "approved_tools": [
+      "check_document_completeness",
+      "create_review_ticket",
+      "generate_completeness_report",
+      "publish_completeness_report"
+    ],
+    "publish": false
+  },
+  "iterations": 2,
+  "status": "success",
+  "stop_reason": "report_ready",
+  "stop_detail": "The report is ready for the procurement officer.",
+  "error": null,
+  "handoff": {
+    "to": "procurement_officer",
+    "reason": "The report is ready: Incomplete, 66.7% of items present. The findings are advisory.",
+    "actions": [
+      "Locate or request: Anti-bribery and anti-corruption declaration signed by the bidder",
+      "Sign off the report before it goes on the procurement record."
+    ]
+  },
+  "notes": [],
+  "steps": [
+    {
+      "iteration": 1,
+      "sense": {
+        "checked": false,
+        "completeness_percentage": null,
+        "item_counts": {
+          "Present": 0,
+          "Missing": 0,
+          "Unclear": 0
+        },
+        "recheck_rounds": 0,
+        "tickets_open": 0,
+        "report_ready": false,
+        "published": false,
+        "last_error": null,
+        "consecutive_retries": 0,
+        "abandoned": []
+      },
+      "plan": {
+        "action": "check",
+        "reason": "No check has run. Check all 3 checklist items.",
+        "retry": false,
+        "abandoned": null,
+        "stop_reason": null
+      },
+      "act": [
+        {
+          "tool": "check_document_completeness",
+          "arguments": {
+            "document_text": "[PAGE 1]\nSECTION 1 - BID SUBMISSION COVER\nTender Reference: SYN/WORKS/2026/014\nProcuring Entity: Synthetic District Local Government (illustrative only)\nBidder: Kavuma Civil Works Limited (fictional e... (2935 characters)",
+            "document_type": "Bid Document",
+            "required_items": [
+              "Valid tax clearance certificate from the revenue authority",
+              "Anti-bribery and anti-corruption declaration signed by the bidder",
+              "Signed conflict of interest declaration"
+            ]
+          },
+          "status": "success",
+          "error_code": null,
+          "duration_ms": 507583,
+          "approval": null,
+          "result": {
+            "status": "success",
+            "document_type": "Bid Document",
+            "completeness_percentage": 66.7,
+            "results": [
+              {
+                "item": "Valid tax clearance certificate from the revenue authority",
+                "status": "Present",
+                "reason": "No page number, as the file format has no pages: \"The bidder encloses a Tax Clearance Certificate issued by the national revenue authority, reference TCC/2026/00417, valid from 01 January 2026 to 31 December 2026. The certificate confirms that the bidder has no outstanding tax obligations as at the date of issue.\""
+              },
+              {
+                "item": "Anti-bribery and anti-corruption declaration signed by the bidder",
+                "status": "Missing",
+                "reason": "The model was given the single page of the submission and asked to find this document. It reported that no passage is this document, and returned no page and no quotation. Its match confidence was 0.00. A value of 0.00 means it saw no likely match. With nothing quoted, there was no evidence for the later checks to verify."
+              },
+              {
+                "item": "Signed conflict of interest declaration",
+                "status": "Present",
+                "reason": "No page number, as the file format has no pages: \"The bidder confirms that no director, officer or shareholder of Kavuma Civil Works Limited holds any interest, direct or indirect, in the Procuring Entity, and that no circumstance exists that would place the bidder in a position of conflict in respect of this procurement. Signed by the Managing...\""
+              }
+            ]
+          }
+        }
+      ],
+      "observe": [
+        "success"
+      ]
+    },
+    {
+      "iteration": 2,
+      "sense": {
+        "checked": true,
+        "completeness_percentage": 66.7,
+        "item_counts": {
+          "Present": 2,
+          "Missing": 1,
+          "Unclear": 0
+        },
+        "recheck_rounds": 0,
+        "tickets_open": 0,
+        "report_ready": false,
+        "published": false,
+        "last_error": null,
+        "consecutive_retries": 0,
+        "abandoned": []
+      },
+      "plan": {
+        "action": "generate_report",
+        "reason": "The check is settled. Generate the report.",
+        "retry": false,
+        "abandoned": null,
+        "stop_reason": null
+      },
+      "act": [
+        {
+          "tool": "generate_completeness_report",
+          "arguments": {
+            "document_name": "synthetic-submission.txt",
+            "document_type": "Bid Document",
+            "completeness_percentage": 66.7,
+            "completeness_results": [
+              {
+                "item": "Valid tax clearance certificate from the revenue authority",
+                "status": "Present",
+                "reason": "No page number, as the file format has no pages: \"The bidder encloses a Tax Clearance Certificate issued by the national revenue authority, reference TCC/2026/00417, valid from 01 January 2026 to 31 December 2026. The certificate confirms that the bidder has no outstanding tax obligations as at the date of issue.\""
+              },
+              {
+                "item": "Anti-bribery and anti-corruption declaration signed by the bidder",
+                "status": "Missing",
+                "reason": "The model was given the single page of the submission and asked to find this document. It reported that no passage is this document, and returned no page and no quotation. Its match confidence was 0.00. A value of 0.00 means it saw no likely match. With nothing quoted, there was no evidence for the later checks to verify."
+              },
+              {
+                "item": "Signed conflict of interest declaration",
+                "status": "Present",
+                "reason": "No page number, as the file format has no pages: \"The bidder confirms that no director, officer or shareholder of Kavuma Civil Works Limited holds any interest, direct or indirect, in the Procuring Entity, and that no circumstance exists that would place the bidder in a position of conflict in respect of this procurement. Signed by the Managing...\""
+              }
+            ]
+          },
+          "status": "success",
+          "error_code": null,
+          "duration_ms": 0,
+          "approval": null,
+          "result": {
+            "status": "success",
+            "report": {
+              "document_name": "synthetic-submission.txt",
+              "document_type": "Bid Document",
+              "overall_status": "Incomplete",
+              "completeness_percentage": 66.7,
+              "present_items": [
+                "Valid tax clearance certificate from the revenue authority",
+                "Signed conflict of interest declaration"
+              ],
+              "missing_items": [
+                "Anti-bribery and anti-corruption declaration signed by the bidder"
+              ],
+              "unclear_items": [],
+              "recommendations": [
+                "Locate or request the Anti-bribery and anti-corruption declaration signed by the bidder. The check did not find it in the document."
+              ]
+            }
+          }
+        }
+      ],
+      "observe": [
+        "success"
+      ]
+    }
+  ],
+  "tickets": [],
+  "report": {
+    "status": "success",
+    "report": {
+      "document_name": "synthetic-submission.txt",
+      "document_type": "Bid Document",
+      "overall_status": "Incomplete",
+      "completeness_percentage": 66.7,
+      "present_items": [
+        "Valid tax clearance certificate from the revenue authority",
+        "Signed conflict of interest declaration"
+      ],
+      "missing_items": [
+        "Anti-bribery and anti-corruption declaration signed by the bidder"
+      ],
+      "unclear_items": [],
+      "recommendations": [
+        "Locate or request the Anti-bribery and anti-corruption declaration signed by the bidder. The check did not find it in the document."
+      ]
+    }
+  },
+  "record": null,
+  "memory": {
+    "retention_days": 180,
+    "used_by_planner": false,
+    "recalled": null,
+    "comparison": null,
+    "stored_case_id": 1,
+    "notes": [
+      "No earlier check of this submission is remembered."
+    ]
+  }
+}

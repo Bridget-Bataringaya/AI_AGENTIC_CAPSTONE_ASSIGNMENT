@@ -1,0 +1,42 @@
+4.5
+4.6
+5.0
+5.1
+5.2
+5.3
+6.0
+7.0
+8.0
+8.1
+Development Partner Access
+Development partners shall be provided with access to the e-GP System to
+interface or integrate with it their procurement systems, upload bidding
+documents and review the procurements of the projects.
+Oversight Agencies
+Oversight bodies shall be registered on the e-GP System and shall have
+access to view procurement and disposal records for purposes of
+monitoring and compliance.
+PART Ill - PROCUREMENT PLANNING AND INITIATION
+Preparation of the Procurement and Disposal Plan
+The Procurement and Disposal Plan shall be created, reviewed, and
+published within the e-GP System in accordance with the PPDA Act and as
+prescribed by the Authority.
+Where amendments are made to the published plan, these shall
+automatically be updated by the System.
+Emergency procurements shall be undertaken off the System and the
+records subsequently uploaded in the contract management module.
+Procurement and Disposal Initiation/Requisitioning
+Requisitions shall only be initiated against approved items in the
+Procurement Plan. The Accounting Officer shall have final authority to
+approve or reject requisitions, subject to budget confirmation through the
+respective financial management systems.
+Preparation of Bidding Documents
+Bidding documents shall be prepared and published within the e-GP
+System using Smart Standard Bidding Documents in line with the PPDA
+Act, Regulations and Guidelines.
+PART IV - BIDDING AND EVALUATION
+Invitation of Bidders
+A PDE shall invite bids using the online template in the e-GP System
+through the following methods:
+(i) by publication of a bid notice on the System;
+Page 7 of 18

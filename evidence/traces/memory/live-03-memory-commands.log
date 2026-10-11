@@ -1,0 +1,19 @@
+> python run.py memory list
+SYN-WORKS-2026-014: 2 check(s), last on 2026-10-06 20:33 UTC, Complete
+Each check is kept for 180 days. Stored at D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\data\memory\case-history.sqlite3
+
+> python run.py memory show --submission-id SYN-WORKS-2026-014
+Case 2: 2026-10-06 20:33 UTC by pc, synthetic-resubmission.txt, Complete, 100.0% present (ProcureCheck 0.4.0, ended as report_ready)
+  Document fingerprint: 17ac35c9d4cec912427adc3e2d24dd270b9b41eec741a2dfedb2cbe6f7e20a70
+  - Present: Valid tax clearance certificate from the revenue authority
+  - Present: Anti-bribery and anti-corruption declaration signed by the bidder
+  - Present: Signed conflict of interest declaration
+Case 1: 2026-10-06 20:22 UTC by pc, synthetic-submission.txt, Incomplete, 66.7% present (ProcureCheck 0.4.0, ended as report_ready)
+  Document fingerprint: 83d73abb364028f1db99184a9b0b41a374cad3ba9c7f9a61c2ad27cef7fb0521
+  - Present: Valid tax clearance certificate from the revenue authority
+  - Missing: Anti-bribery and anti-corruption declaration signed by the bidder
+  - Present: Signed conflict of interest declaration
+
+> python run.py memory list --role evaluation_committee
+Refused: the role evaluation_committee may not list case history.
+exit code 1

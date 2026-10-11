@@ -1,0 +1,13 @@
+[
+  {
+    "id": "EV-18",
+    "acceptance_criteria": "AC4",
+    "description": "A complete, realistic tender package that contains NONE of the ten required documents: only a method statement, programme, plant schedule, personnel list and safety approach. Three unrelated checklist items are checked against it. This isolates whether the model can report absence at all, or only ever latches onto the nearest plausible text.",
+    "expected": "All three items Not Found, with no page number and no snippet",
+    "actual": "0 of 3 Not Found. CHK-01=Requires Human Review (conf 0.00); CHK-02=Requires Human Review (conf 0.00); CHK-04=Requires Human Review (conf 0.00)",
+    "passed": false,
+    "seconds": 399.7,
+    "detail": "[{\"checklist_item_id\": \"CHK-01\", \"clause_title\": \"Certificate of Incorporation or business registration certificate\", \"is_present\": true, \"page_number\": 5, \"extracted_snippet\": \"Accidents will be recorded in the site register and reported to the supervising officer within twenty four hours.\", \"confidence_score\": 0.0, \"requires_human_review\": true}, {\"checklist_item_id\": \"CHK-02\", \"clause_title\": \"Valid tax clearance certificate from the revenue authority\", \"is_present\": true, \"page_number\": 5, \"extracted_snippet\": \"Accidents will be recorded in the site register and reported to the supervising officer within twenty four hours.\", \"confidence_score\": 0.0, \"requires_human_review\": true}, {\"checklist_item_id\": \"CHK-04\", \"clause_title\": \"Bid security in the form and amount stated in the bidding document\", \"is_present\": true, \"page_number\": 5, \"extracted_snippet\": \"Accidents will be recorded in the site register and reported to the supervising officer within twenty four hours.\", \"confidence_score\": 0.0, \"requires_human_review\": true}]",
+    "submission": "no-items-submission"
+  }
+]

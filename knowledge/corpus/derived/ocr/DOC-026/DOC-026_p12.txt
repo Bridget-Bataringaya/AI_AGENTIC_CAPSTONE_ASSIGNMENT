@@ -1,0 +1,44 @@
+12.2
+12.3
+12.4
+13.0
+13.1
+13.2
+13.3
+13.4
+13.5
+13.6
+13.7
+13.8
+13.9
+The requirement of obtaining physical proof of receipt of the addendum by
+a bidder shall not apply to procurements and disposals conducted on the e-
+GP System.
+Bidders shall receive an email from the System on amendments to the
+bidding document while other providers shall have access to view the
+amendments on the bid notice.
+Where an addendum is issued and less than one third of the bidding period
+remains after issuance of the addendum, the PDE shall extend the deadline
+for submission of bids which should be within the maximum bidding period
+under Clause 9.2.
+Submission of Bids
+Bidders shall prepare bids and submit them within the time specified in the
+bidding documents.
+Submission of bids shall be done by an authorized representative of the
+bidder on the System.
+Any modification to the bid submitted in the e-GP System shall be permitted
+provided it is undertaken prior to the bid submission deadline.
+Bidders shall be permitted to withdraw or replace their bids prior to the
+submission deadline through the e-GP System. Bidders who withdraw their
+bids after the deadline of bid submission shall forfeit their bid securities.
+Bidders shall submit bids electronically in compliance with prescribed
+formats and within stated deadlines.
+Bidders with invalid requirements will not be allowed proceed with bid
+submissions.
+All bids shall be encrypted upon submission and automatically decrypt at
+bid opening.
+Bids submitted online shall be scanned for malware by the System before
+being accepted onto the System.
+A bidder shall instantly be notified where the bid is rejected due to threats
+of malware.
+Page 10 of 18

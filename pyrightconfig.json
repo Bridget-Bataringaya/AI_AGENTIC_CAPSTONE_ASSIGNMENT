@@ -1,0 +1,6 @@
+{
+  "include": ["src", "tests", "knowledge", "run.py"],
+  "extraPaths": ["src", "tests/evaluation"],
+  "reportMissingImports": "warning",
+  "pythonVersion": "3.10"
+}

@@ -1,0 +1,36 @@
+ProcureCheck 0.4.0 workflow on synthetic-submission.txt: 3 checklist items, 1 page(s), role procurement_officer, model llama3.1:8b.
+Case history: on for submission SYN-WORKS-2026-014. Statuses only, kept 180 days; --no-memory turns it off.
+Trace written to evidence\traces\memory\live-01-first-check.json
+[iteration 1] check: success (508s)
+             No check has run. Check all 3 checklist items.
+[iteration 2] generate_report: success (0s)
+             The check is settled. Generate the report.
+Stopped: report_ready. The report is ready for the procurement officer.
+{
+  "status": "success",
+  "report": {
+    "document_name": "synthetic-submission.txt",
+    "document_type": "Bid Document",
+    "overall_status": "Incomplete",
+    "completeness_percentage": 66.7,
+    "present_items": [
+      "Valid tax clearance certificate from the revenue authority",
+      "Signed conflict of interest declaration"
+    ],
+    "missing_items": [
+      "Anti-bribery and anti-corruption declaration signed by the bidder"
+    ],
+    "unclear_items": [],
+    "recommendations": [
+      "Locate or request the Anti-bribery and anti-corruption declaration signed by the bidder. The check did not find it in the document."
+    ]
+  }
+}
+
+Hand-off to procurement_officer: The report is ready: Incomplete, 66.7% of items present. The findings are advisory.
+  - Locate or request: Anti-bribery and anti-corruption declaration signed by the bidder
+  - Sign off the report before it goes on the procurement record.
+
+Case history:
+  - No earlier check of this submission is remembered.
+  - This check was remembered as case 1 and is kept for 180 days.

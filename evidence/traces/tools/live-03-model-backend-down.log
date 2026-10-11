@@ -1,0 +1,4 @@
+Agent run on synthetic-submission.pdf: 3 checklist items, 7 page(s), role procurement_officer, model llama3.1:8b.
+Trace written to evidence\traces\tools\live-03-model-backend-down.json
+Run ended: SERVICE_UNAVAILABLE: The model backend is unavailable, so no tool was chosen. Model request failed against http://127.0.0.1:9/api/chat. Underlying error: [WinError 10061] No connection could be made because the target machine actively refused it
+exit=2

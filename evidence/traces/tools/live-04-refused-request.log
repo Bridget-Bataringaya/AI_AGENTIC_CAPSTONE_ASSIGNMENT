@@ -1,0 +1,4 @@
+Agent run on synthetic-submission.pdf: 3 checklist items, 7 page(s), role procurement_officer, model llama3.1:8b.
+Trace written to evidence\traces\tools\live-04-refused-request.json
+Run ended: REFUSED: This system performs document completeness checking only. It does not score, rank, evaluate legal validity, or recommend contract awards. Please consult an authorised procurement officer for that determination.
+exit=3

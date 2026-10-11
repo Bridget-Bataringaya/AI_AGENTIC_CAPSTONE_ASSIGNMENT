@@ -1,0 +1,45 @@
+34.2
+34.3
+34.4
+34.5
+34.6
+(i) Documented, verified, and sustained System failure where the e-GP
+System is unavailable due to technical failures, scheduled maintenance,
+or network issues that prevent access;
+(ii) Emergency situations such as humanitarian crises: epidemics, or
+pandemics, natural/man-made disasters: floods, fires, earthquakes,
+volcanic eruptions, or accidents, critical Infrastructure failure: sudden
+breakdown of security systems, hospitals, roads, bridges, or
+water/sewerage installations, political Emergencies: war, civil uprisings,
+or terrorist attacks and unforeseen security Risks: situations that
+threaten personnel or government operations.
+(iii) Specialized procurements where the technical specifications, quality
+requirements or functional requirements cannot be accommodated on
+the e-GP System.
+(iv)Where a procurement is subject to specific legal obligations, donor
+conditions, development partner requirements, or government policy
+directives that are incompatible with conduct of the procurement on the
+e-GP System.
+(v) Any other circumstance where the procuring and disposing entity can
+demonstrate with documented evidence and comparative analysis that
+undertaking the procurement off the e-GP System better serves the
+public interest, achieves superior value for money, or addresses critical
+operational needs that the e-GP System cannot accommodate.
+All exceptions under 34.1 above shall require written justification clearly
+stating the specific exception being invoked; detailed circumstances
+necessitating the exception; evidence supporting the exception (market
+survey, supplier performance records, technical analysis, etc.) and how
+procurement off the e-GP System will achieve value for money.
+The exceptions shall require approval by the Ministry of Finance, Planning
+and Economic Development.
+The procuring and disposing entity shall notify the Authority of the approval
+within seven (7) working days of approval, including copies of the
+justification and approval documents.
+The procuring and disposing entity shall maintain complete records of all
+exceptions invoked, including justifications, approvals, procurement
+outcomes, and evidence demonstrating that the exception achieved the
+intended benefits.
+The Ministry of Finance, Planning and Economic Development may, upon
+review of an exception require additional justification, supporting
+documentation, or clarification. The Ministry shall thereafter approve or
+Page 17 of 18

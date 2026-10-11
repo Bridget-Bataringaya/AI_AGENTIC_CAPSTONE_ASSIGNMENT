@@ -1,0 +1,3 @@
+Checking 10 checklist items against 7 page(s) using llama3.1:8b (per_item)...
+Report written to evidence\traces\baseline-run.json
+BASELINE EXIT=0

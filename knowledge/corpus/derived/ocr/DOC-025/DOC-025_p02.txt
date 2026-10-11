@@ -1,0 +1,35 @@
+Guideline Subject:
+1.0 Definitions
+Bid, Performance and Advance Payment Securities
+For this Guideline, unless the context otherwise requires:
+ii.
+iv.
+"EAC Provider" means a citizen of the East African Community (EAC) or
+company incorporated in any of the EAC Partner States and has been
+operational in any of the EAC Partner States for at least ten years with
+demonstrated evidence of doing business and complying with relevant
+statutory obligations;
+"Local provider" means a national, resident or EAC provider;
+"National provider" means a provider registered in Uganda and wholly
+owned and controlled by Ugandans;
+"Resident provider" means a provider registered in Uganda who is not a
+national provider.
+2.0 Bid Security
+A procuring and disposing entity may require a bidder to provide a Bid Security in
+accordance with Regulation 63 (2) of the Public Procurement and Disposal of Public
+Assets (Rules and Methods for Procurement of Supplies, Works and Non- Consultancy
+Services) Regulations, 2023 and Regulation 47 (2) of the Public Procurement and
+Disposal of Public Assets (Procurement of Consultancy Services) Regulations, 2023.
+The bid security may take the form of a bid guarantee, bid bond or a bid securing
+declaration as provided in this guideline.
+2.1
+ii.
+Bid Guarantee
+A bid security in the form of a bank guarantee shall be required for procurement
+of supplies, works and non-consultancy services under open domestic and
+international bidding methods.
+The bank guarantee shall indicate a fixed amount and shall not exceed 1% of the
+estimated value of the procurement requirement. For example, where a
+procurement is estimated at UGX. 500 Million, the bid security required should
+not exceed UGX 5 Million i.e. 1% of the estimated cost.
+2

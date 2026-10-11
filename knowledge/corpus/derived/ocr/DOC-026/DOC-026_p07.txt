@@ -1,0 +1,36 @@
+4.0
+4.1
+4.2
+Access to the e-GP System
+(i) To access relevant information and carry out transactions on the
+System, a user account shall be created in any of the following ways:
+(a) PDE System Administrator accounts created by the System
+Super Administrator;
+(b) PDE portal users that are created by the PDE System
+Administrator; and
+(c) Self-registration by providers.
+(ii) Access shall be restricted to information relevant to the user's assigned
+roles.
+Super System Administrator (SSA)
+(i) There shall be one Super System Administrator responsible for all
+configurations of the e-GP System and the overall management of
+System users.
+(ii) The Super System Administrator shall have authority to create and
+modify users and their roles, including PDE, PDE Administrators,
+oversight agencies, the Attorney General, the PPDA Appeals Tribunal,
+development partners, and other designated users.
+(iii) The Super System Administrator shall set and manage System
+parameters including procurement categories, methods, thresholds,
+lead times, user roles and permissions, accreditation, e-catalogue
+management, and password settings.
+(iv) The SSA shall maintain an activity log of all the actions undertaken on
+the e-GP System.
+Procuring and Disposing Entity System Administrator
+(i) Each procuring and disposing entity shall designate a PDE System
+Administrator responsible for creating and managing user accounts,
+departments, branches, and regional offices within the entity. The PDE
+System Administrator shall have authority to assign roles to users, and
+to deactivate accounts where necessary, with reasons duly recorded.
+(ii) The PDE Administrator shall ensure that all changes and actions taken
+on user accounts are recorded in an activity log for accountability.
+Page 5 of 18

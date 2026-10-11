@@ -1,0 +1,33 @@
+4.3
+4.4
+Procuring and Disposing Entity Registration
+(i) The Super System Administrator shall be responsible for registering a
+PDE on the e-GP System and capturing all mandatory details of each
+entity.
+(ii) Each PDE shall upload its official logo and any required authorization
+letters at registration.
+(iii) The PDE shall ensure that all user registrations and subsequent
+changes are duly authorized, recorded, and maintained in the system
+for audit and compliance purposes.
+Provider Registration and Fees to be Paid
+(i) Providers shall register on the e-GP System in order to participate in the
+procurement or disposal processes of procuring and disposing entities.
+(ii) A provider that is suspended by the Authority or an international agency
+to which Uganda is a member shall not be registered on the e-GP
+System.
+(iii) Providers shall pay a fee for registration on the e-GP System which
+registration shall be valid for a period of twelve calendar months.
+(iv) The fee paid in paragraph (iii) above shall be collected through the
+Uganda Revenue Authority payment system or any other mechanism
+prescribed.
+(v) The registration shall be undertaken through an online centralized
+registration system of the e-GP which shall be approved by the
+Authority.
+(vi) The provider registered on the e-GP System shall comply with the
+system requirements at the time of registration and during the use of
+the system.
+(vii) A sub-contractor shall be registered as an individual provider prior to
+participation as a sub-contractor of another bidder.
+(viii) Joint ventures shall be required to register on the e-GP System prior
+to submission of bids on the System.
+Page 6 of 18
