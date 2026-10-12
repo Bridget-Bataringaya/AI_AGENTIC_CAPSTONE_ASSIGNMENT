@@ -8,7 +8,7 @@ This index records **Bridget's individually assigned work**, plus explicitly lab
 
 | Week | Task | Source evidence in ClickUp | GitHub status |
 |---|---|---|---|
-| 1 | [Create 2–3 Page Project Charter](https://app.clickup.com/t/123tcvwcfk7) | `Project Charter.docx` attached | ClickUp evidence only; document not copied to GitHub |
+| 1 | [Create 2–3 Page Project Charter](https://app.clickup.com/t/123tcvwcfk7) | `Project Charter.docx` attached | **Original Word file committed** at `docs/requirements/Project Charter.docx` (blob SHA `8a928a96545bb2aea581bf0e5265d50eab147746`) |
 | 1 | [Set Up GitHub Repository and ClickUp Evidence](https://app.clickup.com/t/123tcvwcfkd) | Completed task; repository exists | Existing repo; no separate deliverable file identified |
 | 2 | [Create at least 10 test cases and record expected vs actual behaviour](https://app.clickup.com/t/123tcvwd9up) | `Prompt Evaluation Table.docx`; `Team Test Case Evaluation.docx` attached | ClickUp evidence only |
 | 3 | [Assemble a controlled corpus and record provenance](https://app.clickup.com/t/123tcvwe2y4) | `CORPUS_GROUP_H.zip` attached (approx. 40.7 MB) | ClickUp evidence only; corpus not copied or inspected here |
