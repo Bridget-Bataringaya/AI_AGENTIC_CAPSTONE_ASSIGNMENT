@@ -102,6 +102,11 @@ app = FastAPI(
 )
 
 
+# Week 7: authenticate legacy endpoints before accepting uploaded data.
+from .legacy_auth_patch import install_legacy_auth
+install_legacy_auth(app)
+
+
 def get_settings() -> Settings:
     return Settings.from_env()
 
