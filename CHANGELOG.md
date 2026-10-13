@@ -2,6 +2,7 @@
 
 One line per version, newest first. The version is printed by `python run.py --version`, written into every workflow trace and served by the API.
 
+- 0.4.4: Memory data handling note added (`docs/architecture/`): what is stored, why, who can access it, retention and deletion, with the test that confirms each statement. Documentation only.
 - 0.4.3: Weeks 2 to 4 progress reports rebuilt without the declaration, dedication and acknowledgement pages; member names moved to the title page and the division of work into the introduction. Documentation only.
 - 0.4.2: Week 5 progress report added (`docs/weekly-reports/`). Documentation only.
 - 0.4.1: Week 5 execution traces: `tests/evaluation/run_outage_recovery.py` captures a failure-and-recovery run against the real model; six recorded traces in `evidence/traces/`, set out in `docs/evaluation/workflow-execution-traces`. No change to the application's behaviour.
