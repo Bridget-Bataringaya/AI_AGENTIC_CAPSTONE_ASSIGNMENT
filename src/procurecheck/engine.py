@@ -46,6 +46,7 @@ from typing import Callable, Final, List, Optional, Sequence, Set
 from .config import STRATEGY_BATCH, Settings
 from .ingestion.submission import ParsedSubmission
 from .llm import OllamaClient, StructuredOutputError
+from .observability import ITEM_OUTCOME, clip, emit, labelled
 from .models import (
     AdjudicatedClause,
     ChecklistItem,
@@ -328,6 +329,34 @@ def _assert_fits_context(
         )
 
 
+def _record_outcome(
+    item: ChecklistItem, verification: AdjudicatedClause, seconds: Optional[float]
+) -> None:
+    """One item_outcome event: the verdict, and what each stage did to reach it.
+
+    The quotation is recorded by its length only. Whether it was found in the
+    submission, and what the evidence check made of it, are the facts a reader
+    needs to judge the verdict without seeing the bid.
+    """
+    emit(
+        ITEM_OUTCOME,
+        item_id=item.id,
+        item=clip(item.description),
+        status=verification.status.value,
+        is_present=verification.is_present,
+        confidence=verification.confidence_score,
+        requires_human_review=verification.requires_human_review,
+        page_number=verification.page_number,
+        quotation_chars=len(verification.extracted_snippet or ""),
+        quotation_grounded=verification.quotation_grounded,
+        model_answered=verification.model_answered,
+        first_pass_present=verification.first_pass_present,
+        first_pass_confidence=verification.first_pass_confidence,
+        evidence_check=verification.evidence_check,
+        seconds=None if seconds is None else round(seconds, 3),
+    )
+
+
 class MatchingEngine:
     """Runs a completeness check for one submission against one checklist."""
 
@@ -354,9 +383,14 @@ class MatchingEngine:
             item, clause.extracted_snippet, clause.page_number
         )
         try:
-            adjudication = self._client.complete_structured(
-                system_prompt, user_message, EvidenceAdjudication
-            )
+            with labelled(
+                purpose="evidence_adjudication",
+                prompt_version=self._settings.adjudicator_prompt_version,
+                item_id=item.id,
+            ):
+                adjudication = self._client.complete_structured(
+                    system_prompt, user_message, EvidenceAdjudication
+                )
         except StructuredOutputError:
             # The check could not be completed, so the claim is unverified.
             # Reporting it as Found would present an unchecked answer as a
@@ -429,9 +463,14 @@ class MatchingEngine:
                 item, submission_text, self._settings.human_review_threshold
             )
             try:
-                raw = self._client.complete_structured(
-                    system_prompt, user_message, ClauseVerification
-                )
+                with labelled(
+                    purpose="clause_verification",
+                    prompt_version=self._settings.resolved_prompt_version,
+                    item_id=item.id,
+                ):
+                    raw = self._client.complete_structured(
+                        system_prompt, user_message, ClauseVerification
+                    )
                 verification = self._adjudicate(
                     _post_process(raw, item, submission, haystack, self._settings),
                     item,
@@ -440,6 +479,7 @@ class MatchingEngine:
                 # One unusable answer must not lose the whole report.
                 verification = _unreviewed(item, submission.page_count)
             results.append(verification)
+            _record_outcome(item, verification, time.monotonic() - started)
             if on_progress is not None:
                 on_progress(
                     ItemProgress(
@@ -463,21 +503,25 @@ class MatchingEngine:
         user_message = build_batch_user_message(
             items, submission_text, self._settings.human_review_threshold
         )
-        raw_report = self._client.complete_structured(
-            system_prompt, user_message, CompletenessReport
-        )
+        with labelled(
+            purpose="batch_verification",
+            prompt_version=self._settings.resolved_prompt_version,
+        ):
+            raw_report = self._client.complete_structured(
+                system_prompt, user_message, CompletenessReport
+            )
         by_id = {v.checklist_item_id: v for v in raw_report.verified_items}
 
         results: List[AdjudicatedClause] = []
         for item in items:
             raw = by_id.get(item.id)
             if raw is None:
-                results.append(_unreviewed(item, submission.page_count))
-                continue
-            results.append(
-                self._adjudicate(
+                verification = _unreviewed(item, submission.page_count)
+            else:
+                verification = self._adjudicate(
                     _post_process(raw, item, submission, haystack, self._settings),
                     item,
                 )
-            )
+            results.append(verification)
+            _record_outcome(item, verification, None)
         return results

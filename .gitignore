@@ -21,3 +21,6 @@ knowledge/index/
 
 # Case history, written locally by workflow runs and never committed
 data/memory/
+
+# Run logs, written locally by every run and never committed
+data/logs/

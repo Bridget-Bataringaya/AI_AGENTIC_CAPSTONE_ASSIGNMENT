@@ -35,6 +35,7 @@ from ..ingestion import (
     parse_submission,
 )
 from ..llm import OllamaClient
+from ..observability import recording
 from .authorization import ROLE_PERMISSIONS, ROLE_PROCUREMENT_OFFICER, Principal
 from .completeness import ToolContext
 from .contracts import ErrorCode
@@ -119,12 +120,23 @@ def run_agent(args: argparse.Namespace, settings: Settings) -> int:
         executor = ToolExecutor(default_registry(), ToolContext(settings, client))
         agent = ToolCallingAgent(client, executor, max_turns=args.max_turns)
         started = datetime.now()
-        run = agent.run(args.request, principal, session)
+        with recording(
+            "agent", settings, role=principal.role, user=principal.user_id,
+            submission_name=args.submission.name, document_text=session.document_text,
+            pages=parsed.page_count, checklist_items=len(items), max_turns=args.max_turns,
+        ) as recorder:
+            run = agent.run(args.request, principal, session)
+            recorder.finish(
+                "answered" if run.error is None else run.error.error_code.value,
+                ok=run.error is None,
+            )
         seconds = (datetime.now() - started).total_seconds()
 
     destination = args.trace or _trace_path(args.submission)
     destination.parent.mkdir(parents=True, exist_ok=True)
     trace = {
+        "run_id": recorder.run_id,
+        "run_log": None if recorder.path is None else recorder.path.name,
         "run_at": started.isoformat(timespec="seconds"),
         "seconds": round(seconds, 1),
         "model": settings.model,

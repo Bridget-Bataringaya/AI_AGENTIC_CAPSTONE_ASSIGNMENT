@@ -12,6 +12,7 @@ Usage:
     python -m procurecheck.cli agent --submission FILE [--request TEXT] [--role ROLE]
     python -m procurecheck.cli workflow --submission FILE [--role ROLE]
     python -m procurecheck.cli memory list|show|forget|purge
+    python -m procurecheck.cli logs list|show|summary
     python -m procurecheck.cli --version
 """
 
@@ -34,6 +35,8 @@ from .ingestion import (
 )
 from .llm import ModelUnavailableError, OllamaClient
 from .memory import commands as memory_commands
+from .observability import commands as log_commands
+from .observability import recording
 from .report import to_csv, to_json, to_text
 from .retrieval import commands as retrieval_commands
 from .tools import commands as tool_commands
@@ -78,6 +81,7 @@ def _build_parser() -> argparse.ArgumentParser:
     tool_commands.add_parsers(subparsers)
     workflow_commands.add_parsers(subparsers)
     memory_commands.add_parsers(subparsers)
+    log_commands.add_parsers(subparsers)
 
     check = subparsers.add_parser("check", help="Run a completeness check")
     check.add_argument(
@@ -199,17 +203,27 @@ def _run_check(args: argparse.Namespace, settings: Settings) -> int:
     def show(progress: ItemProgress) -> None:
         print(progress.line, file=sys.stderr, flush=True)
 
-    try:
-        with OllamaClient(settings) as client:
-            outcome = MatchingEngine(client, settings).analyse(
-                items, parsed, args.instruction, on_progress=show
-            )
-    except ModelUnavailableError as exc:
-        print(f"Model backend unavailable: {exc}", file=sys.stderr)
-        return EXIT_BACKEND_ERROR
-    except ContextOverflowError as exc:
-        print(f"Input too large: {exc}", file=sys.stderr)
-        return EXIT_USER_ERROR
+    with recording(
+        "check", settings, submission_name=args.submission.name,
+        document_text=parsed.as_marked_text(), pages=parsed.page_count,
+        checklist_items=len(items), checklist=checklist_label,
+    ) as recorder:
+        try:
+            with OllamaClient(settings) as client:
+                outcome = MatchingEngine(client, settings).analyse(
+                    items, parsed, args.instruction, on_progress=show
+                )
+        except ModelUnavailableError as exc:
+            recorder.finish("model_unavailable", ok=False)
+            print(f"Model backend unavailable: {exc}", file=sys.stderr)
+            return EXIT_BACKEND_ERROR
+        except ContextOverflowError as exc:
+            recorder.finish("input_too_large", ok=False)
+            print(f"Input too large: {exc}", file=sys.stderr)
+            return EXIT_USER_ERROR
+        recorder.finish("refused" if outcome.refused else "report", ok=not outcome.refused)
+    if recorder.path is not None:
+        print(f"Run log written to {recorder.path}", file=sys.stderr)
 
     if outcome.refused:
         print(outcome.refusal.reason)
@@ -312,6 +326,9 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if args.command == "memory":
         return memory_commands.run_memory(args, settings)
+
+    if args.command == "logs":
+        return log_commands.run_logs(args, settings)
 
     overrides = {}
     if getattr(args, "strategy", None):

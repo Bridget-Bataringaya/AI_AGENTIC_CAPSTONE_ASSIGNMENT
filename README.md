@@ -54,6 +54,7 @@ AI Boundary Matrix and User Stories AC6 to AC9.
 | `knowledge/corpus/` | The controlled corpus: 30 PPDA documents and 5 synthetic bids, with provenance |
 | `knowledge/index/` | The retrieval index, built locally and not committed |
 | `data/memory/` | The case history store, written locally and not committed |
+| `data/logs/` | The run logs, written locally and not committed |
 | `evidence/` | Screenshots, traces, demo recordings |
 | `tests/` | Test suite |
 
@@ -275,6 +276,40 @@ one submission's records after the operator types its id, and
 read costs the run its comparison and nothing else. The design is in
 `docs/architecture/Persistent Memory Implementation.docx`.
 
+What is stored, why, who can access it, and how it is retained and deleted is set out
+in `docs/architecture/Memory Data Handling Note.docx`. A live comparison of three runs
+(memory off, a truthful earlier case, and a false one) is in
+`docs/evaluation/memory-demonstration.docx`, and is repeated with
+`python tests/evaluation/run_memory_demonstration.py` (`--scripted` for an instant check).
+
+## Run logs
+
+Every `check`, `workflow`, `agent` and `search` run writes one JSON Lines file to
+`data/logs/`: one event to a line, in the order things happened. A log records each
+model call (prompt version and fingerprint, sizes, tokens, time, any error), whether
+each answer matched its schema, the verdict on each checklist item and how it was
+reached, each search with its scores, each tool call with its outcome, each planning
+decision, and how the run ended.
+
+```bash
+python run.py logs list
+python run.py logs show latest
+python run.py logs summary
+python run.py logs summary --json
+```
+
+`list` gives one line for each run. `show` prints one run, event by event, and takes
+the start of a run id. `summary` adds runs together: outcomes, median and slowest
+model call, tokens, failed calls by kind, tool error codes and the slowest calls.
+
+A log holds no text from a submission: no document text, no quotation, no prompt text
+and no model answer. A prompt is recorded as its version, a fingerprint and a length.
+Logging never changes a run: an event that cannot be recorded is dropped, and a log
+that cannot be written is skipped. Only a procurement officer may read the logs. They
+are deleted after 90 days (`PROCURECHECK_LOG_RETENTION_DAYS`), and
+`PROCURECHECK_LOGS=off` writes none. The design, and what the first logs showed about
+where a check's time goes, is in `docs/architecture/Observability Implementation.docx`.
+
 ## Searching the corpus
 
 The team's controlled corpus lives in `knowledge/corpus/`: 30 public PPDA documents
@@ -389,6 +424,9 @@ Regenerate the submission with `python knowledge/samples/generate_submission.py`
 | `PROCURECHECK_MEMORY` | `on` | Remember each finished workflow check so the next one can show what changed. `off` keeps nothing |
 | `PROCURECHECK_MEMORY_DIR` | `data/memory` | Where the case history store is kept |
 | `PROCURECHECK_MEMORY_RETENTION_DAYS` | `180` | Records older than this are deleted |
+| `PROCURECHECK_LOGS` | `on` | Write a run log for every check, workflow, agent run and search. `off` writes none |
+| `PROCURECHECK_LOG_DIR` | `data/logs` | Where the run logs are kept |
+| `PROCURECHECK_LOG_RETENTION_DAYS` | `90` | Logs older than this are deleted |
 | `PROCURECHECK_API_KEYS` | unset | `key:role:user` entries for the tool routes. Unset means every tool route refuses |
 
 ### A note on the context window

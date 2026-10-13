@@ -41,6 +41,7 @@ Usage:
   python run.py workflow --submission F [--role ROLE]
                                               Run the multi-step completeness workflow
   python run.py memory list|show|forget|purge See or delete the remembered case history
+  python run.py logs list|show|summary        Read the run logs: model, tool and outcome evidence
   python run.py --version                     Print the version
   python run.py evaluate [--no-model]         Run the prompt evaluation cases
   python run.py evaluate-retrieval            Measure retrieval quality on labelled queries
@@ -118,7 +119,7 @@ def main(argv: list[str] | None = None) -> int:
         return _run_tests(rest)
     if command == "api":
         return _run_api(rest)
-    if command in ("health", "check", "verify", "index", "search", "tools", "agent", "workflow", "memory", "--version"):
+    if command in ("health", "check", "verify", "index", "search", "tools", "agent", "workflow", "memory", "logs", "--version"):
         _bootstrap()
         from procurecheck.cli import main as cli_main
 
