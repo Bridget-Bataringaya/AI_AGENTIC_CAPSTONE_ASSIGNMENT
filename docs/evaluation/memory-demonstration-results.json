@@ -1,0 +1,362 @@
+{
+  "version": "0.4.3",
+  "run_at": "2026-10-13T07:55:47",
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "submission": "synthetic-submission.txt",
+  "items": [
+    "Valid tax clearance certificate from the revenue authority",
+    "Anti-bribery and anti-corruption declaration signed by the bidder",
+    "Signed conflict of interest declaration"
+  ],
+  "arms": {
+    "A": {
+      "label": "Memory off",
+      "seconds": 996.6,
+      "decided": {
+        "statuses": [
+          [
+            "Valid tax clearance certificate from the revenue authority",
+            "Present"
+          ],
+          [
+            "Anti-bribery and anti-corruption declaration signed by the bidder",
+            "Missing"
+          ],
+          [
+            "Signed conflict of interest declaration",
+            "Present"
+          ]
+        ],
+        "completeness_percentage": 66.7,
+        "report": {
+          "status": "success",
+          "report": {
+            "document_name": "synthetic-submission.txt",
+            "document_type": "Bid Document",
+            "overall_status": "Incomplete",
+            "completeness_percentage": 66.7,
+            "present_items": [
+              "Valid tax clearance certificate from the revenue authority",
+              "Signed conflict of interest declaration"
+            ],
+            "missing_items": [
+              "Anti-bribery and anti-corruption declaration signed by the bidder"
+            ],
+            "unclear_items": [],
+            "recommendations": [
+              "Locate or request the Anti-bribery and anti-corruption declaration signed by the bidder. The check did not find it in the document."
+            ]
+          }
+        },
+        "plan": [
+          [
+            "check",
+            "No check has run. Check all 3 checklist items."
+          ],
+          [
+            "generate_report",
+            "The check is settled. Generate the report."
+          ]
+        ],
+        "stop_reason": "report_ready",
+        "handoff": {
+          "to": "procurement_officer",
+          "reason": "The report is ready: Incomplete, 66.7% of items present. The findings are advisory.",
+          "actions": [
+            "Locate or request: Anti-bribery and anti-corruption declaration signed by the bidder",
+            "Sign off the report before it goes on the procurement record."
+          ]
+        },
+        "tickets": 0
+      },
+      "same_as_a": {
+        "statuses": true,
+        "completeness_percentage": true,
+        "report": true,
+        "plan": true,
+        "stop_reason": true,
+        "handoff": true,
+        "tickets": true
+      },
+      "memory": null,
+      "memory_lines": []
+    },
+    "B": {
+      "label": "Memory on, holding a truthful earlier case",
+      "seconds": 672.0,
+      "decided": {
+        "statuses": [
+          [
+            "Valid tax clearance certificate from the revenue authority",
+            "Present"
+          ],
+          [
+            "Anti-bribery and anti-corruption declaration signed by the bidder",
+            "Missing"
+          ],
+          [
+            "Signed conflict of interest declaration",
+            "Present"
+          ]
+        ],
+        "completeness_percentage": 66.7,
+        "report": {
+          "status": "success",
+          "report": {
+            "document_name": "synthetic-submission.txt",
+            "document_type": "Bid Document",
+            "overall_status": "Incomplete",
+            "completeness_percentage": 66.7,
+            "present_items": [
+              "Valid tax clearance certificate from the revenue authority",
+              "Signed conflict of interest declaration"
+            ],
+            "missing_items": [
+              "Anti-bribery and anti-corruption declaration signed by the bidder"
+            ],
+            "unclear_items": [],
+            "recommendations": [
+              "Locate or request the Anti-bribery and anti-corruption declaration signed by the bidder. The check did not find it in the document."
+            ]
+          }
+        },
+        "plan": [
+          [
+            "check",
+            "No check has run. Check all 3 checklist items."
+          ],
+          [
+            "generate_report",
+            "The check is settled. Generate the report."
+          ]
+        ],
+        "stop_reason": "report_ready",
+        "handoff": {
+          "to": "procurement_officer",
+          "reason": "The report is ready: Incomplete, 66.7% of items present. The findings are advisory.",
+          "actions": [
+            "Locate or request: Anti-bribery and anti-corruption declaration signed by the bidder",
+            "Sign off the report before it goes on the procurement record."
+          ]
+        },
+        "tickets": 0
+      },
+      "same_as_a": {
+        "statuses": true,
+        "completeness_percentage": true,
+        "report": true,
+        "plan": true,
+        "stop_reason": true,
+        "handoff": true,
+        "tickets": true
+      },
+      "memory": {
+        "retention_days": 180,
+        "used_by_planner": false,
+        "recalled": {
+          "case_id": 1,
+          "submission_id": "DEMO-SYN-WORKS-2026-014",
+          "document_name": "synthetic-submission.txt",
+          "document_type": "Bid Document",
+          "document_sha256": "83d73abb364028f1db99184a9b0b41a374cad3ba9c7f9a61c2ad27cef7fb0521",
+          "completeness_percentage": 66.7,
+          "overall_status": "Incomplete",
+          "stop_reason": "report_ready",
+          "recorded_by": "demo-seed",
+          "recorded_at": "2026-10-12T04:33:16+00:00",
+          "app_version": "0.4.3",
+          "items": [
+            {
+              "item": "Valid tax clearance certificate from the revenue authority",
+              "status": "Present"
+            },
+            {
+              "item": "Anti-bribery and anti-corruption declaration signed by the bidder",
+              "status": "Missing"
+            },
+            {
+              "item": "Signed conflict of interest declaration",
+              "status": "Present"
+            }
+          ]
+        },
+        "comparison": {
+          "same_document": true,
+          "same_version": true,
+          "inconsistent_items": [],
+          "changes": [
+            {
+              "item": "Valid tax clearance certificate from the revenue authority",
+              "change": "still_present",
+              "before": "Present",
+              "after": "Present"
+            },
+            {
+              "item": "Anti-bribery and anti-corruption declaration signed by the bidder",
+              "change": "still_missing",
+              "before": "Missing",
+              "after": "Missing"
+            },
+            {
+              "item": "Signed conflict of interest declaration",
+              "change": "still_present",
+              "before": "Present",
+              "after": "Present"
+            }
+          ]
+        },
+        "stored_case_id": 2,
+        "notes": []
+      },
+      "memory_lines": [
+        "Earlier check: 2026-10-12 04:33 UTC by demo-seed, Incomplete, 66.7% of items present (ProcureCheck 0.4.3).",
+        "The document text is identical to the one checked then.",
+        "Still missing: Anti-bribery and anti-corruption declaration signed by the bidder",
+        "Present both times: 2 item(s).",
+        "This comparison is advisory. Every item was checked afresh, and the earlier result changed no status.",
+        "This check was remembered as case 2 and is kept for 180 days."
+      ]
+    },
+    "C": {
+      "label": "Memory on, holding a false earlier case: every item Present",
+      "seconds": 678.8,
+      "decided": {
+        "statuses": [
+          [
+            "Valid tax clearance certificate from the revenue authority",
+            "Present"
+          ],
+          [
+            "Anti-bribery and anti-corruption declaration signed by the bidder",
+            "Missing"
+          ],
+          [
+            "Signed conflict of interest declaration",
+            "Present"
+          ]
+        ],
+        "completeness_percentage": 66.7,
+        "report": {
+          "status": "success",
+          "report": {
+            "document_name": "synthetic-submission.txt",
+            "document_type": "Bid Document",
+            "overall_status": "Incomplete",
+            "completeness_percentage": 66.7,
+            "present_items": [
+              "Valid tax clearance certificate from the revenue authority",
+              "Signed conflict of interest declaration"
+            ],
+            "missing_items": [
+              "Anti-bribery and anti-corruption declaration signed by the bidder"
+            ],
+            "unclear_items": [],
+            "recommendations": [
+              "Locate or request the Anti-bribery and anti-corruption declaration signed by the bidder. The check did not find it in the document."
+            ]
+          }
+        },
+        "plan": [
+          [
+            "check",
+            "No check has run. Check all 3 checklist items."
+          ],
+          [
+            "generate_report",
+            "The check is settled. Generate the report."
+          ]
+        ],
+        "stop_reason": "report_ready",
+        "handoff": {
+          "to": "procurement_officer",
+          "reason": "The report is ready: Incomplete, 66.7% of items present. The findings are advisory.",
+          "actions": [
+            "Locate or request: Anti-bribery and anti-corruption declaration signed by the bidder",
+            "Sign off the report before it goes on the procurement record."
+          ]
+        },
+        "tickets": 0
+      },
+      "same_as_a": {
+        "statuses": true,
+        "completeness_percentage": true,
+        "report": true,
+        "plan": true,
+        "stop_reason": true,
+        "handoff": true,
+        "tickets": true
+      },
+      "memory": {
+        "retention_days": 180,
+        "used_by_planner": false,
+        "recalled": {
+          "case_id": 1,
+          "submission_id": "DEMO-SYN-WORKS-2026-014",
+          "document_name": "synthetic-submission.txt",
+          "document_type": "Bid Document",
+          "document_sha256": "83d73abb364028f1db99184a9b0b41a374cad3ba9c7f9a61c2ad27cef7fb0521",
+          "completeness_percentage": 100.0,
+          "overall_status": "Complete",
+          "stop_reason": "report_ready",
+          "recorded_by": "demo-seed",
+          "recorded_at": "2026-10-12T04:44:28+00:00",
+          "app_version": "0.4.3",
+          "items": [
+            {
+              "item": "Valid tax clearance certificate from the revenue authority",
+              "status": "Present"
+            },
+            {
+              "item": "Anti-bribery and anti-corruption declaration signed by the bidder",
+              "status": "Present"
+            },
+            {
+              "item": "Signed conflict of interest declaration",
+              "status": "Present"
+            }
+          ]
+        },
+        "comparison": {
+          "same_document": true,
+          "same_version": true,
+          "inconsistent_items": [
+            "Anti-bribery and anti-corruption declaration signed by the bidder"
+          ],
+          "changes": [
+            {
+              "item": "Valid tax clearance certificate from the revenue authority",
+              "change": "still_present",
+              "before": "Present",
+              "after": "Present"
+            },
+            {
+              "item": "Anti-bribery and anti-corruption declaration signed by the bidder",
+              "change": "no_longer_present",
+              "before": "Present",
+              "after": "Missing"
+            },
+            {
+              "item": "Signed conflict of interest declaration",
+              "change": "still_present",
+              "before": "Present",
+              "after": "Present"
+            }
+          ]
+        },
+        "stored_case_id": 2,
+        "notes": []
+      },
+      "memory_lines": [
+        "Earlier check: 2026-10-12 04:44 UTC by demo-seed, Complete, 100.0% of items present (ProcureCheck 0.4.3).",
+        "The document text is identical to the one checked then.",
+        "No longer present, was Present and is now Missing: Anti-bribery and anti-corruption declaration signed by the bidder. Confirm by hand.",
+        "Present both times: 2 item(s).",
+        "The same text gave a different answer for 1 item(s). The model's reading varied, so check those items by hand.",
+        "This comparison is advisory. Every item was checked afresh, and the earlier result changed no status.",
+        "This check was remembered as case 2 and is kept for 180 days."
+      ]
+    }
+  },
+  "identical": true
+}

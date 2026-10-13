@@ -1,0 +1,17 @@
+A (Memory off): Present, Missing, Present; report_ready; 996.6s; same as A
+B (Memory on, holding a truthful earlier case): Present, Missing, Present; report_ready; 672.0s; same as A
+     memory: Earlier check: 2026-10-12 04:33 UTC by demo-seed, Incomplete, 66.7% of items present (ProcureCheck 0.4.3).
+     memory: The document text is identical to the one checked then.
+     memory: Still missing: Anti-bribery and anti-corruption declaration signed by the bidder
+     memory: Present both times: 2 item(s).
+     memory: This comparison is advisory. Every item was checked afresh, and the earlier result changed no status.
+     memory: This check was remembered as case 2 and is kept for 180 days.
+C (Memory on, holding a false earlier case: every item Present): Present, Missing, Present; report_ready; 678.8s; same as A
+     memory: Earlier check: 2026-10-12 04:44 UTC by demo-seed, Complete, 100.0% of items present (ProcureCheck 0.4.3).
+     memory: The document text is identical to the one checked then.
+     memory: No longer present, was Present and is now Missing: Anti-bribery and anti-corruption declaration signed by the bidder. Confirm by hand.
+     memory: Present both times: 2 item(s).
+     memory: The same text gave a different answer for 1 item(s). The model's reading varied, so check those items by hand.
+     memory: This comparison is advisory. Every item was checked afresh, and the earlier result changed no status.
+     memory: This check was remembered as case 2 and is kept for 180 days.
+Memory changed nothing the run decided.
