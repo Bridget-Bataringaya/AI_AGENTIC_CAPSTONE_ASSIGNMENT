@@ -2,6 +2,7 @@
 
 One line per version, newest first. The version is printed by `python run.py --version`, written into every workflow trace and served by the API.
 
+- 0.4.6: Week 6 progress report added (`docs/weekly-reports/`). Documentation only.
 - 0.4.5: Memory demonstration: `tests/evaluation/run_memory_demonstration.py` checks one submission three times (memory off, truthful memory, false memory) and compares everything the runs decide; live results and `docs/evaluation/memory-demonstration`. No change to the application's behaviour.
 - 0.4.4: Memory data handling note added (`docs/architecture/`): what is stored, why, who can access it, retention and deletion, with the test that confirms each statement. Documentation only.
 - 0.4.3: Weeks 2 to 4 progress reports rebuilt without the declaration, dedication and acknowledgement pages; member names moved to the title page and the division of work into the introduction. Documentation only.
