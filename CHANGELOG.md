@@ -2,6 +2,7 @@
 
 One line per version, newest first. The version is printed by `python run.py --version`, written into every workflow trace and served by the API.
 
+- 0.6.1: Makmot Johnson's branch merged: his Week 1 report, Week 1 task and Week 2 prompt iteration documents. Documentation only.
 - 0.6.0: Bataringaya Bridget's branch merged: the legacy routes POST /check and POST /checklist/parse now require an API key and the document:analyse permission (401 without a valid key, 403 for a role without it, 500 if the key setting is broken), with guardrail contract tests; her Weeks 1 to 7 documents and the corpus archive.
 - 0.5.1: Week 7 failure catalogue (`docs/evaluation/failure-catalogue`): five failures recorded in the repository, each re-tested on 19 October 2026, with the live re-test evidence in `evidence/traces/failures/`; Week 7 progress report added. Documentation only.
 - 0.5.0: Week 7 observability: the run log. Every check, workflow, agent run and search writes one JSON Lines file recording each model call (prompt version and fingerprint, sizes, tokens, timings, errors), each schema check, each item outcome, each search, each tool call, each planning decision and the run's outcome. No document text, quotation, prompt text or model answer is logged. `logs list|show|summary`; officer-only read permission; 90-day retention; `PROCURECHECK_LOGS=off` writes none. Traces now carry their run id.
