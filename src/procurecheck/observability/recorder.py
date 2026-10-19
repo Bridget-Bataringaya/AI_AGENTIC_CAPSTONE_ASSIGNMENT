@@ -110,6 +110,10 @@ class RunRecorder:
         self.run_id = run_id or uuid.uuid4().hex[:12]
         self._clock = clock or (lambda: datetime.now(timezone.utc))
         self._started = time.perf_counter()
+        # Orders runs that start within one tick of the wall clock, which on
+        # Windows is about 16 ms. The performance counter is shared by every
+        # process on the machine and only ever moves forward.
+        self.started_ns = time.perf_counter_ns()
         self._started_at = self._clock()
         self._lock = threading.Lock()
         self._events: List[Dict[str, Any]] = []
@@ -293,7 +297,7 @@ def recording(command: str, settings: Settings, **header: Any) -> Iterator[RunRe
     """
     recorder = RunRecorder(command)
     try:
-        recorder.emit(RUN_STARTED, command=command, **run_header(settings, **header))
+        recorder.emit(RUN_STARTED, command=command, started_ns=recorder.started_ns, **run_header(settings, **header))
     except Exception:  # noqa: BLE001 - a header that cannot be built must not stop the run
         logger.warning("The run log header could not be recorded", exc_info=True)
     token = _ACTIVE.set(recorder)

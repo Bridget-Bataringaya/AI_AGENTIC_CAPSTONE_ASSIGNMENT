@@ -20,6 +20,7 @@ import math
 import sys
 from collections import Counter
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
@@ -50,6 +51,8 @@ EXIT_USER_ERROR = 1
 DEFAULT_LAST = 20
 SLOWEST_SHOWN = 5
 LATEST = "latest"
+NAME_STAMP = "%Y%m%d-%H%M%S"
+OLDEST = datetime.min.replace(tzinfo=timezone.utc)
 
 
 @dataclass(frozen=True)
@@ -85,10 +88,35 @@ def read_log(path: Path) -> RunLog:
     return RunLog(path, tuple(events))
 
 
+def _started_at(log: RunLog) -> datetime:
+    """When the run began: its run_started time, else the time in its file name."""
+    try:
+        started = datetime.fromisoformat(str(log.first(RUN_STARTED)["at"]))
+        return started if started.tzinfo else started.replace(tzinfo=timezone.utc)
+    except (KeyError, ValueError):
+        pass
+    try:
+        return datetime.strptime(log.path.name[:15], NAME_STAMP).replace(tzinfo=timezone.utc)
+    except ValueError:
+        return OLDEST
+
+
+def _run_order(log: RunLog) -> Tuple[datetime, int, str]:
+    """The wall clock first; the performance counter for runs that started in
+    the same tick of it; the file name last, for logs written before it."""
+    counter = log.first(RUN_STARTED).get("started_ns")
+    return _started_at(log), counter if isinstance(counter, int) else -1, log.path.name
+
+
 def load_logs(directory: Path, last: Optional[int] = None) -> List[RunLog]:
-    """Newest first. File names start with the run's time, so they sort by it."""
-    paths = sorted(directory.glob(f"*{LOG_SUFFIX}"), reverse=True) if directory.is_dir() else []
-    return [read_log(path) for path in (paths if last is None else paths[:last])]
+    """Newest first, by when each run started.
+
+    File names carry the start only to the second, and two runs in the same
+    second would sort by their random run ids, so the order comes from inside.
+    """
+    paths = directory.glob(f"*{LOG_SUFFIX}") if directory.is_dir() else []
+    logs = sorted((read_log(path) for path in paths), key=_run_order, reverse=True)
+    return logs if last is None else logs[:last]
 
 
 def percentile(values: Sequence[float], fraction: float) -> Optional[float]:

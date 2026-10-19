@@ -2,6 +2,7 @@
 
 One line per version, newest first. The version is printed by `python run.py --version`, written into every workflow trace and served by the API.
 
+- 0.6.3: Fix: `logs show latest`, `logs list` and `--last N` order runs by when they started (the run_started time, then a performance-counter reading now recorded in run_started, then the file name), not by file name alone, so two runs started in the same second no longer come back in random order. Made on 19 October as 0.5.2 on Jonathan's branch, never pushed, and renumbered when rebased onto main.
 - 0.6.2: Isaac Mwesigwa's branch merged: user stories, AI boundary matrix, context construction and trace specification, and retrieval and grounding failure analysis. Documentation only.
 - 0.6.1: Makmot Johnson's branch merged: his Week 1 report, Week 1 task and Week 2 prompt iteration documents. Documentation only.
 - 0.6.0: Bataringaya Bridget's branch merged: the legacy routes POST /check and POST /checklist/parse now require an API key and the document:analyse permission (401 without a valid key, 403 for a role without it, 500 if the key setting is broken), with guardrail contract tests; her Weeks 1 to 7 documents and the corpus archive.

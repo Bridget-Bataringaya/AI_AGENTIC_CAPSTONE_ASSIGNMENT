@@ -5,7 +5,9 @@ from __future__ import annotations
 import json
 import os
 import time
+import uuid
 from datetime import datetime, timedelta, timezone
+from types import SimpleNamespace
 
 import httpx
 import pytest
@@ -32,6 +34,7 @@ from procurecheck.observability import (
     recording,
     short_hash,
 )
+import procurecheck.observability.recorder as recorder_module
 from procurecheck.observability.commands import load_logs, percentile, read_log, summarise
 from procurecheck.prompts import get_prompt
 from procurecheck.retrieval.retriever import Retriever
@@ -531,6 +534,30 @@ class TestCommands:
         assert main(["logs", "summary"]) == 0
         summary = capsys.readouterr().out
         assert "Runs: 2" in summary and "'UNAUTHORIZED': 1" in summary and "'Found': 1" in summary
+
+    def test_latest_is_the_later_of_two_runs_started_in_the_same_second(self, files, tmp_path, capsys, monkeypatch):
+        # One frozen wall clock, so both file names carry the same second, and
+        # run ids that sort the wrong way round, so the name cannot decide.
+        now = datetime.now(timezone.utc)
+
+        class Frozen(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return now
+
+        ids = iter([uuid.UUID(int=(1 << 128) - 1), uuid.UUID(int=0)])
+        monkeypatch.setattr(recorder_module, "datetime", Frozen)
+        monkeypatch.setattr(recorder_module, "uuid", SimpleNamespace(uuid4=lambda: next(ids)))
+        workflow(files)
+        workflow(files, "--role", "bidder")
+        names = sorted(path.name for path in (tmp_path / "run-logs").glob("*.jsonl"))
+        assert len(names) == 2 and names[0][:15] == names[1][:15]
+        assert [log.run_id for log in logged(tmp_path)] == ["000000000000", "ffffffffffff"]
+        capsys.readouterr()
+        assert main(["logs", "show", "latest"]) == 0
+        assert "Run 000000000000" in capsys.readouterr().out
+        assert main(["logs", "list", "--last", "1"]) == 0
+        assert capsys.readouterr().out.startswith("000000000000")
 
     def test_summary_as_json_can_be_parsed(self, files, capsys):
         workflow(files)

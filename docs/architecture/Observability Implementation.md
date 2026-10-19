@@ -46,7 +46,7 @@ Table 2 lists the eight events.
 <!-- Table: Events of the run log -->
 | Event | When it is written | What it records |
 | --- | --- | --- |
-| run_started | Once, first | The command, version, model, prompt versions, settings, caller's role, and the submission by name, fingerprint and size |
+| run_started | Once, first | The command, version, model, prompt versions, settings, caller's role, the submission by name, fingerprint and size, and a performance-counter reading that orders runs started in the same instant |
 | decision | Each planning decision of the workflow | The iteration, the action, the written reason, whether it is a retry, and any stop reason |
 | model_call | Each request to the model | The purpose, the item, the prompt version and fingerprint, sizes, tokens, timings, and any error |
 | model_output | Each answer checked against its schema | The schema, the attempt number and whether the answer was valid |
