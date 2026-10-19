@@ -36,3 +36,9 @@ def settings():
 def isolated_case_history(tmp_path, monkeypatch):
     """Case history is on by default; no test may write to the real store."""
     monkeypatch.setenv("PROCURECHECK_MEMORY_DIR", str(tmp_path / "case-history"))
+
+
+@pytest.fixture(autouse=True)
+def isolated_run_logs(tmp_path, monkeypatch):
+    """Run logs are on by default; no test may write to the real log folder."""
+    monkeypatch.setenv("PROCURECHECK_LOG_DIR", str(tmp_path / "run-logs"))

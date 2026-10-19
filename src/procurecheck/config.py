@@ -101,6 +101,17 @@ DEFAULT_MEMORY_ENABLED: Final[bool] = True
 DEFAULT_MEMORY_DIR: Final[str] = "data/memory"
 DEFAULT_MEMORY_RETENTION_DAYS: Final[int] = 180
 
+# The run log (see observability/recorder.py): one JSON Lines file per run,
+# recording model calls, tool calls, searches, decisions and the outcome.
+#
+# On by default, because a failure that was not logged cannot be explained
+# afterwards. It holds no document text, quotation, prompt text or model
+# answer, so it is kept for a shorter time than the case history rather than
+# for none. Set PROCURECHECK_LOGS=off to write nothing.
+DEFAULT_LOGS_ENABLED: Final[bool] = True
+DEFAULT_LOG_DIR: Final[str] = "data/logs"
+DEFAULT_LOG_RETENTION_DAYS: Final[int] = 90
+
 _TRUE_VALUES: Final[frozenset] = frozenset({"1", "true", "yes", "on"})
 _FALSE_VALUES: Final[frozenset] = frozenset({"0", "false", "no", "off"})
 
@@ -168,6 +179,9 @@ class Settings:
     memory_enabled: bool = DEFAULT_MEMORY_ENABLED
     memory_dir: str = DEFAULT_MEMORY_DIR
     memory_retention_days: int = DEFAULT_MEMORY_RETENTION_DAYS
+    logs_enabled: bool = DEFAULT_LOGS_ENABLED
+    log_dir: str = DEFAULT_LOG_DIR
+    log_retention_days: int = DEFAULT_LOG_RETENTION_DAYS
 
     def __post_init__(self) -> None:
         if not 0.0 <= self.temperature <= 2.0:
@@ -182,6 +196,8 @@ class Settings:
             raise ValueError("context_tokens must exceed max_output_tokens")
         if self.memory_retention_days < 1:
             raise ValueError("memory_retention_days must be at least 1")
+        if self.log_retention_days < 1:
+            raise ValueError("log_retention_days must be at least 1")
         if self.strategy not in (STRATEGY_PER_ITEM, STRATEGY_BATCH):
             raise ValueError(
                 f"strategy must be {STRATEGY_PER_ITEM!r} or {STRATEGY_BATCH!r}"
@@ -258,6 +274,11 @@ class Settings:
             memory_dir=_env_str("PROCURECHECK_MEMORY_DIR", DEFAULT_MEMORY_DIR),
             memory_retention_days=_env_int(
                 "PROCURECHECK_MEMORY_RETENTION_DAYS", DEFAULT_MEMORY_RETENTION_DAYS
+            ),
+            logs_enabled=_env_bool("PROCURECHECK_LOGS", DEFAULT_LOGS_ENABLED),
+            log_dir=_env_str("PROCURECHECK_LOG_DIR", DEFAULT_LOG_DIR),
+            log_retention_days=_env_int(
+                "PROCURECHECK_LOG_RETENTION_DAYS", DEFAULT_LOG_RETENTION_DAYS
             ),
         )
 

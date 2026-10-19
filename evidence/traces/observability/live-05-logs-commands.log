@@ -1,0 +1,66 @@
+> python run.py logs list
+bee75493f045  2026-10-13T05:22:27  workflow  unauthorized         0.001s  model 0 (0 failed)  tools 1 (1 failed)  synthetic-submission.txt
+f52bb7e1a8f6  2026-10-13T05:08:57  workflow  report_ready         793.666s  model 6 (1 failed)  tools 3 (1 failed)  synthetic-submission.txt
+9a61368ec450  2026-10-13T04:57:22  workflow  report_ready         680.643s  model 5 (0 failed)  tools 2 (0 failed)  synthetic-submission.txt
+ec79ca55794a  2026-10-13T04:57:10  search    results              4.95s  model 0 (0 failed)  tools 0 (0 failed)  -
+
+> python run.py logs summary
+Runs: 4  by command: {'workflow': 3, 'search': 1}
+Outcomes: {'unauthorized': 1, 'report_ready': 2, 'results': 1}
+Model calls: 11, failed: 1 {'ConnectError': 1}
+Model latency: median 168.2s, 95th percentile 241.3s, slowest 241.3s
+Tokens: 17736 in, 898 out
+Calls by prompt version: {'v2.0-per-item': 7, 'adjudicator-v1.0': 4}
+Answers that did not match their schema: 0
+Tool calls: 6, errors: {'UNAUTHORIZED': 1, 'SERVICE_UNAVAILABLE': 1}
+Item outcomes: {'Found': 4, 'Not Found': 2}; for human review: 0; quotations not found in the submission: 0
+Searches: 1, without sufficient evidence: 0
+  slow: run f52bb7e1a8f6 clause_verification REQ-01 241.3s, 2367 prompt tokens
+  slow: run f52bb7e1a8f6 clause_verification REQ-03 231.8s, 2364 prompt tokens
+  slow: run 9a61368ec450 clause_verification REQ-03 215.4s, 2364 prompt tokens
+  slow: run 9a61368ec450 clause_verification REQ-01 200.9s, 2367 prompt tokens
+  slow: run f52bb7e1a8f6 clause_verification REQ-02 168.8s, 2372 prompt tokens
+
+> python run.py logs show f52bb7   (the run that met an outage and recovered)
+Run f52bb7e1a8f6 (20261013-050857-workflow-f52bb7e1a8f6.jsonl)
+    1 05:08:57.181 run_started   workflow by procurement_officer, ProcureCheck 0.4.5, llama3.1:8b, v2.0-per-item + adjudicator-v1.0, submission synthetic-submission.txt (2935 characters), 3 items
+    2 05:08:57.181 decision      iteration 1: check. No check has run. Check all 3 checklist items.
+    3 05:08:59.329 model_call    clause_verification REQ-01 prompt v2.0-per-item #4de417c75f006aee, 10656 chars in, no tokens, 2.1s FAILED ConnectError
+    4 05:08:59.357 tool_call     check_document_completeness by procurement_officer: FAILED SERVICE_UNAVAILABLE, 2.2s
+    5 05:08:59.357 decision      iteration 2: check. check failed with SERVICE_UNAVAILABLE; retry 1 of 1.
+    6 05:13:45.723 model_call    clause_verification REQ-01 prompt v2.0-per-item #4de417c75f006aee, 10656 chars in, 2367 + 132 tokens, 241.3s
+    7 05:13:45.726 model_output  ClauseVerification attempt 1: valid
+    8 05:14:37.457 model_call    evidence_adjudication REQ-01 prompt adjudicator-v1.0 #9c09ce17b594337c, 3852 chars in, 881 + 51 tokens, 51.7s
+    9 05:14:37.457 model_output  EvidenceAdjudication attempt 1: valid
+   10 05:14:37.459 item_outcome  REQ-01 Found, confidence 0.95, quotation grounded: True, evidence check: accepted, 293.078s. Valid tax clearance certificate from the revenue authority
+   11 05:17:26.284 model_call    clause_verification REQ-02 prompt v2.0-per-item #4de417c75f006aee, 10663 chars in, 2372 + 78 tokens, 168.8s
+   12 05:17:26.284 model_output  ClauseVerification attempt 1: valid
+   13 05:17:26.285 item_outcome  REQ-02 Not Found, confidence 0.0, quotation grounded: None, evidence check: None, 168.828s. Anti-bribery and anti-corruption declaration signed by the bidder
+   14 05:21:18.150 model_call    clause_verification REQ-03 prompt v2.0-per-item #4de417c75f006aee, 10637 chars in, 2364 + 135 tokens, 231.8s
+   15 05:21:18.206 model_output  ClauseVerification attempt 1: valid
+   16 05:22:10.582 model_call    evidence_adjudication REQ-03 prompt adjudicator-v1.0 #9c09ce17b594337c, 3890 chars in, 884 + 53 tokens, 52.3s
+   17 05:22:10.582 model_output  EvidenceAdjudication attempt 1: valid
+   18 05:22:10.582 item_outcome  REQ-03 Found, confidence 0.9, quotation grounded: True, evidence check: accepted, 284.297s. Signed conflict of interest declaration
+   19 05:22:10.732 tool_call     check_document_completeness by procurement_officer: ok, 746.3s
+   20 05:22:10.782 decision      iteration 3: generate_report. The check is settled. Generate the report.
+   21 05:22:10.820 tool_call     generate_completeness_report by procurement_officer: ok, 0.0s
+   22 05:22:10.821 decision      iteration 4: stop -> stop: report_ready. The report is ready for the procurement officer.
+   23 05:22:10.847 run_finished  report_ready after 793.666s. Totals: {'events': 22, 'model_calls': 6, 'model_errors': 1, 'model_latency_ms': 748063, 'prompt_tokens': 8868, 'output_tokens': 449, 'tool_calls': 3, 'tool_errors': 1, 'retrievals': 0, 'decisions': 4}
+
+> python run.py logs show ec79   (the search)
+Run ec79ca55794a (20261013-045710-search-ec79ca55794a.jsonl)
+    1 04:57:10.543 run_started   search by the local operator, ProcureCheck 0.4.3, llama3.1:8b, v2.0-per-item + adjudicator-v1.0
+    2 04:57:15.492 retrieval     hybrid search, 3 hits, best cosine 0.8064, evidence sufficient: True, 4.9s. What form of bid security is required for open bidding?
+    3 04:57:15.492 run_finished  results after 4.95s. Totals: {'events': 2, 'model_calls': 0, 'model_errors': 0, 'model_latency_ms': 0, 'prompt_tokens': 0, 'output_tokens': 0, 'tool_calls': 0, 'tool_errors': 0, 'retrievals': 1, 'decisions': 0}
+
+> python run.py logs show latest   (the refused caller)
+Run bee75493f045 (20261013-052227-workflow-bee75493f045.jsonl)
+    1 05:22:27.261 run_started   workflow by bidder, ProcureCheck 0.4.5, llama3.1:8b, v2.0-per-item + adjudicator-v1.0, submission synthetic-submission.txt (2935 characters), 3 items
+    2 05:22:27.261 decision      iteration 1: check. No check has run. Check all 3 checklist items.
+    3 05:22:27.262 tool_call     check_document_completeness by bidder: FAILED UNAUTHORIZED, 0.0s
+    4 05:22:27.262 decision      iteration 2: stop -> stop: unauthorized. The caller may not check; retrying cannot change that.
+    5 05:22:27.262 run_finished  unauthorized after 0.001s. Totals: {'events': 4, 'model_calls': 0, 'model_errors': 0, 'model_latency_ms': 0, 'prompt_tokens': 0, 'output_tokens': 0, 'tool_calls': 1, 'tool_errors': 1, 'retrievals': 0, 'decisions': 2}
+
+> python run.py logs list --role bidder
+Refused: the role bidder may not read the run logs.
+exit code 1

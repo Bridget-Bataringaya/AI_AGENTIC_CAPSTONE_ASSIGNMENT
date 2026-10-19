@@ -32,6 +32,7 @@ from ..ingestion import (
 )
 from ..llm import OllamaClient
 from ..memory import CaseHistoryStore, CaseMemory, resolve_store_path, validate_submission_id
+from ..observability import recording
 from ..tools.approval import ConsoleApprover
 from ..tools.authorization import ROLE_PERMISSIONS, ROLE_PROCUREMENT_OFFICER, Principal
 from ..tools.completeness import ToolContext
@@ -178,13 +179,27 @@ def run_workflow(args: argparse.Namespace, settings: Settings) -> int:
         )
         runner = WorkflowRunner(ToolExecutor(default_registry(), context), limits, memory=memory)
         started = datetime.now()
-        run = runner.run(workflow_input, principal)
+        with recording(
+            "workflow", settings, role=principal.role, user=principal.user_id,
+            submission_name=args.submission.name, document_text=workflow_input.document_text,
+            pages=parsed.page_count, checklist_items=len(items), submission_id=submission_id,
+            limits=limits.to_trace(), memory=memory is not None,
+        ) as recorder:
+            run = runner.run(workflow_input, principal)
+            recorder.finish(
+                run.stop_reason.value, ok=run.ok, iterations=run.iterations,
+                error_code=None if run.error is None else run.error.error_code.value,
+                completeness_percentage=None if run.check is None else run.check.completeness_percentage,
+                tickets=len(run.tickets), published=run.record is not None,
+            )
         seconds = (datetime.now() - started).total_seconds()
 
     destination = args.trace or _trace_path(args.submission)
     destination.parent.mkdir(parents=True, exist_ok=True)
     trace = {
         "version": __version__,
+        "run_id": recorder.run_id,
+        "run_log": None if recorder.path is None else recorder.path.name,
         "run_at": started.isoformat(timespec="seconds"),
         "seconds": round(seconds, 1),
         "model": settings.model,
@@ -196,6 +211,8 @@ def run_workflow(args: argparse.Namespace, settings: Settings) -> int:
     }
     destination.write_text(json.dumps(trace, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"Trace written to {destination}", file=sys.stderr)
+    if recorder.path is not None:
+        print(f"Run log written to {recorder.path}", file=sys.stderr)
 
     _print_run(run)
     if run.ok:

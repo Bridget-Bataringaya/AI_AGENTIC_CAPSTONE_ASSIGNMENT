@@ -15,9 +15,11 @@ why a passage was, or was not, put in front of the model.
 from __future__ import annotations
 
 import os
+import time
 from dataclasses import dataclass
 from typing import Dict, Final, List, Optional, Sequence
 
+from ..observability import RETRIEVAL, STATUS_ERROR, STATUS_OK, clip, emit
 from .chunking import Chunk
 from .embeddings import EmbeddingUnavailableError, OllamaEmbedder, dot
 from .index import CorpusIndex
@@ -137,6 +139,46 @@ class Retriever:
         top_k: int = DEFAULT_TOP_K,
         mode: str = MODE_HYBRID,
         doc_ids: Optional[Sequence[str]] = None,
+    ) -> SearchResult:
+        """Search, and record one retrieval event with the scores and sources.
+
+        The passages themselves are not logged; each hit is named by its chunk
+        and location, which is enough to find it again in the corpus.
+        """
+        started = time.perf_counter()
+        requested = {"query": clip(query), "requested_mode": mode, "top_k": top_k,
+                     "document_filter": None if not doc_ids else list(doc_ids)}
+        try:
+            result = self._search(query, top_k, mode, doc_ids)
+        except ValueError as exc:
+            emit(RETRIEVAL, **requested, status=STATUS_ERROR, error_kind=type(exc).__name__,
+                 latency_ms=int((time.perf_counter() - started) * 1000))
+            raise
+        emit(
+            RETRIEVAL,
+            **requested,
+            status=STATUS_OK,
+            mode=result.mode,
+            hits=[
+                {"rank": hit.rank, "chunk_id": hit.chunk.chunk_id, "location": hit.chunk.location,
+                 "cosine": None if hit.cosine is None else round(hit.cosine, 4),
+                 "fused_score": round(hit.fused_score, 6)}
+                for hit in result.hits
+            ],
+            best_cosine=None if result.best_cosine is None else round(result.best_cosine, 4),
+            min_cosine=result.min_cosine,
+            evidence_sufficient=result.evidence_sufficient,
+            notes=list(result.notes),
+            latency_ms=int((time.perf_counter() - started) * 1000),
+        )
+        return result
+
+    def _search(
+        self,
+        query: str,
+        top_k: int,
+        mode: str,
+        doc_ids: Optional[Sequence[str]],
     ) -> SearchResult:
         if not query.strip():
             raise ValueError("query must not be empty")

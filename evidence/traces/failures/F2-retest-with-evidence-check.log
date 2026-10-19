@@ -1,0 +1,12 @@
+2026-10-19T16:04:39Z
+Checking 4 checklist items against 7 page(s) using llama3.1:8b (per_item, v2.0-per-item + adjudicator-v1.0)...
+[1/4] CHK-02 Found 0.95 p3 502s  Valid tax clearance certificate from the revenue
+[2/4] CHK-05 Requires Human Review 0.01 p7 213s  Anti-bribery and anti-corruption declaration sig
+[3/4] CHK-08 Found 0.90 p7 173s  Signed conflict of interest declaration
+[4/4] CHK-10 Not Found 0.00 - 234s  Certificate of non-blacklisting or non-debarment
+Run log written to D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\data\logs\20261019-160441-check-15afd87df91a.jsonl
+Report written to evidence\traces\failures\F2-retest-with-evidence-check.json
+
+real	18m43.677s
+user	0m0.015s
+sys	0m0.015s

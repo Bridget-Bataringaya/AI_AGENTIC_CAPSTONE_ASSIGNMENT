@@ -28,6 +28,7 @@ from .ingestion import (
 )
 from .llm import ModelUnavailableError, OllamaClient
 from .memory import CaseHistoryStore, CaseMemory, resolve_store_path, validate_submission_id
+from .observability import recording
 from .models import ChecklistItem, ItemStatus
 from .report import to_csv, to_dict
 from .safety import MultipleSubmissionsError, assert_single_submission
@@ -359,8 +360,18 @@ def run_workflow(
     with OllamaClient(settings) as client:
         context = ToolContext(settings, client, review_queue=ReviewQueue())
         runner = WorkflowRunner(ToolExecutor(default_registry(), context), memory=memory)
-        run = runner.run(workflow_input, principal)
-    trace = {"version": __version__, **run.to_trace()}
+        with recording(
+            "api-workflow", settings, role=principal.role, user=principal.user_id,
+            submission_name=submission_path.name, document_text=workflow_input.document_text,
+            pages=parsed.page_count, checklist_items=len(items), submission_id=case_id,
+            memory=memory is not None,
+        ) as recorder:
+            run = runner.run(workflow_input, principal)
+            recorder.finish(
+                run.stop_reason.value, ok=run.ok, iterations=run.iterations,
+                error_code=None if run.error is None else run.error.error_code.value,
+            )
+    trace = {"version": __version__, "run_id": recorder.run_id, **run.to_trace()}
     if run.error is not None:
         return _error_response(run.error, principal, trace)
     return trace

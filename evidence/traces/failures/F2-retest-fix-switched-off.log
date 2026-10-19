@@ -1,0 +1,13 @@
+2026-10-19T16:23:22Z
+Checking 4 checklist items against 7 page(s) using llama3.1:8b (per_item, v2.0-per-item)...
+The evidence check is off. A quotation belonging to a different document will be reported as a match.
+[1/4] CHK-02 Found 0.95 p3 173s  Valid tax clearance certificate from the revenue
+[2/4] CHK-05 Found 0.95 p7 143s  Anti-bribery and anti-corruption declaration sig
+[3/4] CHK-08 Found 0.95 p7 146s  Signed conflict of interest declaration
+[4/4] CHK-10 Found 0.95 p2 153s  Certificate of non-blacklisting or non-debarment
+Run log written to D:\Academic\Y4\year 4 sem 1\ETS\Public procurement document completeness agent\AI_AGENTIC_CAPSTONE_ASSIGNMENT\data\logs\20261019-162326-check-754cfdf28bdb.jsonl
+Report written to evidence\traces\failures\F2-retest-fix-switched-off.json
+
+real	10m17.875s
+user	0m0.000s
+sys	0m0.094s

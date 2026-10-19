@@ -42,6 +42,9 @@ PERMISSION_SIGN_OFF: Final[str] = "report:sign_off"
 PERMISSION_HISTORY_READ: Final[str] = "case_history:read"
 PERMISSION_HISTORY_WRITE: Final[str] = "case_history:write"
 PERMISSION_HISTORY_DELETE: Final[str] = "case_history:delete"
+# Run logs (Week 7) name the submissions checked and who checked them, so
+# reading them is a permission too, held by the officer alone.
+PERMISSION_LOGS_READ: Final[str] = "run_logs:read"
 
 ROLE_PROCUREMENT_OFFICER: Final[str] = "procurement_officer"
 ROLE_EVALUATION_COMMITTEE: Final[str] = "evaluation_committee"
@@ -52,6 +55,7 @@ ROLE_PERMISSIONS: Final[Mapping[str, FrozenSet[str]]] = {
     ROLE_PROCUREMENT_OFFICER: frozenset({
         PERMISSION_ANALYSE, PERMISSION_REPORT, PERMISSION_TICKET, PERMISSION_PUBLISH, PERMISSION_SIGN_OFF,
         PERMISSION_HISTORY_READ, PERMISSION_HISTORY_WRITE, PERMISSION_HISTORY_DELETE,
+        PERMISSION_LOGS_READ,
     }),
     ROLE_EVALUATION_COMMITTEE: frozenset({PERMISSION_REPORT}),
     ROLE_BIDDER: frozenset(),

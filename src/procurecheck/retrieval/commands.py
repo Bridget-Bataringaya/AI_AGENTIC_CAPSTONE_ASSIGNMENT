@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Final
 
 from ..checklists import REPO_ROOT
+from ..observability import recording
 from ..config import Settings
 from .corpus import CORPUS_DIR, CorpusError, load_corpus
 from .embeddings import EmbeddingUnavailableError, OllamaEmbedder
@@ -157,11 +158,20 @@ def run_search(args: argparse.Namespace, settings: Settings) -> int:
     model = index.meta.get("embedding_model") or embedding_model()
     with OllamaEmbedder(settings.base_url, str(model)) as embedder:
         retriever = Retriever(index, embedder, min_cosine_from_env())
-        try:
-            result = retriever.search(args.query, args.top_k, args.mode, args.doc_ids)
-        except ValueError as exc:
-            print(f"Search error: {exc}", file=sys.stderr)
-            return EXIT_USER_ERROR
+        with recording(
+            "search", settings, embedding_model=str(model),
+            index_built_at=index.meta.get("built_at"), index_stale=stale,
+        ) as recorder:
+            try:
+                result = retriever.search(args.query, args.top_k, args.mode, args.doc_ids)
+            except ValueError as exc:
+                recorder.finish("invalid_query")
+                print(f"Search error: {exc}", file=sys.stderr)
+                return EXIT_USER_ERROR
+            recorder.finish(
+                "no_evidence" if result.evidence_sufficient is False else "results",
+                hits=len(result.hits),
+            )
 
     trace = {
         "searched_at": datetime.now().isoformat(timespec="seconds"),

@@ -25,6 +25,7 @@ from dataclasses import dataclass, field, replace
 from typing import Any, Dict, Final, List, Mapping, Optional, Protocol, Tuple
 
 from ..llm import ModelUnavailableError
+from ..observability import labelled
 from ..prompts import PROMPT_ORCHESTRATOR_V1_0, build_orchestrator_user_message
 from ..safety import screen_request
 from .authorization import Principal
@@ -49,6 +50,9 @@ WITHHELD_ANSWER: Final[str] = (
     "The model's summary was withheld because it crossed the safety boundary. "
     "The tool results in this run are unchanged and can be read directly."
 )
+
+
+ORCHESTRATOR_PROMPT_VERSION = "orchestrator-v1.0"
 
 
 class ChatModel(Protocol):
@@ -110,7 +114,7 @@ class AgentRun:
             "principal": None if self.principal is None else {
                 "user_id": self.principal.user_id, "role": self.principal.role,
             },
-            "prompt_version": "orchestrator-v1.0",
+            "prompt_version": ORCHESTRATOR_PROMPT_VERSION,
             "model_turns": self.model_turns,
             "status": "success" if self.ok else "error",
             "error": None if self.error is None else self.error.to_dict(),
@@ -258,7 +262,8 @@ class ToolCallingAgent:
 
         for turn in range(1, self._max_turns + 1):
             try:
-                message = self._model.chat_with_tools(messages, tools)
+                with labelled(purpose="tool_calling", prompt_version=ORCHESTRATOR_PROMPT_VERSION, turn=turn):
+                    message = self._model.chat_with_tools(messages, tools)
             except ModelUnavailableError:
                 logger.warning("Agent run: model backend unavailable", exc_info=True)
                 return self._finish(request, principal, state, turn, error=ToolError(

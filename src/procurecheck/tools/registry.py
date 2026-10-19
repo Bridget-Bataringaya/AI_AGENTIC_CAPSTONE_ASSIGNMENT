@@ -31,6 +31,7 @@ from typing import Any, Callable, Dict, Final, List, Mapping, Optional, Tuple, T
 from pydantic import BaseModel, ValidationError
 
 from ..llm import ModelUnavailableError
+from ..observability import STATUS_ERROR, STATUS_OK, TOOL_CALL, emit
 from .authorization import (
     PERMISSION_ANALYSE,
     PERMISSION_PUBLISH,
@@ -68,6 +69,8 @@ from .tickets import TOOL_TICKET, CreateTicketInput, CreateTicketOutput, create_
 MISSING_ERROR_TYPE: Final[str] = "missing"
 
 logger = logging.getLogger(__name__)
+
+UNKNOWN_TOOL_LABEL: Final[str] = "<unregistered tool>"
 
 Handler = Callable[[Any, ToolContext], BaseModel]
 
@@ -236,11 +239,25 @@ class ToolExecutor:
         self, name: str, arguments: Mapping[str, Any], principal: Optional[Principal]
     ) -> ToolResult:
         started = time.perf_counter()
+        # The model proposes the tool name, so an unregistered one is text the
+        # model wrote, which a crafted document could have put in its mouth.
+        # It is not logged.
+        logged_tool = name if self._registry.get(name) is not None else UNKNOWN_TOOL_LABEL
 
         approval: Optional[ApprovalDecision] = None
 
         def finish(output: Optional[BaseModel] = None, error: Optional[ToolError] = None) -> ToolResult:
             elapsed = int((time.perf_counter() - started) * 1000)
+            emit(
+                TOOL_CALL,
+                tool=logged_tool,
+                role=None if principal is None else principal.role,
+                status=STATUS_OK if error is None else STATUS_ERROR,
+                error_code=None if error is None else error.error_code.value,
+                duration_ms=elapsed,
+                approval=None if approval is None else ("approved" if approval.approved else "declined"),
+                argument_chars=sum(len(v) for v in arguments.values() if isinstance(v, str)),
+            )
             return ToolResult(name, dict(arguments), output, error, elapsed, approval)
 
         spec = self._registry.get(name)

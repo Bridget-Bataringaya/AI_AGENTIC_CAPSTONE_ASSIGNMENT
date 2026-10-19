@@ -31,6 +31,7 @@ from dataclasses import dataclass, replace
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from ..memory.recall import CaseMemory, MemoryReport, Recall
+from ..observability import DECISION, clip, emit
 from ..tools.authorization import Principal
 from ..tools.contracts import CheckCompletenessOutput, ErrorCode, GenerateReportOutput, ToolError
 from ..tools.publishing import PublishReportOutput
@@ -255,6 +256,15 @@ class WorkflowRunner:
         while True:
             sensed = state.sense()
             decision = decide(state, limits)
+            emit(
+                DECISION,
+                iteration=len(steps) + 1,
+                action=decision.action.value,
+                reason=clip(decision.reason),
+                retry=decision.retry,
+                abandoned=None if decision.abandon is None else decision.abandon.value,
+                stop_reason=None if decision.stop_reason is None else decision.stop_reason.value,
+            )
             if decision.abandon is not None:
                 # Recorded before anything else, so a dropped step is noted
                 # even when the decision that follows it is to stop.

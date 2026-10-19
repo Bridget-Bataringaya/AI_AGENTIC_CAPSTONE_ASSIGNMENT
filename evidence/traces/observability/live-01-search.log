@@ -1,0 +1,14 @@
+Query: "What form of bid security is required for open bidding?"  mode: hybrid
+  best similarity 0.806 against threshold 0.65: evidence sufficient
+
+1. [DOC-014-C0041] Standard Bidding Document for Works Under Open or Restricted Bidding
+   DOC-014, Section 1: Instructions to Bidders > Bid Security or Bid Securing Declaration  |  keyword #2, meaning #2 (0.804)
+   The Bid Security or Bid Securing Declaration shall be submitted using the appropriate form included in Section 4, Bidding Forms and shall be valid until the date specified in the BDS. Any bid not accompanied by appropriate Bid Security or Bid Securing Declaration, shall be rejected by the PDE as non-compliant. The Bid ...
+
+2. [DOC-015-C0032] User Guide for Works Under Open or Restricted Bidding
+   DOC-015, Section 8 “Special Conditions of Contract.” > Paragraph 6  |  keyword #7, meaning #1 (0.806)
+   Paragraph 6 The amount of bid security should be stated as a fixed amount in accordance with the PPDA guideline on securities. Alternatively, if a bid security is not required then the paragraph should so state that a Bid Securing Declaration shall be required.
+
+3. [DOC-009-C0047] Standard Bidding Document for Supplies Under Open or Restricted Bidding
+   DOC-009, p. 29, General > Bid Security or Bid Securing Declaration  |  keyword #3, meaning #7 (0.796)
+   Be submitted in its original form - copies will not be accepted. The Bid Security or Bid Securing Declaration shall be submitted using the appropriate form included in Section 4, Bidding Forms and shall remain valid until the date specified in the BDS. Any bid not accompanied by a substantially responsive Bid Security ...
