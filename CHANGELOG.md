@@ -2,6 +2,7 @@
 
 One line per version, newest first. The version is printed by `python run.py --version`, written into every workflow trace and served by the API.
 
+- 0.5.1: Week 7 failure catalogue (`docs/evaluation/failure-catalogue`): five failures recorded in the repository, each re-tested on 19 October 2026, with the live re-test evidence in `evidence/traces/failures/`; Week 7 progress report added. Documentation only.
 - 0.5.0: Week 7 observability: the run log. Every check, workflow, agent run and search writes one JSON Lines file recording each model call (prompt version and fingerprint, sizes, tokens, timings, errors), each schema check, each item outcome, each search, each tool call, each planning decision and the run's outcome. No document text, quotation, prompt text or model answer is logged. `logs list|show|summary`; officer-only read permission; 90-day retention; `PROCURECHECK_LOGS=off` writes none. Traces now carry their run id.
 - 0.4.6: Week 6 progress report added (`docs/weekly-reports/`). Documentation only.
 - 0.4.5: Memory demonstration: `tests/evaluation/run_memory_demonstration.py` checks one submission three times (memory off, truthful memory, false memory) and compares everything the runs decide; live results and `docs/evaluation/memory-demonstration`. No change to the application's behaviour.

@@ -1,0 +1,63 @@
+{
+  "submission_id": "synthetic-submission",
+  "generated_at": "2026-10-19T16:23:22+00:00",
+  "model": "llama3.1:8b",
+  "disclaimer": "This report is a document completeness check only. It records whether required checklist items could be located in the submission. It does not constitute a legal review, an eligibility determination, a score, a ranking, or a recommendation to award or reject any bid. All procurement decisions remain with authorised human officers.",
+  "summary": {
+    "Found": 2,
+    "Not Found": 1,
+    "Requires Human Review": 1
+  },
+  "items": [
+    {
+      "checklist_item_id": "CHK-02",
+      "clause_title": "Valid tax clearance certificate from the revenue authority",
+      "status": "Found",
+      "page_number": 3,
+      "extracted_snippet": "The bidder encloses a Tax Clearance Certificate issued by the national revenue authority, reference TCC/2026/00417, valid from 01 January 2026 to 31 December 2026. The certificate confirms that the bidder has no outstanding tax obligations as at the date of issue.",
+      "confidence_score": 0.95,
+      "evidence_check": "Evidence check: the quoted Tax Clearance Certificate is the required Tax Clearance Certificate.",
+      "what_happened": "The model was given all 7 pages of the submission and located the document on page 3. The quotation was confirmed to appear in the submission. The evidence check then compared the quotation with the requirement. It described the quoted passage as \"Tax Clearance Certificate\" and the requirement as \"Tax Clearance Certificate\". It judged them to be the same document.",
+      "next_step": "Open page 3 and confirm the quoted passage is the required document."
+    },
+    {
+      "checklist_item_id": "CHK-05",
+      "clause_title": "Anti-bribery and anti-corruption declaration signed by the bidder",
+      "status": "Requires Human Review",
+      "page_number": 7,
+      "extracted_snippet": "The bidder confirms that no director, officer or shareholder of Kavuma Civil Works Limited holds any interest, direct or indirect, in the Procuring Entity, and that no circumstance exists that would place the bidder in a position of conflict in respect of this procurement. Signed by the Managing Director, 12 March 2026.",
+      "confidence_score": 0.01,
+      "evidence_check": "Evidence check: the quoted Director and Shareholder Declaration is the required Anti-bribery and anti-corruption declaration.",
+      "what_happened": "The model was given all 7 pages of the submission and located the document on page 7. The quotation was confirmed to appear in the submission. The evidence check then compared the quotation with the requirement. It described the quoted passage as \"Director and Shareholder Declaration\" and the requirement as \"Anti-bribery and anti-corruption declaration\". It judged them to be the same document. Final confidence was 0.01. The model itself marked the match as uncertain, so the item was passed to a person.",
+      "next_step": "Read page 7 and decide whether it is the required document. Record the item as Found or Not Found."
+    },
+    {
+      "checklist_item_id": "CHK-08",
+      "clause_title": "Signed conflict of interest declaration",
+      "status": "Found",
+      "page_number": 7,
+      "extracted_snippet": "The bidder confirms that no director, officer or shareholder of Kavuma Civil Works Limited holds any interest, direct or indirect, in the Procuring Entity, and that no circumstance exists that would place the bidder in a position of conflict in respect of this procurement. Signed by the Managing Director, 12 March 2026.",
+      "confidence_score": 0.9,
+      "evidence_check": "Evidence check: the quoted Conflict of Interest Declaration is the required Conflict of Interest Declaration.",
+      "what_happened": "The model was given all 7 pages of the submission and located the document on page 7. The quotation was confirmed to appear in the submission. The evidence check then compared the quotation with the requirement. It described the quoted passage as \"Conflict of Interest Declaration\" and the requirement as \"Conflict of Interest Declaration\". It judged them to be the same document.",
+      "next_step": "Open page 7 and confirm the quoted passage is the required document."
+    },
+    {
+      "checklist_item_id": "CHK-10",
+      "clause_title": "Certificate of non-blacklisting or non-debarment",
+      "status": "Not Found",
+      "page_number": null,
+      "extracted_snippet": null,
+      "confidence_score": 0.0,
+      "evidence_check": "The first pass quoted a Certificate of Registration of the Company on page 2. The evidence check found that is not the required Certificate of non-blacklisting.",
+      "what_happened": "The model was given all 7 pages of the submission and reported the document as present on page 2. It quoted: \"Attached as Appendix A is the Certificate of Registration of the Company issued by the Registrar of Companies, registration number SYN-114-2019, dated 08 August 2019, confirming that Kavuma Civil Works Limited is duly incorporated and remains in good standing.\" The quotation was confirmed to appear in the submission. The evidence check then compared the quotation with the requirement, without the rest of the submission. It described the quoted passage as \"Certificate of Registration of the Company\" and the requirement as \"Certificate of non-blacklisting\". It judged them to be different documents and rejected the quotation. The item was therefore reported Not Found.",
+      "next_step": "Start with page 2, where the rejected passage was. Search the submission by hand for this document. If it is there, record it as Found with its page number. If it is not, record it as missing."
+    }
+  ],
+  "missing_items": [
+    "CHK-10"
+  ],
+  "items_requiring_human_review": [
+    "CHK-05"
+  ]
+}

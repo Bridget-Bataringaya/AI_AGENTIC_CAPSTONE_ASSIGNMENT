@@ -1,0 +1,59 @@
+{
+  "submission_id": "synthetic-submission",
+  "generated_at": "2026-10-19T16:33:40+00:00",
+  "model": "llama3.1:8b",
+  "disclaimer": "This report is a document completeness check only. It records whether required checklist items could be located in the submission. It does not constitute a legal review, an eligibility determination, a score, a ranking, or a recommendation to award or reject any bid. All procurement decisions remain with authorised human officers.",
+  "summary": {
+    "Found": 4,
+    "Not Found": 0,
+    "Requires Human Review": 0
+  },
+  "items": [
+    {
+      "checklist_item_id": "CHK-02",
+      "clause_title": "Valid tax clearance certificate from the revenue authority",
+      "status": "Found",
+      "page_number": 3,
+      "extracted_snippet": "The bidder encloses a Tax Clearance Certificate issued by the national revenue authority, reference TCC/2026/00417, valid from 01 January 2026 to 31 December 2026. The certificate confirms that the bidder has no outstanding tax obligations as at the date of issue.",
+      "confidence_score": 0.95,
+      "evidence_check": null,
+      "what_happened": "The model was given all 7 pages of the submission and located the document on page 3. The quotation was confirmed to appear in the submission.",
+      "next_step": "Open page 3 and confirm the quoted passage is the required document."
+    },
+    {
+      "checklist_item_id": "CHK-05",
+      "clause_title": "Anti-bribery and anti-corruption declaration signed by the bidder",
+      "status": "Found",
+      "page_number": 7,
+      "extracted_snippet": "The bidder confirms that no director, officer or shareholder of Kavuma Civil Works Limited holds any interest, direct or indirect, in the Procuring Entity, and that no circumstance exists that would place the bidder in a position of conflict in respect of this procurement. Signed by the Managing Director, 12 March 2026.",
+      "confidence_score": 0.95,
+      "evidence_check": null,
+      "what_happened": "The model was given all 7 pages of the submission and located the document on page 7. The quotation was confirmed to appear in the submission.",
+      "next_step": "Open page 7 and confirm the quoted passage is the required document."
+    },
+    {
+      "checklist_item_id": "CHK-08",
+      "clause_title": "Signed conflict of interest declaration",
+      "status": "Found",
+      "page_number": 7,
+      "extracted_snippet": "The bidder confirms that no director, officer or shareholder of Kavuma Civil Works Limited holds any interest, direct or indirect, in the Procuring Entity, and that no circumstance exists that would place the bidder in a position of conflict in respect of this procurement. Signed by the Managing Director, 12 March 2026.",
+      "confidence_score": 0.95,
+      "evidence_check": null,
+      "what_happened": "The model was given all 7 pages of the submission and located the document on page 7. The quotation was confirmed to appear in the submission.",
+      "next_step": "Open page 7 and confirm the quoted passage is the required document."
+    },
+    {
+      "checklist_item_id": "CHK-10",
+      "clause_title": "Certificate of non-blacklisting or non-debarment",
+      "status": "Found",
+      "page_number": 2,
+      "extracted_snippet": "Attached as Appendix A is the Certificate of Registration of the Company issued by the Registrar of Companies, registration number SYN-114-2019, dated 08 August 2019, confirming that Kavuma Civil Works Limited is duly incorporated and remains in good standing.",
+      "confidence_score": 0.95,
+      "evidence_check": null,
+      "what_happened": "The model was given all 7 pages of the submission and located the document on page 2. The quotation was confirmed to appear in the submission.",
+      "next_step": "Open page 2 and confirm the quoted passage is the required document."
+    }
+  ],
+  "missing_items": [],
+  "items_requiring_human_review": []
+}
