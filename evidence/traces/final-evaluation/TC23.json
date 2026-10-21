@@ -1,0 +1,96 @@
+{
+  "run_at": "2026-10-21T06:36:33",
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "id": "TC23",
+  "category": "Tool failure",
+  "verdict": "Not met",
+  "actual": "With the embedding service unreachable, search answered in 2.7 s in mode bm25 with 5 hits. Notes: Meaning-based search failed: Cannot reach the embedding backend at http://127.0.0.1:9/api/embed. Start Ollama with `ollama serve`. Underlying error: [WinError 10061] No connection could be made because the target machine actively refused it Fell back to keyword search only.",
+  "observation": "The scenario's control does not exist: the completeness check never consults the corpus index, so an index outage cannot affect an item, and there is no UNRESOLVED status. The nearest component failed safely: search fell back to keywords and said so.",
+  "seconds": 2.7,
+  "model_calls": 0,
+  "completion": "Fail",
+  "grounding": "N/A",
+  "supported_claims": 0,
+  "claims": 0,
+  "tool_selection": "N/A",
+  "instructions": "Pass",
+  "safety": "None",
+  "items": 0,
+  "run_log": "20261021-033631-search-991041a7a92f.jsonl",
+  "detail": {
+    "search": {
+      "query": "bid securing declaration form",
+      "mode": "bm25",
+      "best_cosine": null,
+      "min_cosine": 0.65,
+      "evidence_sufficient": null,
+      "notes": [
+        "Meaning-based search failed: Cannot reach the embedding backend at http://127.0.0.1:9/api/embed. Start Ollama with `ollama serve`. Underlying error: [WinError 10061] No connection could be made because the target machine actively refused it",
+        "Fell back to keyword search only."
+      ],
+      "hits": [
+        {
+          "rank": 1,
+          "chunk_id": "DOC-012-C0029",
+          "location": "DOC-012, p. 11, Guidance Notes on Section 2: Bidding Forms > Bid-Securing Declaration",
+          "extraction": "native",
+          "fused_score": 0.016393,
+          "bm25_rank": 1,
+          "bm25_score": 14.5158,
+          "dense_rank": null,
+          "cosine": null,
+          "text": "Bid-Securing Declaration\nThe Bid-Securing Declaration a standard form for bidders/providers to fill and sign and include as part of their bid.\nAll information stated in the form is to be completed by bidders. The PDE is not required to input or change any information in the Bid–Securing Declaration and it is therefore not included in this User Guide.\nInstructions to the Bidders on completing the template are given at the top of the form in italics and should not be deleted by the PDE."
+        },
+        {
+          "rank": 2,
+          "chunk_id": "DOC-003-C0035",
+          "location": "DOC-003, p. 14, INVITATION TO BIDDERS UNDER QUOTATION BIDDING METHOD > Bid-Securing Declaration",
+          "extraction": "native",
+          "fused_score": 0.016129,
+          "bm25_rank": 2,
+          "bm25_score": 14.1497,
+          "dense_rank": null,
+          "cosine": null,
+          "text": "Bid-Securing Declaration\nThe Bid-Securing Declaration a standard form for bidders/providers to fill and sign and include as part of their bid.\nAll information stated in the form is to be completed by bidders. The PDE is not required to input or change any information in the Bid–Securing Declaration and it is therefore not included in this User Guide.\nInstructions to the Bidders on completing the template are given at the top of the form in italics and should not be deleted by the PDE."
+        },
+        {
+          "rank": 3,
+          "chunk_id": "DOC-010-C0034",
+          "location": "DOC-010, p. 24, Section 2: Bidding Forms > Bid Securing Declaration",
+          "extraction": "native",
+          "fused_score": 0.015873,
+          "bm25_rank": 3,
+          "bm25_score": 14.0496,
+          "dense_rank": null,
+          "cosine": null,
+          "text": "Bid Securing Declaration\n[[The bidder shall fill in this Form in accordance with the instructions indicated. If the bidder is a Joint Venture, the bid Securing Declaration must be in the name of the Joint Venture that submits the quotation. If the Joint Venture has not been legally constituted at the time of bidding, the bid Securing Declaration shall be in the names of all future partners as named in the letter of intent]\nDate: [insert date (as day, month and year)]"
+        },
+        {
+          "rank": 4,
+          "chunk_id": "DOC-002-C0039",
+          "location": "DOC-002, p. 22, Section 2: Bidding Forms > Bid Securing Declaration",
+          "extraction": "native",
+          "fused_score": 0.015625,
+          "bm25_rank": 4,
+          "bm25_score": 13.9235,
+          "dense_rank": null,
+          "cosine": null,
+          "text": "Bid Securing Declaration\n[[The bidder shall fill in this Form in accordance with the instructions indicated. If the bidder is a Joint Venture, the Bid Securing Declaration must be in the name of the Joint Venture, that submits the quotation. If the Joint Venture has not been legally constituted at the time of bidding, the Bid Securing Declaration shall be in the names of all future partners as named in the letter of intent]\nDate: [insert date (as day, month and year)]"
+        },
+        {
+          "rank": 5,
+          "chunk_id": "DOC-009-C0139",
+          "location": "DOC-009, p. 60, Section 4: Bidding Forms > Form of Bid-Securing Declaration",
+          "extraction": "native",
+          "fused_score": 0.015385,
+          "bm25_rank": 5,
+          "bm25_score": 13.8694,
+          "dense_rank": null,
+          "cosine": null,
+          "text": "Form of Bid-Securing Declaration\nDate: [insert date (as day, month and year)]"
+        }
+      ]
+    }
+  }
+}

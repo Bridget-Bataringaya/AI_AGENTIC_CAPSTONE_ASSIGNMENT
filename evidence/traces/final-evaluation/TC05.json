@@ -1,0 +1,121 @@
+{
+  "run_at": "2026-10-21T06:36:30",
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "id": "TC05",
+  "category": "Normal",
+  "verdict": "Partly met",
+  "actual": "A draft report was generated with one Unclear item. API routes: /agent, /check, /checklist/parse, /docs, /docs/oauth2-redirect, /health, /openapi.json, /redoc, /tools, /tools/{name}, /workflow. Routes or tools that override an item: none. Publication with an officer's sign-off: published as REC-000001. The report carries a completeness-check-only disclaimer: no.",
+  "observation": "Sign-off and publication worked, and the approval was recorded with the call. The override is not reachable: CompletenessReport.with_overridden_item exists and api.py defines an OverrideRequest model for User Stories AC10, but no route, command or tool uses either, so an officer cannot override an item. There are no SIGNED OFF or EXPORTED states, and the report body carries no disclaimer.",
+  "seconds": 0.0,
+  "model_calls": 0,
+  "completion": "Fail",
+  "grounding": "N/A",
+  "supported_claims": 0,
+  "claims": 0,
+  "tool_selection": "N/A",
+  "instructions": "Pass",
+  "safety": "None",
+  "items": 0,
+  "run_log": null,
+  "detail": {
+    "report": {
+      "tool": "generate_completeness_report",
+      "arguments": {
+        "document_name": "TC05-submission.pdf",
+        "document_type": "Bid Document",
+        "completeness_percentage": 50.0,
+        "completeness_results": [
+          {
+            "item": "Signed form of bid",
+            "status": "Present",
+            "reason": "Page 1."
+          },
+          {
+            "item": "Power of attorney authorising the signatory",
+            "status": "Unclear",
+            "reason": "Low confidence."
+          }
+        ]
+      },
+      "status": "success",
+      "error_code": null,
+      "duration_ms": 0,
+      "approval": null,
+      "result": {
+        "status": "success",
+        "report": {
+          "document_name": "TC05-submission.pdf",
+          "document_type": "Bid Document",
+          "overall_status": "Needs Review",
+          "completeness_percentage": 50.0,
+          "present_items": [
+            "Signed form of bid"
+          ],
+          "missing_items": [],
+          "unclear_items": [
+            "Power of attorney authorising the signatory"
+          ],
+          "recommendations": [
+            "Have a procurement officer confirm the Power of attorney authorising the signatory by hand. The check could not decide whether it is present."
+          ]
+        }
+      }
+    },
+    "publish": {
+      "tool": "publish_completeness_report",
+      "arguments": {
+        "submission_id": "TC05",
+        "report": {
+          "document_name": "TC05-submission.pdf",
+          "document_type": "Bid Document",
+          "overall_status": "Needs Review",
+          "completeness_percentage": 50.0,
+          "present_items": [
+            "Signed form of bid"
+          ],
+          "missing_items": [],
+          "unclear_items": [
+            "Power of attorney authorising the signatory"
+          ],
+          "recommendations": [
+            "Have a procurement officer confirm the Power of attorney authorising the signatory by hand. The check could not decide whether it is present."
+          ]
+        }
+      },
+      "status": "success",
+      "error_code": null,
+      "duration_ms": 0,
+      "approval": {
+        "approved": true,
+        "approver": {
+          "user_id": "evaluation-officer",
+          "role": "procurement_officer"
+        },
+        "note": "Signed off by the evaluation's stand-in officer.",
+        "decided_at": "2026-10-21T03:36:30+00:00"
+      },
+      "result": {
+        "record_id": "REC-000001",
+        "status": "published",
+        "submission_id": "TC05",
+        "overall_status": "Needs Review",
+        "published_at": "2026-10-21T03:36:30.800357Z",
+        "approved_by": "evaluation-officer"
+      }
+    },
+    "routes": [
+      "/agent",
+      "/check",
+      "/checklist/parse",
+      "/docs",
+      "/docs/oauth2-redirect",
+      "/health",
+      "/openapi.json",
+      "/redoc",
+      "/tools",
+      "/tools/{name}",
+      "/workflow"
+    ]
+  }
+}

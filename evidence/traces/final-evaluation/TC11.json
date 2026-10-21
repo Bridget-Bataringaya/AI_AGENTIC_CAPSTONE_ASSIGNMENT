@@ -1,0 +1,288 @@
+{
+  "run_at": "2026-10-21T07:42:07",
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "id": "TC11",
+  "category": "Edge",
+  "verdict": "Not met",
+  "actual": "Signed form of bid for procurement MUK/SUPP/2026/0012: Not Found. The model was given all 3 pages of the submission and asked to find this document. It reported that no passage is this document, and returned no page and no quotation. Its match confidence was 0.00. A value of 0.00 means it saw no likely match. With nothing quoted, there was no evidence for the later checks to verify.\nBid securing declaration: Not Found. The model was given all 3 pages of the submission and asked to find this document. It reported that no passage is this document, and returned no page and no quotation. Its match confidence was 0.00. A value of 0.00 means it saw no likely match. With nothing quoted, there was no evidence for the later checks to verify.\nPower of attorney authorising the signatory: Not Found. The model was given all 3 pages of the submission and asked to find this document. It reported that no passage is this document, and returned no page and no quotation. Its match confidence was 0.00. A value of 0.00 means it saw no likely match. With nothing quoted, there was no evidence for the later checks to verify.\nThe run stopped as report_ready after 2 iterations, calling check_document_completeness, generate_completeness_report; 0 review ticket(s) opened.",
+  "observation": "No mismatch was flagged: the system has no test for a submission that belongs to another tender. Every item was reported on its own, with no warning that the bid is for a different procurement.",
+  "seconds": 197.3,
+  "model_calls": 3,
+  "completion": "Fail",
+  "grounding": "N/A",
+  "supported_claims": 0,
+  "claims": 0,
+  "tool_selection": "Pass",
+  "instructions": "Pass",
+  "safety": "None",
+  "items": 3,
+  "run_log": "20261021-043850-workflow-3741fb00f414.jsonl",
+  "detail": {
+    "trace": {
+      "principal": {
+        "user_id": "evaluation-officer",
+        "role": "procurement_officer"
+      },
+      "orchestration": "direct",
+      "limits": {
+        "max_iterations": 7,
+        "max_service_retries": 1,
+        "max_recheck_rounds": 1,
+        "retry_delay_seconds": 5.0,
+        "approved_tools": [
+          "check_document_completeness",
+          "create_review_ticket",
+          "generate_completeness_report",
+          "publish_completeness_report"
+        ],
+        "publish": false
+      },
+      "iterations": 2,
+      "status": "success",
+      "stop_reason": "report_ready",
+      "stop_detail": "The report is ready for the procurement officer.",
+      "error": null,
+      "handoff": {
+        "to": "procurement_officer",
+        "reason": "The report is ready: Incomplete, 0.0% of items present. The findings are advisory.",
+        "actions": [
+          "Locate or request: Signed form of bid for procurement MUK/SUPP/2026/0012",
+          "Locate or request: Bid securing declaration",
+          "Locate or request: Power of attorney authorising the signatory",
+          "Sign off the report before it goes on the procurement record."
+        ]
+      },
+      "notes": [],
+      "steps": [
+        {
+          "iteration": 1,
+          "sense": {
+            "checked": false,
+            "completeness_percentage": null,
+            "item_counts": {
+              "Present": 0,
+              "Missing": 0,
+              "Unclear": 0
+            },
+            "recheck_rounds": 0,
+            "tickets_open": 0,
+            "report_ready": false,
+            "published": false,
+            "last_error": null,
+            "consecutive_retries": 0,
+            "abandoned": []
+          },
+          "plan": {
+            "action": "check",
+            "reason": "No check has run. Check all 3 checklist items.",
+            "retry": false,
+            "abandoned": null,
+            "stop_reason": null
+          },
+          "act": [
+            {
+              "tool": "check_document_completeness",
+              "arguments": {
+                "document_text": "[PAGE 1]\nFORM OF BID\nProcurement reference: MOWT/WRKS/2026/0098\nSubject of procurement: Periodic maintenance of the Masaka to Mbarara road, lot 2\nBidder: Ankole Roadworks Ltd.\nWe offer to execute the ... (626 characters)",
+                "document_type": "Bid Document",
+                "required_items": [
+                  "Signed form of bid for procurement MUK/SUPP/2026/0012",
+                  "Bid securing declaration",
+                  "Power of attorney authorising the signatory"
+                ]
+              },
+              "status": "success",
+              "error_code": null,
+              "duration_ms": 197324,
+              "approval": null,
+              "result": {
+                "status": "success",
+                "document_type": "Bid Document",
+                "completeness_percentage": 0.0,
+                "results": [
+                  {
+                    "item": "Signed form of bid for procurement MUK/SUPP/2026/0012",
+                    "status": "Missing",
+                    "reason": "The model was given all 3 pages of the submission and asked to find this document. It reported that no passage is this document, and returned no page and no quotation. Its match confidence was 0.00. A value of 0.00 means it saw no likely match. With nothing quoted, there was no evidence for the later checks to verify."
+                  },
+                  {
+                    "item": "Bid securing declaration",
+                    "status": "Missing",
+                    "reason": "The model was given all 3 pages of the submission and asked to find this document. It reported that no passage is this document, and returned no page and no quotation. Its match confidence was 0.00. A value of 0.00 means it saw no likely match. With nothing quoted, there was no evidence for the later checks to verify."
+                  },
+                  {
+                    "item": "Power of attorney authorising the signatory",
+                    "status": "Missing",
+                    "reason": "The model was given all 3 pages of the submission and asked to find this document. It reported that no passage is this document, and returned no page and no quotation. Its match confidence was 0.00. A value of 0.00 means it saw no likely match. With nothing quoted, there was no evidence for the later checks to verify."
+                  }
+                ]
+              }
+            }
+          ],
+          "observe": [
+            "success"
+          ]
+        },
+        {
+          "iteration": 2,
+          "sense": {
+            "checked": true,
+            "completeness_percentage": 0.0,
+            "item_counts": {
+              "Present": 0,
+              "Missing": 3,
+              "Unclear": 0
+            },
+            "recheck_rounds": 0,
+            "tickets_open": 0,
+            "report_ready": false,
+            "published": false,
+            "last_error": null,
+            "consecutive_retries": 0,
+            "abandoned": []
+          },
+          "plan": {
+            "action": "generate_report",
+            "reason": "The check is settled. Generate the report.",
+            "retry": false,
+            "abandoned": null,
+            "stop_reason": null
+          },
+          "act": [
+            {
+              "tool": "generate_completeness_report",
+              "arguments": {
+                "document_name": "TC11-submission.pdf",
+                "document_type": "Bid Document",
+                "completeness_percentage": 0.0,
+                "completeness_results": [
+                  {
+                    "item": "Signed form of bid for procurement MUK/SUPP/2026/0012",
+                    "status": "Missing",
+                    "reason": "The model was given all 3 pages of the submission and asked to find this document. It reported that no passage is this document, and returned no page and no quotation. Its match confidence was 0.00. A value of 0.00 means it saw no likely match. With nothing quoted, there was no evidence for the later checks to verify."
+                  },
+                  {
+                    "item": "Bid securing declaration",
+                    "status": "Missing",
+                    "reason": "The model was given all 3 pages of the submission and asked to find this document. It reported that no passage is this document, and returned no page and no quotation. Its match confidence was 0.00. A value of 0.00 means it saw no likely match. With nothing quoted, there was no evidence for the later checks to verify."
+                  },
+                  {
+                    "item": "Power of attorney authorising the signatory",
+                    "status": "Missing",
+                    "reason": "The model was given all 3 pages of the submission and asked to find this document. It reported that no passage is this document, and returned no page and no quotation. Its match confidence was 0.00. A value of 0.00 means it saw no likely match. With nothing quoted, there was no evidence for the later checks to verify."
+                  }
+                ]
+              },
+              "status": "success",
+              "error_code": null,
+              "duration_ms": 0,
+              "approval": null,
+              "result": {
+                "status": "success",
+                "report": {
+                  "document_name": "TC11-submission.pdf",
+                  "document_type": "Bid Document",
+                  "overall_status": "Incomplete",
+                  "completeness_percentage": 0.0,
+                  "present_items": [],
+                  "missing_items": [
+                    "Signed form of bid for procurement MUK/SUPP/2026/0012",
+                    "Bid securing declaration",
+                    "Power of attorney authorising the signatory"
+                  ],
+                  "unclear_items": [],
+                  "recommendations": [
+                    "Locate or request the Signed form of bid for procurement MUK/SUPP/2026/0012. The check did not find it in the document.",
+                    "Locate or request the Bid securing declaration. The check did not find it in the document.",
+                    "Locate or request the Power of attorney authorising the signatory. The check did not find it in the document."
+                  ]
+                }
+              }
+            }
+          ],
+          "observe": [
+            "success"
+          ]
+        }
+      ],
+      "tickets": [],
+      "report": {
+        "status": "success",
+        "report": {
+          "document_name": "TC11-submission.pdf",
+          "document_type": "Bid Document",
+          "overall_status": "Incomplete",
+          "completeness_percentage": 0.0,
+          "present_items": [],
+          "missing_items": [
+            "Signed form of bid for procurement MUK/SUPP/2026/0012",
+            "Bid securing declaration",
+            "Power of attorney authorising the signatory"
+          ],
+          "unclear_items": [],
+          "recommendations": [
+            "Locate or request the Signed form of bid for procurement MUK/SUPP/2026/0012. The check did not find it in the document.",
+            "Locate or request the Bid securing declaration. The check did not find it in the document.",
+            "Locate or request the Power of attorney authorising the signatory. The check did not find it in the document."
+          ]
+        }
+      },
+      "record": null,
+      "memory": null
+    },
+    "model_calls": [
+      {
+        "call": 1,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-01\", \"description\": \"Signed form of bid for procurement MUK/SUPP/2026/0012\"}",
+        "outcome": "ok",
+        "seconds": 71.2,
+        "answer": {
+          "checklist_item_id": "REQ-01",
+          "clause_title": "Signed form of bid for procurement MUK/SUPP/2026/0012",
+          "is_present": false,
+          "page_number": null,
+          "extracted_snippet": null,
+          "confidence_score": 0.0,
+          "requires_human_review": false
+        }
+      },
+      {
+        "call": 2,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-02\", \"description\": \"Bid securing declaration\"}",
+        "outcome": "ok",
+        "seconds": 60.7,
+        "answer": {
+          "checklist_item_id": "REQ-02",
+          "clause_title": "Bid securing declaration",
+          "is_present": false,
+          "page_number": null,
+          "extracted_snippet": null,
+          "confidence_score": 0.0,
+          "requires_human_review": false
+        }
+      },
+      {
+        "call": 3,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-03\", \"description\": \"Power of attorney authorising the signatory\"}",
+        "outcome": "ok",
+        "seconds": 65.4,
+        "answer": {
+          "checklist_item_id": "REQ-03",
+          "clause_title": "Power of attorney authorising the signatory",
+          "is_present": false,
+          "page_number": null,
+          "extracted_snippet": null,
+          "confidence_score": 0.0,
+          "requires_human_review": false
+        }
+      }
+    ],
+    "grounding": [],
+    "submission": "inputs/TC11-submission.pdf",
+    "checklist": "inputs/TC11-checklist.txt"
+  }
+}

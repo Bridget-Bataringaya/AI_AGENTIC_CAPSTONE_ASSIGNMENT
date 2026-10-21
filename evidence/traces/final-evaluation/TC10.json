@@ -1,0 +1,239 @@
+{
+  "run_at": "2026-10-21T07:38:50",
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "id": "TC10",
+  "category": "Edge",
+  "verdict": "Met",
+  "actual": "Certificate of incorporation: Found. Page 2: \"Uganda Registration Services Bureau This is to certify that Lakeside Scientific Supplies Ltd. is incorporated under the Companies Act, 2012 as a company limited by shares. Registration number: 80020003141592 Dated 14 February 2015 at Kampala.\"\nThe run stopped as report_ready after 2 iterations, calling check_document_completeness, generate_completeness_report; 0 review ticket(s) opened.",
+  "observation": "All 1 items came back as expected, each Found item with a page and a quotation, and the run stopped report_ready with a hand-off to the officer.",
+  "seconds": 164.8,
+  "model_calls": 2,
+  "completion": "Pass",
+  "grounding": "2",
+  "supported_claims": 1,
+  "claims": 1,
+  "tool_selection": "Pass",
+  "instructions": "Pass",
+  "safety": "None",
+  "items": 1,
+  "run_log": "20261021-043605-workflow-f6c5e5290d57.jsonl",
+  "detail": {
+    "trace": {
+      "principal": {
+        "user_id": "evaluation-officer",
+        "role": "procurement_officer"
+      },
+      "orchestration": "direct",
+      "limits": {
+        "max_iterations": 7,
+        "max_service_retries": 1,
+        "max_recheck_rounds": 1,
+        "retry_delay_seconds": 5.0,
+        "approved_tools": [
+          "check_document_completeness",
+          "create_review_ticket",
+          "generate_completeness_report",
+          "publish_completeness_report"
+        ],
+        "publish": false
+      },
+      "iterations": 2,
+      "status": "success",
+      "stop_reason": "report_ready",
+      "stop_detail": "The report is ready for the procurement officer.",
+      "error": null,
+      "handoff": {
+        "to": "procurement_officer",
+        "reason": "The report is ready: Complete, 100.0% of items present. The findings are advisory.",
+        "actions": [
+          "Sign off the report before it goes on the procurement record."
+        ]
+      },
+      "notes": [],
+      "steps": [
+        {
+          "iteration": 1,
+          "sense": {
+            "checked": false,
+            "completeness_percentage": null,
+            "item_counts": {
+              "Present": 0,
+              "Missing": 0,
+              "Unclear": 0
+            },
+            "recheck_rounds": 0,
+            "tickets_open": 0,
+            "report_ready": false,
+            "published": false,
+            "last_error": null,
+            "consecutive_retries": 0,
+            "abandoned": []
+          },
+          "plan": {
+            "action": "check",
+            "reason": "No check has run. Check all 1 checklist items.",
+            "retry": false,
+            "abandoned": null,
+            "stop_reason": null
+          },
+          "act": [
+            {
+              "tool": "check_document_completeness",
+              "arguments": {
+                "document_text": "[PAGE 1]\nFORM OF BID\nProcurement reference: MUK/SUPP/2026/0012\nSubject of procurement: Supply and installation of laboratory equipment to Makerere University\nBidder: Lakeside Scientific Supplies Ltd.\n... (1824 characters)",
+                "document_type": "Bid Document",
+                "required_items": [
+                  "Certificate of incorporation"
+                ]
+              },
+              "status": "success",
+              "error_code": null,
+              "duration_ms": 164790,
+              "approval": null,
+              "result": {
+                "status": "success",
+                "document_type": "Bid Document",
+                "completeness_percentage": 100.0,
+                "results": [
+                  {
+                    "item": "Certificate of incorporation",
+                    "status": "Present",
+                    "reason": "Page 2: \"Uganda Registration Services Bureau This is to certify that Lakeside Scientific Supplies Ltd. is incorporated under the Companies Act, 2012 as a company limited by shares. Registration number: 80020003141592 Dated 14 February 2015 at Kampala.\""
+                  }
+                ]
+              }
+            }
+          ],
+          "observe": [
+            "success"
+          ]
+        },
+        {
+          "iteration": 2,
+          "sense": {
+            "checked": true,
+            "completeness_percentage": 100.0,
+            "item_counts": {
+              "Present": 1,
+              "Missing": 0,
+              "Unclear": 0
+            },
+            "recheck_rounds": 0,
+            "tickets_open": 0,
+            "report_ready": false,
+            "published": false,
+            "last_error": null,
+            "consecutive_retries": 0,
+            "abandoned": []
+          },
+          "plan": {
+            "action": "generate_report",
+            "reason": "The check is settled. Generate the report.",
+            "retry": false,
+            "abandoned": null,
+            "stop_reason": null
+          },
+          "act": [
+            {
+              "tool": "generate_completeness_report",
+              "arguments": {
+                "document_name": "TC10-submission.pdf",
+                "document_type": "Bid Document",
+                "completeness_percentage": 100.0,
+                "completeness_results": [
+                  {
+                    "item": "Certificate of incorporation",
+                    "status": "Present",
+                    "reason": "Page 2: \"Uganda Registration Services Bureau This is to certify that Lakeside Scientific Supplies Ltd. is incorporated under the Companies Act, 2012 as a company limited by shares. Registration number: 80020003141592 Dated 14 February 2015 at Kampala.\""
+                  }
+                ]
+              },
+              "status": "success",
+              "error_code": null,
+              "duration_ms": 0,
+              "approval": null,
+              "result": {
+                "status": "success",
+                "report": {
+                  "document_name": "TC10-submission.pdf",
+                  "document_type": "Bid Document",
+                  "overall_status": "Complete",
+                  "completeness_percentage": 100.0,
+                  "present_items": [
+                    "Certificate of incorporation"
+                  ],
+                  "missing_items": [],
+                  "unclear_items": [],
+                  "recommendations": [
+                    "Every required item was found. This confirms completeness only; it is not an evaluation of the bid."
+                  ]
+                }
+              }
+            }
+          ],
+          "observe": [
+            "success"
+          ]
+        }
+      ],
+      "tickets": [],
+      "report": {
+        "status": "success",
+        "report": {
+          "document_name": "TC10-submission.pdf",
+          "document_type": "Bid Document",
+          "overall_status": "Complete",
+          "completeness_percentage": 100.0,
+          "present_items": [
+            "Certificate of incorporation"
+          ],
+          "missing_items": [],
+          "unclear_items": [],
+          "recommendations": [
+            "Every required item was found. This confirms completeness only; it is not an evaluation of the bid."
+          ]
+        }
+      },
+      "record": null,
+      "memory": null
+    },
+    "model_calls": [
+      {
+        "call": 1,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-01\", \"description\": \"Certificate of incorporation\"}",
+        "outcome": "ok",
+        "seconds": 128.2,
+        "answer": {
+          "checklist_item_id": "REQ-01",
+          "clause_title": "Certificate of incorporation",
+          "is_present": true,
+          "page_number": 2,
+          "extracted_snippet": "Uganda Registration Services Bureau\nThis is to certify that Lakeside Scientific Supplies Ltd. is incorporated under the Companies Act, 2012 as a company limited by shares.\nRegistration number: 80020003141592\nDated 14 February 2015 at Kampala.",
+          "confidence_score": 1.0,
+          "requires_human_review": false
+        }
+      },
+      {
+        "call": 2,
+        "schema": "EvidenceAdjudication",
+        "item": "evidence check",
+        "outcome": "ok",
+        "seconds": 36.6,
+        "answer": {
+          "required_document": "Certificate of incorporation",
+          "quoted_document": "Certificate of incorporation",
+          "same_document": true,
+          "both_required_separately": false,
+          "match_confidence": 0.9
+        }
+      }
+    ],
+    "grounding": [
+      "Certificate of incorporation: quotation found on page 2"
+    ],
+    "submission": "inputs/TC10-submission.pdf",
+    "checklist": "inputs/TC10-checklist.txt"
+  }
+}

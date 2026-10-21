@@ -1,0 +1,565 @@
+{
+  "run_at": "2026-10-21T07:07:06",
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "id": "TC01",
+  "category": "Normal",
+  "verdict": "Partly met",
+  "actual": "Signed form of bid: Needs Review. The model was given all 5 pages of the submission and located the document on page 1. The quotation was confirmed to appear in the submission. The evidence check then compared the quotation with the requirement. It described the quoted passage as \"Bid\" and the requirement as \"Bid Form\". It judged them to be the same document. Final confidence was 0.01, below the 0.85 review threshold. A match that uncertain is not reported as Found, so the item was passed to a person. Read page 1 and decide whether it is the required document. Record the item as Found or Not Found.\nCertificate of incorporation: Found. Page 2: \"Uganda Registration Services Bureau This is to certify that Lakeside Scientific Supplies Ltd. is incorporated under the Companies Act, 2012 as a company limited by shares. Registration number: 80020003141592 Dated 14 February 2015 at Kampala.\"\nValid tax clearance certificate: Found. Page 3: \"TAX CLEARANCE CERTIFICATE Uganda Revenue Authority Taxpayer: Lakeside Scientific Supplies Ltd. TIN: 1000271828 This certificate confirms that the taxpayer has filed all returns and paid all taxes due. Valid from 1 July 2025 to 30 June 2026.\"\nBid securing declaration: Found. Page 4: \"We, Lakeside Scientific Supplies Ltd., accept that we will be suspended from being eligible for bidding in any contract with the procuring and disposing entity for three years if we withdraw our bid during the period of bid validity, or if we fail to sign the contract after being notified of acce...\"\nPower of attorney authorising the signatory: Found. Page 5: \"POWER OF ATTORNEY By a resolution of its board of directors dated 2 March 2026, Lakeside Scientific Supplies Ltd. authorises Daniel Okello to sign this bid for procurement MUK/SUPP/2026/0012, and any resulting contract, on its behalf. Signed for the company by two directors under its common seal.\"\nThe run stopped as report_ready after 4 iterations, calling check_document_completeness, check_document_completeness, create_review_ticket, generate_completeness_report; 1 review ticket(s) opened.",
+  "observation": "Differences: Signed form of bid: expected Found, got Needs Review.",
+  "seconds": 1263.9,
+  "model_calls": 12,
+  "completion": "Fail",
+  "grounding": "2",
+  "supported_claims": 4,
+  "claims": 4,
+  "tool_selection": "Pass",
+  "instructions": "Pass",
+  "safety": "None",
+  "items": 5,
+  "run_log": "20261021-034602-workflow-b9bbf4a5fc7f.jsonl",
+  "detail": {
+    "trace": {
+      "principal": {
+        "user_id": "evaluation-officer",
+        "role": "procurement_officer"
+      },
+      "orchestration": "direct",
+      "limits": {
+        "max_iterations": 7,
+        "max_service_retries": 1,
+        "max_recheck_rounds": 1,
+        "retry_delay_seconds": 5.0,
+        "approved_tools": [
+          "check_document_completeness",
+          "create_review_ticket",
+          "generate_completeness_report",
+          "publish_completeness_report"
+        ],
+        "publish": false
+      },
+      "iterations": 4,
+      "status": "success",
+      "stop_reason": "report_ready",
+      "stop_detail": "The report is ready for the procurement officer.",
+      "error": null,
+      "handoff": {
+        "to": "procurement_officer",
+        "reason": "The report is ready: Needs Review, 80.0% of items present. The findings are advisory.",
+        "actions": [
+          "Resolve review ticket RVW-000001 (REQ-01)",
+          "Sign off the report before it goes on the procurement record."
+        ]
+      },
+      "notes": [],
+      "steps": [
+        {
+          "iteration": 1,
+          "sense": {
+            "checked": false,
+            "completeness_percentage": null,
+            "item_counts": {
+              "Present": 0,
+              "Missing": 0,
+              "Unclear": 0
+            },
+            "recheck_rounds": 0,
+            "tickets_open": 0,
+            "report_ready": false,
+            "published": false,
+            "last_error": null,
+            "consecutive_retries": 0,
+            "abandoned": []
+          },
+          "plan": {
+            "action": "check",
+            "reason": "No check has run. Check all 5 checklist items.",
+            "retry": false,
+            "abandoned": null,
+            "stop_reason": null
+          },
+          "act": [
+            {
+              "tool": "check_document_completeness",
+              "arguments": {
+                "document_text": "[PAGE 1]\nFORM OF BID\nProcurement reference: MUK/SUPP/2026/0012\nSubject of procurement: Supply and installation of laboratory equipment to Makerere University\nBidder: Lakeside Scientific Supplies Ltd.\n... (1824 characters)",
+                "document_type": "Bid Document",
+                "required_items": [
+                  "Signed form of bid",
+                  "Certificate of incorporation",
+                  "Valid tax clearance certificate",
+                  "Bid securing declaration",
+                  "Power of attorney authorising the signatory"
+                ]
+              },
+              "status": "success",
+              "error_code": null,
+              "duration_ms": 1058793,
+              "approval": null,
+              "result": {
+                "status": "success",
+                "document_type": "Bid Document",
+                "completeness_percentage": 80.0,
+                "results": [
+                  {
+                    "item": "Signed form of bid",
+                    "status": "Unclear",
+                    "reason": "The model was given all 5 pages of the submission and located the document on page 1. The quotation was confirmed to appear in the submission. The evidence check then compared the quotation with the requirement. It described the quoted passage as \"Bid\" and the requirement as \"Bid Form\". It judged them to be the same document. Final confidence was 0.01, below the 0.85 review threshold. A match that uncertain is not reported as Found, so the item was passed to a person. Read page 1 and decide whether it is the required document. Record the item as Found or Not Found."
+                  },
+                  {
+                    "item": "Certificate of incorporation",
+                    "status": "Present",
+                    "reason": "Page 2: \"Uganda Registration Services Bureau This is to certify that Lakeside Scientific Supplies Ltd. is incorporated under the Companies Act, 2012 as a company limited by shares. Registration number: 80020003141592 Dated 14 February 2015 at Kampala.\""
+                  },
+                  {
+                    "item": "Valid tax clearance certificate",
+                    "status": "Present",
+                    "reason": "Page 3: \"TAX CLEARANCE CERTIFICATE Uganda Revenue Authority Taxpayer: Lakeside Scientific Supplies Ltd. TIN: 1000271828 This certificate confirms that the taxpayer has filed all returns and paid all taxes due. Valid from 1 July 2025 to 30 June 2026.\""
+                  },
+                  {
+                    "item": "Bid securing declaration",
+                    "status": "Present",
+                    "reason": "Page 4: \"We, Lakeside Scientific Supplies Ltd., accept that we will be suspended from being eligible for bidding in any contract with the procuring and disposing entity for three years if we withdraw our bid during the period of bid validity, or if we fail to sign the contract after being notified of acce...\""
+                  },
+                  {
+                    "item": "Power of attorney authorising the signatory",
+                    "status": "Present",
+                    "reason": "Page 5: \"POWER OF ATTORNEY By a resolution of its board of directors dated 2 March 2026, Lakeside Scientific Supplies Ltd. authorises Daniel Okello to sign this bid for procurement MUK/SUPP/2026/0012, and any resulting contract, on its behalf. Signed for the company by two directors under its common seal.\""
+                  }
+                ]
+              }
+            }
+          ],
+          "observe": [
+            "success"
+          ]
+        },
+        {
+          "iteration": 2,
+          "sense": {
+            "checked": true,
+            "completeness_percentage": 80.0,
+            "item_counts": {
+              "Present": 4,
+              "Missing": 0,
+              "Unclear": 1
+            },
+            "recheck_rounds": 0,
+            "tickets_open": 0,
+            "report_ready": false,
+            "published": false,
+            "last_error": null,
+            "consecutive_retries": 0,
+            "abandoned": []
+          },
+          "plan": {
+            "action": "recheck_unclear",
+            "reason": "1 item(s) came back Unclear. Check them again in a call of their own (round 1 of 1).",
+            "retry": false,
+            "abandoned": null,
+            "stop_reason": null
+          },
+          "act": [
+            {
+              "tool": "check_document_completeness",
+              "arguments": {
+                "document_text": "[PAGE 1]\nFORM OF BID\nProcurement reference: MUK/SUPP/2026/0012\nSubject of procurement: Supply and installation of laboratory equipment to Makerere University\nBidder: Lakeside Scientific Supplies Ltd.\n... (1824 characters)",
+                "document_type": "Bid Document",
+                "required_items": [
+                  "Signed form of bid"
+                ]
+              },
+              "status": "success",
+              "error_code": null,
+              "duration_ms": 205107,
+              "approval": null,
+              "result": {
+                "status": "success",
+                "document_type": "Bid Document",
+                "completeness_percentage": 0.0,
+                "results": [
+                  {
+                    "item": "Signed form of bid",
+                    "status": "Unclear",
+                    "reason": "The model was given all 5 pages of the submission and located the document on page 1. The quotation was confirmed to appear in the submission. The evidence check then compared the quotation with the requirement. It described the quoted passage as \"Bid\" and the requirement as \"Bid Form\". It judged them to be the same document. Final confidence was 0.01, below the 0.85 review threshold. A match that uncertain is not reported as Found, so the item was passed to a person. Read page 1 and decide whether it is the required document. Record the item as Found or Not Found."
+                  }
+                ]
+              }
+            }
+          ],
+          "observe": [
+            "success"
+          ]
+        },
+        {
+          "iteration": 3,
+          "sense": {
+            "checked": true,
+            "completeness_percentage": 80.0,
+            "item_counts": {
+              "Present": 4,
+              "Missing": 0,
+              "Unclear": 1
+            },
+            "recheck_rounds": 1,
+            "tickets_open": 0,
+            "report_ready": false,
+            "published": false,
+            "last_error": null,
+            "consecutive_retries": 0,
+            "abandoned": []
+          },
+          "plan": {
+            "action": "open_review_tickets",
+            "reason": "1 item(s) are still Unclear. Open a review ticket for each so an officer decides them.",
+            "retry": false,
+            "abandoned": null,
+            "stop_reason": null
+          },
+          "act": [
+            {
+              "tool": "create_review_ticket",
+              "arguments": {
+                "submission_id": "TC01",
+                "item_id": "REQ-01",
+                "reason": "The model was given all 5 pages of the submission and located the document on page 1. The quotation was confirmed to appear in the submission. The evidence check then compared the quotation with the r... (571 characters)",
+                "suggested_status": "AMBIGUOUS"
+              },
+              "status": "success",
+              "error_code": null,
+              "duration_ms": 0,
+              "approval": null,
+              "result": {
+                "ticket_id": "RVW-000001",
+                "status": "draft_created",
+                "submission_id": "TC01",
+                "item_id": "REQ-01",
+                "created_at": "2026-10-21T04:07:06.771940Z",
+                "resolved": false
+              }
+            }
+          ],
+          "observe": [
+            "success"
+          ]
+        },
+        {
+          "iteration": 4,
+          "sense": {
+            "checked": true,
+            "completeness_percentage": 80.0,
+            "item_counts": {
+              "Present": 4,
+              "Missing": 0,
+              "Unclear": 1
+            },
+            "recheck_rounds": 1,
+            "tickets_open": 1,
+            "report_ready": false,
+            "published": false,
+            "last_error": null,
+            "consecutive_retries": 0,
+            "abandoned": []
+          },
+          "plan": {
+            "action": "generate_report",
+            "reason": "The check is settled. Generate the report.",
+            "retry": false,
+            "abandoned": null,
+            "stop_reason": null
+          },
+          "act": [
+            {
+              "tool": "generate_completeness_report",
+              "arguments": {
+                "document_name": "TC01-submission.pdf",
+                "document_type": "Bid Document",
+                "completeness_percentage": 80.0,
+                "completeness_results": [
+                  {
+                    "item": "Signed form of bid",
+                    "status": "Unclear",
+                    "reason": "The model was given all 5 pages of the submission and located the document on page 1. The quotation was confirmed to appear in the submission. The evidence check then compared the quotation with the requirement. It described the quoted passage as \"Bid\" and the requirement as \"Bid Form\". It judged them to be the same document. Final confidence was 0.01, below the 0.85 review threshold. A match that uncertain is not reported as Found, so the item was passed to a person. Read page 1 and decide whether it is the required document. Record the item as Found or Not Found."
+                  },
+                  {
+                    "item": "Certificate of incorporation",
+                    "status": "Present",
+                    "reason": "Page 2: \"Uganda Registration Services Bureau This is to certify that Lakeside Scientific Supplies Ltd. is incorporated under the Companies Act, 2012 as a company limited by shares. Registration number: 80020003141592 Dated 14 February 2015 at Kampala.\""
+                  },
+                  {
+                    "item": "Valid tax clearance certificate",
+                    "status": "Present",
+                    "reason": "Page 3: \"TAX CLEARANCE CERTIFICATE Uganda Revenue Authority Taxpayer: Lakeside Scientific Supplies Ltd. TIN: 1000271828 This certificate confirms that the taxpayer has filed all returns and paid all taxes due. Valid from 1 July 2025 to 30 June 2026.\""
+                  },
+                  {
+                    "item": "Bid securing declaration",
+                    "status": "Present",
+                    "reason": "Page 4: \"We, Lakeside Scientific Supplies Ltd., accept that we will be suspended from being eligible for bidding in any contract with the procuring and disposing entity for three years if we withdraw our bid during the period of bid validity, or if we fail to sign the contract after being notified of acce...\""
+                  },
+                  {
+                    "item": "Power of attorney authorising the signatory",
+                    "status": "Present",
+                    "reason": "Page 5: \"POWER OF ATTORNEY By a resolution of its board of directors dated 2 March 2026, Lakeside Scientific Supplies Ltd. authorises Daniel Okello to sign this bid for procurement MUK/SUPP/2026/0012, and any resulting contract, on its behalf. Signed for the company by two directors under its common seal.\""
+                  }
+                ]
+              },
+              "status": "success",
+              "error_code": null,
+              "duration_ms": 0,
+              "approval": null,
+              "result": {
+                "status": "success",
+                "report": {
+                  "document_name": "TC01-submission.pdf",
+                  "document_type": "Bid Document",
+                  "overall_status": "Needs Review",
+                  "completeness_percentage": 80.0,
+                  "present_items": [
+                    "Certificate of incorporation",
+                    "Valid tax clearance certificate",
+                    "Bid securing declaration",
+                    "Power of attorney authorising the signatory"
+                  ],
+                  "missing_items": [],
+                  "unclear_items": [
+                    "Signed form of bid"
+                  ],
+                  "recommendations": [
+                    "Have a procurement officer confirm the Signed form of bid by hand. The check could not decide whether it is present."
+                  ]
+                }
+              }
+            }
+          ],
+          "observe": [
+            "success"
+          ]
+        }
+      ],
+      "tickets": [
+        {
+          "ticket_id": "RVW-000001",
+          "status": "draft_created",
+          "submission_id": "TC01",
+          "item_id": "REQ-01",
+          "created_at": "2026-10-21T04:07:06.771940Z",
+          "resolved": false
+        }
+      ],
+      "report": {
+        "status": "success",
+        "report": {
+          "document_name": "TC01-submission.pdf",
+          "document_type": "Bid Document",
+          "overall_status": "Needs Review",
+          "completeness_percentage": 80.0,
+          "present_items": [
+            "Certificate of incorporation",
+            "Valid tax clearance certificate",
+            "Bid securing declaration",
+            "Power of attorney authorising the signatory"
+          ],
+          "missing_items": [],
+          "unclear_items": [
+            "Signed form of bid"
+          ],
+          "recommendations": [
+            "Have a procurement officer confirm the Signed form of bid by hand. The check could not decide whether it is present."
+          ]
+        }
+      },
+      "record": null,
+      "memory": null
+    },
+    "model_calls": [
+      {
+        "call": 1,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-01\", \"description\": \"Signed form of bid\"}",
+        "outcome": "ok",
+        "seconds": 157.3,
+        "answer": {
+          "checklist_item_id": "REQ-01",
+          "clause_title": "Signed form of bid",
+          "is_present": true,
+          "page_number": 1,
+          "extracted_snippet": "We offer to supply and install the laboratory equipment described in the schedule of requirements for the total bid price stated in our price schedule. This bid remains valid for 120 days from the bid submission deadline of 12 March 2026. Signed: Daniel Okello, Managing Director Date: 10 March 2026",
+          "confidence_score": 0.95,
+          "requires_human_review": false
+        }
+      },
+      {
+        "call": 2,
+        "schema": "EvidenceAdjudication",
+        "item": "evidence check",
+        "outcome": "ok",
+        "seconds": 41.3,
+        "answer": {
+          "required_document": "Bid Form",
+          "quoted_document": "Bid",
+          "same_document": true,
+          "both_required_separately": false,
+          "match_confidence": 0.01
+        }
+      },
+      {
+        "call": 3,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-02\", \"description\": \"Certificate of incorporation\"}",
+        "outcome": "ok",
+        "seconds": 154.9,
+        "answer": {
+          "checklist_item_id": "REQ-02",
+          "clause_title": "Certificate of incorporation",
+          "is_present": true,
+          "page_number": 2,
+          "extracted_snippet": "Uganda Registration Services Bureau\nThis is to certify that Lakeside Scientific Supplies Ltd. is incorporated under the Companies Act, 2012 as a company limited by shares.\nRegistration number: 80020003141592\nDated 14 February 2015 at Kampala.",
+          "confidence_score": 1.0,
+          "requires_human_review": false
+        }
+      },
+      {
+        "call": 4,
+        "schema": "EvidenceAdjudication",
+        "item": "evidence check",
+        "outcome": "ok",
+        "seconds": 43.8,
+        "answer": {
+          "required_document": "Certificate of incorporation",
+          "quoted_document": "Certificate of incorporation",
+          "same_document": true,
+          "both_required_separately": false,
+          "match_confidence": 1.0
+        }
+      },
+      {
+        "call": 5,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-03\", \"description\": \"Valid tax clearance certificate\"}",
+        "outcome": "ok",
+        "seconds": 161.8,
+        "answer": {
+          "checklist_item_id": "REQ-03",
+          "clause_title": "Valid tax clearance certificate",
+          "is_present": true,
+          "page_number": 3,
+          "extracted_snippet": "TAX CLEARANCE CERTIFICATE\nUganda Revenue Authority\nTaxpayer: Lakeside Scientific Supplies Ltd.\nTIN: 1000271828\nThis certificate confirms that the taxpayer has filed all returns and paid all taxes due. Valid from 1 July 2025 to 30 June 2026.",
+          "confidence_score": 0.95,
+          "requires_human_review": false
+        }
+      },
+      {
+        "call": 6,
+        "schema": "EvidenceAdjudication",
+        "item": "evidence check",
+        "outcome": "ok",
+        "seconds": 43.9,
+        "answer": {
+          "required_document": "Valid tax clearance certificate",
+          "quoted_document": "TAX CLEARANCE CERTIFICATE",
+          "same_document": true,
+          "both_required_separately": false,
+          "match_confidence": 0.9
+        }
+      },
+      {
+        "call": 7,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-04\", \"description\": \"Bid securing declaration\"}",
+        "outcome": "ok",
+        "seconds": 182.4,
+        "answer": {
+          "checklist_item_id": "REQ-04",
+          "clause_title": "Bid securing declaration",
+          "is_present": true,
+          "page_number": 4,
+          "extracted_snippet": "We, Lakeside Scientific Supplies Ltd., accept that we will be suspended from being eligible for bidding in any contract with the procuring and disposing entity for three years if we withdraw our bid during the period of bid validity, or if we fail to sign the contract after being notified of acceptance of our bid.\nSigned: Daniel Okello, Managing Director\nWitness: Ruth Nabirye, Company Secretary, signed.",
+          "confidence_score": 1.0,
+          "requires_human_review": false
+        }
+      },
+      {
+        "call": 8,
+        "schema": "EvidenceAdjudication",
+        "item": "evidence check",
+        "outcome": "ok",
+        "seconds": 49.3,
+        "answer": {
+          "required_document": "Bid Securing Declaration",
+          "quoted_document": "Bid Securing Declaration",
+          "same_document": true,
+          "both_required_separately": false,
+          "match_confidence": 1.0
+        }
+      },
+      {
+        "call": 9,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-05\", \"description\": \"Power of attorney authorising the signatory\"}",
+        "outcome": "ok",
+        "seconds": 177.7,
+        "answer": {
+          "checklist_item_id": "REQ-05",
+          "clause_title": "Power of attorney authorising the signatory",
+          "is_present": true,
+          "page_number": 5,
+          "extracted_snippet": "POWER OF ATTORNEY\nBy a resolution of its board of directors dated 2 March 2026, Lakeside Scientific Supplies Ltd.\nauthorises Daniel Okello to sign this bid for procurement MUK/SUPP/2026/0012, and any resulting\ncontract, on its behalf.\nSigned for the company by two directors under its common seal.",
+          "confidence_score": 0.95,
+          "requires_human_review": false
+        }
+      },
+      {
+        "call": 10,
+        "schema": "EvidenceAdjudication",
+        "item": "evidence check",
+        "outcome": "ok",
+        "seconds": 46.5,
+        "answer": {
+          "required_document": "Power of attorney",
+          "quoted_document": "Power of attorney",
+          "same_document": true,
+          "both_required_separately": false,
+          "match_confidence": 1.0
+        }
+      },
+      {
+        "call": 11,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-01\", \"description\": \"Signed form of bid\"}",
+        "outcome": "ok",
+        "seconds": 163.1,
+        "answer": {
+          "checklist_item_id": "REQ-01",
+          "clause_title": "Signed form of bid",
+          "is_present": true,
+          "page_number": 1,
+          "extracted_snippet": "We offer to supply and install the laboratory equipment described in the schedule of requirements for the total bid price stated in our price schedule. This bid remains valid for 120 days from the bid submission deadline of 12 March 2026. Signed: Daniel Okello, Managing Director Date: 10 March 2026",
+          "confidence_score": 0.95,
+          "requires_human_review": false
+        }
+      },
+      {
+        "call": 12,
+        "schema": "EvidenceAdjudication",
+        "item": "evidence check",
+        "outcome": "ok",
+        "seconds": 42.1,
+        "answer": {
+          "required_document": "Bid Form",
+          "quoted_document": "Bid",
+          "same_document": true,
+          "both_required_separately": false,
+          "match_confidence": 0.01
+        }
+      }
+    ],
+    "grounding": [
+      "Certificate of incorporation: quotation found on page 2",
+      "Valid tax clearance certificate: quotation found on page 3",
+      "Bid securing declaration: quotation found on page 4",
+      "Power of attorney authorising the signatory: quotation found on page 5"
+    ],
+    "submission": "inputs/TC01-submission.pdf",
+    "checklist": "inputs/TC01-checklist.txt"
+  }
+}

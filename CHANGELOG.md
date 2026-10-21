@@ -2,6 +2,7 @@
 
 One line per version, newest first. The version is printed by `python run.py --version`, written into every workflow trace and served by the API.
 
+- 0.6.4: Week 8 final evaluation: `tests/evaluation/run_final_evaluation.py` runs the 32 Week 7 scenarios against the system as built (the workflow and the real model for every scenario that checks a submission) and scores them with the team rubric; synthetic inputs, results and run logs in `evidence/traces/final-evaluation/`, report in `docs/evaluation/final-evaluation`. No change to the application.
 - 0.6.3: Fix: `logs show latest`, `logs list` and `--last N` order runs by when they started (the run_started time, then a performance-counter reading now recorded in run_started, then the file name), not by file name alone, so two runs started in the same second no longer come back in random order. Made on 19 October as 0.5.2 on Jonathan's branch, never pushed, and renumbered when rebased onto main.
 - 0.6.2: Isaac Mwesigwa's branch merged: user stories, AI boundary matrix, context construction and trace specification, and retrieval and grounding failure analysis. Documentation only.
 - 0.6.1: Makmot Johnson's branch merged: his Week 1 report, Week 1 task and Week 2 prompt iteration documents. Documentation only.

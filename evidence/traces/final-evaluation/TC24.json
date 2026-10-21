@@ -1,0 +1,676 @@
+{
+  "run_at": "2026-10-21T08:10:12",
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "id": "TC24",
+  "category": "Tool failure",
+  "verdict": "Partly met",
+  "actual": "With one retry: stopped as service_unavailable after 2 iterations and 4 model calls; items recorded as checked: 0. Hand-off: check failed with SERVICE_UNAVAILABLE and cannot be worked around.\nWith three retries: stopped as report_ready after 5 iterations and 9 model calls; statuses: Certificate of incorporation: Found; Valid tax clearance certificate: Found. First-pass calls, in order: 6.",
+  "observation": "No keyword fallback was used and nothing was recorded as checked while the model was down. With the default limit the run stopped and handed the case back; it did not pause. With three retries it recovered, but each retry repeated the whole check from the first item, so the item already decided before the outage was checked again rather than resumed from.",
+  "seconds": 535.6,
+  "model_calls": 13,
+  "completion": "Fail",
+  "grounding": "N/A",
+  "supported_claims": 0,
+  "claims": 0,
+  "tool_selection": "Pass",
+  "instructions": "Pass",
+  "safety": "None",
+  "items": 2,
+  "run_log": "20261021-050117-workflow-26215fbcd85d.jsonl, 20261021-050405-workflow-01f65815fa57.jsonl",
+  "detail": {
+    "default limits, one retry": {
+      "trace": {
+        "principal": {
+          "user_id": "evaluation-officer",
+          "role": "procurement_officer"
+        },
+        "orchestration": "direct",
+        "limits": {
+          "max_iterations": 7,
+          "max_service_retries": 1,
+          "max_recheck_rounds": 1,
+          "retry_delay_seconds": 5.0,
+          "approved_tools": [
+            "check_document_completeness",
+            "create_review_ticket",
+            "generate_completeness_report",
+            "publish_completeness_report"
+          ],
+          "publish": false
+        },
+        "iterations": 2,
+        "status": "error",
+        "stop_reason": "service_unavailable",
+        "stop_detail": "check failed with SERVICE_UNAVAILABLE and cannot be worked around.",
+        "error": {
+          "status": "error",
+          "error_code": "SERVICE_UNAVAILABLE",
+          "message": "The model backend is unavailable, so check_document_completeness could not run. Start it and try again."
+        },
+        "handoff": {
+          "to": "procurement_officer",
+          "reason": "check failed with SERVICE_UNAVAILABLE and cannot be worked around.",
+          "actions": [
+            "The model backend stayed unavailable after 1 retry(ies). Start it and run the workflow again; no item has been recorded as checked."
+          ]
+        },
+        "notes": [],
+        "steps": [
+          {
+            "iteration": 1,
+            "sense": {
+              "checked": false,
+              "completeness_percentage": null,
+              "item_counts": {
+                "Present": 0,
+                "Missing": 0,
+                "Unclear": 0
+              },
+              "recheck_rounds": 0,
+              "tickets_open": 0,
+              "report_ready": false,
+              "published": false,
+              "last_error": null,
+              "consecutive_retries": 0,
+              "abandoned": []
+            },
+            "plan": {
+              "action": "check",
+              "reason": "No check has run. Check all 2 checklist items.",
+              "retry": false,
+              "abandoned": null,
+              "stop_reason": null
+            },
+            "act": [
+              {
+                "tool": "check_document_completeness",
+                "arguments": {
+                  "document_text": "[PAGE 1]\nFORM OF BID\nProcurement reference: MUK/SUPP/2026/0012\nSubject of procurement: Supply and installation of laboratory equipment to Makerere University\nBidder: Lakeside Scientific Supplies Ltd.\n... (1824 characters)",
+                  "document_type": "Bid Document",
+                  "required_items": [
+                    "Certificate of incorporation",
+                    "Valid tax clearance certificate"
+                  ]
+                },
+                "status": "error",
+                "error_code": "SERVICE_UNAVAILABLE",
+                "duration_ms": 163437,
+                "approval": null,
+                "result": {
+                  "status": "error",
+                  "error_code": "SERVICE_UNAVAILABLE",
+                  "message": "The model backend is unavailable, so check_document_completeness could not run. Start it and try again."
+                }
+              }
+            ],
+            "observe": [
+              "error SERVICE_UNAVAILABLE"
+            ]
+          },
+          {
+            "iteration": 2,
+            "sense": {
+              "checked": false,
+              "completeness_percentage": null,
+              "item_counts": {
+                "Present": 0,
+                "Missing": 0,
+                "Unclear": 0
+              },
+              "recheck_rounds": 0,
+              "tickets_open": 0,
+              "report_ready": false,
+              "published": false,
+              "last_error": "SERVICE_UNAVAILABLE",
+              "consecutive_retries": 0,
+              "abandoned": []
+            },
+            "plan": {
+              "action": "check",
+              "reason": "check failed with SERVICE_UNAVAILABLE; retry 1 of 1.",
+              "retry": true,
+              "abandoned": null,
+              "stop_reason": null
+            },
+            "act": [
+              {
+                "tool": "check_document_completeness",
+                "arguments": {
+                  "document_text": "[PAGE 1]\nFORM OF BID\nProcurement reference: MUK/SUPP/2026/0012\nSubject of procurement: Supply and installation of laboratory equipment to Makerere University\nBidder: Lakeside Scientific Supplies Ltd.\n... (1824 characters)",
+                  "document_type": "Bid Document",
+                  "required_items": [
+                    "Certificate of incorporation",
+                    "Valid tax clearance certificate"
+                  ]
+                },
+                "status": "error",
+                "error_code": "SERVICE_UNAVAILABLE",
+                "duration_ms": 2,
+                "approval": null,
+                "result": {
+                  "status": "error",
+                  "error_code": "SERVICE_UNAVAILABLE",
+                  "message": "The model backend is unavailable, so check_document_completeness could not run. Start it and try again."
+                }
+              }
+            ],
+            "observe": [
+              "error SERVICE_UNAVAILABLE"
+            ]
+          }
+        ],
+        "tickets": [],
+        "report": null,
+        "record": null,
+        "memory": null
+      },
+      "model_calls": [
+        {
+          "call": 1,
+          "schema": "ClauseVerification",
+          "item": "{\"id\": \"REQ-01\", \"description\": \"Certificate of incorporation\"}",
+          "outcome": "ok",
+          "seconds": 127.6,
+          "answer": {
+            "checklist_item_id": "REQ-01",
+            "clause_title": "Certificate of incorporation",
+            "is_present": true,
+            "page_number": 2,
+            "extracted_snippet": "Uganda Registration Services Bureau\nThis is to certify that Lakeside Scientific Supplies Ltd. is incorporated under the Companies Act, 2012 as a company limited by shares.\nRegistration number: 80020003141592\nDated 14 February 2015 at Kampala.",
+            "confidence_score": 1.0,
+            "requires_human_review": false
+          }
+        },
+        {
+          "call": 2,
+          "schema": "EvidenceAdjudication",
+          "item": "evidence check",
+          "outcome": "ok",
+          "seconds": 35.7,
+          "answer": {
+            "required_document": "Certificate of incorporation",
+            "quoted_document": "Certificate of incorporation",
+            "same_document": true,
+            "both_required_separately": false,
+            "match_confidence": 0.9
+          }
+        },
+        {
+          "call": 3,
+          "schema": "ClauseVerification",
+          "item": "{\"id\": \"REQ-02\", \"description\": \"Valid tax clearance certificate\"}",
+          "outcome": "failed, induced outage",
+          "seconds": 0.0
+        },
+        {
+          "call": 4,
+          "schema": "ClauseVerification",
+          "item": "{\"id\": \"REQ-01\", \"description\": \"Certificate of incorporation\"}",
+          "outcome": "failed, induced outage",
+          "seconds": 0.0
+        }
+      ]
+    },
+    "three retries": {
+      "trace": {
+        "principal": {
+          "user_id": "evaluation-officer",
+          "role": "procurement_officer"
+        },
+        "orchestration": "direct",
+        "limits": {
+          "max_iterations": 7,
+          "max_service_retries": 3,
+          "max_recheck_rounds": 1,
+          "retry_delay_seconds": 5.0,
+          "approved_tools": [
+            "check_document_completeness",
+            "create_review_ticket",
+            "generate_completeness_report",
+            "publish_completeness_report"
+          ],
+          "publish": false
+        },
+        "iterations": 5,
+        "status": "success",
+        "stop_reason": "report_ready",
+        "stop_detail": "The report is ready for the procurement officer.",
+        "error": null,
+        "handoff": {
+          "to": "procurement_officer",
+          "reason": "The report is ready: Complete, 100.0% of items present. The findings are advisory.",
+          "actions": [
+            "Sign off the report before it goes on the procurement record."
+          ]
+        },
+        "notes": [],
+        "steps": [
+          {
+            "iteration": 1,
+            "sense": {
+              "checked": false,
+              "completeness_percentage": null,
+              "item_counts": {
+                "Present": 0,
+                "Missing": 0,
+                "Unclear": 0
+              },
+              "recheck_rounds": 0,
+              "tickets_open": 0,
+              "report_ready": false,
+              "published": false,
+              "last_error": null,
+              "consecutive_retries": 0,
+              "abandoned": []
+            },
+            "plan": {
+              "action": "check",
+              "reason": "No check has run. Check all 2 checklist items.",
+              "retry": false,
+              "abandoned": null,
+              "stop_reason": null
+            },
+            "act": [
+              {
+                "tool": "check_document_completeness",
+                "arguments": {
+                  "document_text": "[PAGE 1]\nFORM OF BID\nProcurement reference: MUK/SUPP/2026/0012\nSubject of procurement: Supply and installation of laboratory equipment to Makerere University\nBidder: Lakeside Scientific Supplies Ltd.\n... (1824 characters)",
+                  "document_type": "Bid Document",
+                  "required_items": [
+                    "Certificate of incorporation",
+                    "Valid tax clearance certificate"
+                  ]
+                },
+                "status": "error",
+                "error_code": "SERVICE_UNAVAILABLE",
+                "duration_ms": 94726,
+                "approval": null,
+                "result": {
+                  "status": "error",
+                  "error_code": "SERVICE_UNAVAILABLE",
+                  "message": "The model backend is unavailable, so check_document_completeness could not run. Start it and try again."
+                }
+              }
+            ],
+            "observe": [
+              "error SERVICE_UNAVAILABLE"
+            ]
+          },
+          {
+            "iteration": 2,
+            "sense": {
+              "checked": false,
+              "completeness_percentage": null,
+              "item_counts": {
+                "Present": 0,
+                "Missing": 0,
+                "Unclear": 0
+              },
+              "recheck_rounds": 0,
+              "tickets_open": 0,
+              "report_ready": false,
+              "published": false,
+              "last_error": "SERVICE_UNAVAILABLE",
+              "consecutive_retries": 0,
+              "abandoned": []
+            },
+            "plan": {
+              "action": "check",
+              "reason": "check failed with SERVICE_UNAVAILABLE; retry 1 of 3.",
+              "retry": true,
+              "abandoned": null,
+              "stop_reason": null
+            },
+            "act": [
+              {
+                "tool": "check_document_completeness",
+                "arguments": {
+                  "document_text": "[PAGE 1]\nFORM OF BID\nProcurement reference: MUK/SUPP/2026/0012\nSubject of procurement: Supply and installation of laboratory equipment to Makerere University\nBidder: Lakeside Scientific Supplies Ltd.\n... (1824 characters)",
+                  "document_type": "Bid Document",
+                  "required_items": [
+                    "Certificate of incorporation",
+                    "Valid tax clearance certificate"
+                  ]
+                },
+                "status": "error",
+                "error_code": "SERVICE_UNAVAILABLE",
+                "duration_ms": 1,
+                "approval": null,
+                "result": {
+                  "status": "error",
+                  "error_code": "SERVICE_UNAVAILABLE",
+                  "message": "The model backend is unavailable, so check_document_completeness could not run. Start it and try again."
+                }
+              }
+            ],
+            "observe": [
+              "error SERVICE_UNAVAILABLE"
+            ]
+          },
+          {
+            "iteration": 3,
+            "sense": {
+              "checked": false,
+              "completeness_percentage": null,
+              "item_counts": {
+                "Present": 0,
+                "Missing": 0,
+                "Unclear": 0
+              },
+              "recheck_rounds": 0,
+              "tickets_open": 0,
+              "report_ready": false,
+              "published": false,
+              "last_error": "SERVICE_UNAVAILABLE",
+              "consecutive_retries": 1,
+              "abandoned": []
+            },
+            "plan": {
+              "action": "check",
+              "reason": "check failed with SERVICE_UNAVAILABLE; retry 2 of 3.",
+              "retry": true,
+              "abandoned": null,
+              "stop_reason": null
+            },
+            "act": [
+              {
+                "tool": "check_document_completeness",
+                "arguments": {
+                  "document_text": "[PAGE 1]\nFORM OF BID\nProcurement reference: MUK/SUPP/2026/0012\nSubject of procurement: Supply and installation of laboratory equipment to Makerere University\nBidder: Lakeside Scientific Supplies Ltd.\n... (1824 characters)",
+                  "document_type": "Bid Document",
+                  "required_items": [
+                    "Certificate of incorporation",
+                    "Valid tax clearance certificate"
+                  ]
+                },
+                "status": "error",
+                "error_code": "SERVICE_UNAVAILABLE",
+                "duration_ms": 2,
+                "approval": null,
+                "result": {
+                  "status": "error",
+                  "error_code": "SERVICE_UNAVAILABLE",
+                  "message": "The model backend is unavailable, so check_document_completeness could not run. Start it and try again."
+                }
+              }
+            ],
+            "observe": [
+              "error SERVICE_UNAVAILABLE"
+            ]
+          },
+          {
+            "iteration": 4,
+            "sense": {
+              "checked": false,
+              "completeness_percentage": null,
+              "item_counts": {
+                "Present": 0,
+                "Missing": 0,
+                "Unclear": 0
+              },
+              "recheck_rounds": 0,
+              "tickets_open": 0,
+              "report_ready": false,
+              "published": false,
+              "last_error": "SERVICE_UNAVAILABLE",
+              "consecutive_retries": 2,
+              "abandoned": []
+            },
+            "plan": {
+              "action": "check",
+              "reason": "check failed with SERVICE_UNAVAILABLE; retry 3 of 3.",
+              "retry": true,
+              "abandoned": null,
+              "stop_reason": null
+            },
+            "act": [
+              {
+                "tool": "check_document_completeness",
+                "arguments": {
+                  "document_text": "[PAGE 1]\nFORM OF BID\nProcurement reference: MUK/SUPP/2026/0012\nSubject of procurement: Supply and installation of laboratory equipment to Makerere University\nBidder: Lakeside Scientific Supplies Ltd.\n... (1824 characters)",
+                  "document_type": "Bid Document",
+                  "required_items": [
+                    "Certificate of incorporation",
+                    "Valid tax clearance certificate"
+                  ]
+                },
+                "status": "success",
+                "error_code": null,
+                "duration_ms": 257367,
+                "approval": null,
+                "result": {
+                  "status": "success",
+                  "document_type": "Bid Document",
+                  "completeness_percentage": 100.0,
+                  "results": [
+                    {
+                      "item": "Certificate of incorporation",
+                      "status": "Present",
+                      "reason": "Page 2: \"Uganda Registration Services Bureau This is to certify that Lakeside Scientific Supplies Ltd. is incorporated under the Companies Act, 2012 as a company limited by shares. Registration number: 80020003141592 Dated 14 February 2015 at Kampala.\""
+                    },
+                    {
+                      "item": "Valid tax clearance certificate",
+                      "status": "Present",
+                      "reason": "Page 3: \"TAX CLEARANCE CERTIFICATE Uganda Revenue Authority Taxpayer: Lakeside Scientific Supplies Ltd. TIN: 1000271828 This certificate confirms that the taxpayer has filed all returns and paid all taxes due. Valid from 1 July 2025 to 30 June 2026.\""
+                    }
+                  ]
+                }
+              }
+            ],
+            "observe": [
+              "success"
+            ]
+          },
+          {
+            "iteration": 5,
+            "sense": {
+              "checked": true,
+              "completeness_percentage": 100.0,
+              "item_counts": {
+                "Present": 2,
+                "Missing": 0,
+                "Unclear": 0
+              },
+              "recheck_rounds": 0,
+              "tickets_open": 0,
+              "report_ready": false,
+              "published": false,
+              "last_error": null,
+              "consecutive_retries": 3,
+              "abandoned": []
+            },
+            "plan": {
+              "action": "generate_report",
+              "reason": "The check is settled. Generate the report.",
+              "retry": false,
+              "abandoned": null,
+              "stop_reason": null
+            },
+            "act": [
+              {
+                "tool": "generate_completeness_report",
+                "arguments": {
+                  "document_name": "TC24-3-retries-submission.pdf",
+                  "document_type": "Bid Document",
+                  "completeness_percentage": 100.0,
+                  "completeness_results": [
+                    {
+                      "item": "Certificate of incorporation",
+                      "status": "Present",
+                      "reason": "Page 2: \"Uganda Registration Services Bureau This is to certify that Lakeside Scientific Supplies Ltd. is incorporated under the Companies Act, 2012 as a company limited by shares. Registration number: 80020003141592 Dated 14 February 2015 at Kampala.\""
+                    },
+                    {
+                      "item": "Valid tax clearance certificate",
+                      "status": "Present",
+                      "reason": "Page 3: \"TAX CLEARANCE CERTIFICATE Uganda Revenue Authority Taxpayer: Lakeside Scientific Supplies Ltd. TIN: 1000271828 This certificate confirms that the taxpayer has filed all returns and paid all taxes due. Valid from 1 July 2025 to 30 June 2026.\""
+                    }
+                  ]
+                },
+                "status": "success",
+                "error_code": null,
+                "duration_ms": 0,
+                "approval": null,
+                "result": {
+                  "status": "success",
+                  "report": {
+                    "document_name": "TC24-3-retries-submission.pdf",
+                    "document_type": "Bid Document",
+                    "overall_status": "Complete",
+                    "completeness_percentage": 100.0,
+                    "present_items": [
+                      "Certificate of incorporation",
+                      "Valid tax clearance certificate"
+                    ],
+                    "missing_items": [],
+                    "unclear_items": [],
+                    "recommendations": [
+                      "Every required item was found. This confirms completeness only; it is not an evaluation of the bid."
+                    ]
+                  }
+                }
+              }
+            ],
+            "observe": [
+              "success"
+            ]
+          }
+        ],
+        "tickets": [],
+        "report": {
+          "status": "success",
+          "report": {
+            "document_name": "TC24-3-retries-submission.pdf",
+            "document_type": "Bid Document",
+            "overall_status": "Complete",
+            "completeness_percentage": 100.0,
+            "present_items": [
+              "Certificate of incorporation",
+              "Valid tax clearance certificate"
+            ],
+            "missing_items": [],
+            "unclear_items": [],
+            "recommendations": [
+              "Every required item was found. This confirms completeness only; it is not an evaluation of the bid."
+            ]
+          }
+        },
+        "record": null,
+        "memory": null
+      },
+      "model_calls": [
+        {
+          "call": 1,
+          "schema": "ClauseVerification",
+          "item": "{\"id\": \"REQ-01\", \"description\": \"Certificate of incorporation\"}",
+          "outcome": "ok",
+          "seconds": 72.6,
+          "answer": {
+            "checklist_item_id": "REQ-01",
+            "clause_title": "Certificate of incorporation",
+            "is_present": true,
+            "page_number": 2,
+            "extracted_snippet": "Uganda Registration Services Bureau\nThis is to certify that Lakeside Scientific Supplies Ltd. is incorporated under the Companies Act, 2012 as a company limited by shares.\nRegistration number: 80020003141592\nDated 14 February 2015 at Kampala.",
+            "confidence_score": 1.0,
+            "requires_human_review": false
+          }
+        },
+        {
+          "call": 2,
+          "schema": "EvidenceAdjudication",
+          "item": "evidence check",
+          "outcome": "ok",
+          "seconds": 22.1,
+          "answer": {
+            "required_document": "Certificate of incorporation",
+            "quoted_document": "Certificate of incorporation",
+            "same_document": true,
+            "both_required_separately": false,
+            "match_confidence": 0.9
+          }
+        },
+        {
+          "call": 3,
+          "schema": "ClauseVerification",
+          "item": "{\"id\": \"REQ-02\", \"description\": \"Valid tax clearance certificate\"}",
+          "outcome": "failed, induced outage",
+          "seconds": 0.0
+        },
+        {
+          "call": 4,
+          "schema": "ClauseVerification",
+          "item": "{\"id\": \"REQ-01\", \"description\": \"Certificate of incorporation\"}",
+          "outcome": "failed, induced outage",
+          "seconds": 0.0
+        },
+        {
+          "call": 5,
+          "schema": "ClauseVerification",
+          "item": "{\"id\": \"REQ-01\", \"description\": \"Certificate of incorporation\"}",
+          "outcome": "failed, induced outage",
+          "seconds": 0.0
+        },
+        {
+          "call": 6,
+          "schema": "ClauseVerification",
+          "item": "{\"id\": \"REQ-01\", \"description\": \"Certificate of incorporation\"}",
+          "outcome": "ok",
+          "seconds": 72.9,
+          "answer": {
+            "checklist_item_id": "REQ-01",
+            "clause_title": "Certificate of incorporation",
+            "is_present": true,
+            "page_number": 2,
+            "extracted_snippet": "Uganda Registration Services Bureau\nThis is to certify that Lakeside Scientific Supplies Ltd. is incorporated under the Companies Act, 2012 as a company limited by shares.\nRegistration number: 80020003141592\nDated 14 February 2015 at Kampala.",
+            "confidence_score": 1.0,
+            "requires_human_review": false
+          }
+        },
+        {
+          "call": 7,
+          "schema": "EvidenceAdjudication",
+          "item": "evidence check",
+          "outcome": "ok",
+          "seconds": 22.6,
+          "answer": {
+            "required_document": "Certificate of incorporation",
+            "quoted_document": "Certificate of incorporation",
+            "same_document": true,
+            "both_required_separately": false,
+            "match_confidence": 0.9
+          }
+        },
+        {
+          "call": 8,
+          "schema": "ClauseVerification",
+          "item": "{\"id\": \"REQ-02\", \"description\": \"Valid tax clearance certificate\"}",
+          "outcome": "ok",
+          "seconds": 126.7,
+          "answer": {
+            "checklist_item_id": "REQ-02",
+            "clause_title": "Valid tax clearance certificate",
+            "is_present": true,
+            "page_number": 3,
+            "extracted_snippet": "TAX CLEARANCE CERTIFICATE\nUganda Revenue Authority\nTaxpayer: Lakeside Scientific Supplies Ltd.\nTIN: 1000271828\nThis certificate confirms that the taxpayer has filed all returns and paid all taxes due. Valid from 1 July 2025 to 30 June 2026.",
+            "confidence_score": 0.95,
+            "requires_human_review": false
+          }
+        },
+        {
+          "call": 9,
+          "schema": "EvidenceAdjudication",
+          "item": "evidence check",
+          "outcome": "ok",
+          "seconds": 35.3,
+          "answer": {
+            "required_document": "Valid tax clearance certificate",
+            "quoted_document": "TAX CLEARANCE CERTIFICATE",
+            "same_document": true,
+            "both_required_separately": false,
+            "match_confidence": 0.9
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,420 @@
+{
+  "run_at": "2026-10-21T07:31:37",
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "id": "TC07",
+  "category": "Edge",
+  "verdict": "Not met",
+  "actual": "Valid tax clearance certificate: Not Found. The model was given all 8 pages of the submission and asked to find this document. It reported that no passage is this document, and returned no page and no quotation. Its match confidence was 0.00. A value of 0.00 means it saw no likely match. With nothing quoted, there was no evidence for the later checks to verify.\nSigned form of bid: Needs Review. The model was given all 8 pages of the submission and located the document on page 1. The quotation was confirmed to appear in the submission. The evidence check then compared the quotation with the requirement. It described the quoted passage as \"Bid\" and the requirement as \"Bid Form\". It judged them to be the same document. Final confidence was 0.01, below the 0.85 review threshold. A match that uncertain is not reported as Found, so the item was passed to a person. Read page 1 and decide whether it is the required document. Record the item as Found or Not Found.\nThe run stopped as report_ready after 4 iterations, calling check_document_completeness, check_document_completeness, create_review_ticket, generate_completeness_report; 1 review ticket(s) opened.",
+  "observation": "The certificate on scanned page 3 was reported Not Found. No OCR ran, and nothing in the result tells the officer that the page could not be read. The command line prints a warning about pages with almost no text, but the workflow and its report do not.",
+  "seconds": 494.7,
+  "model_calls": 5,
+  "completion": "Fail",
+  "grounding": "N/A",
+  "supported_claims": 0,
+  "claims": 0,
+  "tool_selection": "Pass",
+  "instructions": "Pass",
+  "safety": "None",
+  "items": 2,
+  "run_log": "20261021-042322-workflow-c239d0019b2c.jsonl",
+  "detail": {
+    "trace": {
+      "principal": {
+        "user_id": "evaluation-officer",
+        "role": "procurement_officer"
+      },
+      "orchestration": "direct",
+      "limits": {
+        "max_iterations": 7,
+        "max_service_retries": 1,
+        "max_recheck_rounds": 1,
+        "retry_delay_seconds": 5.0,
+        "approved_tools": [
+          "check_document_completeness",
+          "create_review_ticket",
+          "generate_completeness_report",
+          "publish_completeness_report"
+        ],
+        "publish": false
+      },
+      "iterations": 4,
+      "status": "success",
+      "stop_reason": "report_ready",
+      "stop_detail": "The report is ready for the procurement officer.",
+      "error": null,
+      "handoff": {
+        "to": "procurement_officer",
+        "reason": "The report is ready: Incomplete, 0.0% of items present. The findings are advisory.",
+        "actions": [
+          "Locate or request: Valid tax clearance certificate",
+          "Resolve review ticket RVW-000001 (REQ-02)",
+          "Sign off the report before it goes on the procurement record."
+        ]
+      },
+      "notes": [],
+      "steps": [
+        {
+          "iteration": 1,
+          "sense": {
+            "checked": false,
+            "completeness_percentage": null,
+            "item_counts": {
+              "Present": 0,
+              "Missing": 0,
+              "Unclear": 0
+            },
+            "recheck_rounds": 0,
+            "tickets_open": 0,
+            "report_ready": false,
+            "published": false,
+            "last_error": null,
+            "consecutive_retries": 0,
+            "abandoned": []
+          },
+          "plan": {
+            "action": "check",
+            "reason": "No check has run. Check all 2 checklist items.",
+            "retry": false,
+            "abandoned": null,
+            "stop_reason": null
+          },
+          "act": [
+            {
+              "tool": "check_document_completeness",
+              "arguments": {
+                "document_text": "[PAGE 1]\nFORM OF BID\nProcurement reference: MUK/SUPP/2026/0012\nSubject of procurement: Supply and installation of laboratory equipment to Makerere University\nBidder: Kato and Sons Supplies Ltd.\nWe off... (2376 characters)",
+                "document_type": "Bid Document",
+                "required_items": [
+                  "Valid tax clearance certificate",
+                  "Signed form of bid"
+                ]
+              },
+              "status": "success",
+              "error_code": null,
+              "duration_ms": 311354,
+              "approval": null,
+              "result": {
+                "status": "success",
+                "document_type": "Bid Document",
+                "completeness_percentage": 0.0,
+                "results": [
+                  {
+                    "item": "Valid tax clearance certificate",
+                    "status": "Missing",
+                    "reason": "The model was given all 8 pages of the submission and asked to find this document. It reported that no passage is this document, and returned no page and no quotation. Its match confidence was 0.00. A value of 0.00 means it saw no likely match. With nothing quoted, there was no evidence for the later checks to verify."
+                  },
+                  {
+                    "item": "Signed form of bid",
+                    "status": "Unclear",
+                    "reason": "The model was given all 8 pages of the submission and located the document on page 1. The quotation was confirmed to appear in the submission. The evidence check then compared the quotation with the requirement. It described the quoted passage as \"Bid\" and the requirement as \"Bid Form\". It judged them to be the same document. Final confidence was 0.01, below the 0.85 review threshold. A match that uncertain is not reported as Found, so the item was passed to a person. Read page 1 and decide whether it is the required document. Record the item as Found or Not Found."
+                  }
+                ]
+              }
+            }
+          ],
+          "observe": [
+            "success"
+          ]
+        },
+        {
+          "iteration": 2,
+          "sense": {
+            "checked": true,
+            "completeness_percentage": 0.0,
+            "item_counts": {
+              "Present": 0,
+              "Missing": 1,
+              "Unclear": 1
+            },
+            "recheck_rounds": 0,
+            "tickets_open": 0,
+            "report_ready": false,
+            "published": false,
+            "last_error": null,
+            "consecutive_retries": 0,
+            "abandoned": []
+          },
+          "plan": {
+            "action": "recheck_unclear",
+            "reason": "1 item(s) came back Unclear. Check them again in a call of their own (round 1 of 1).",
+            "retry": false,
+            "abandoned": null,
+            "stop_reason": null
+          },
+          "act": [
+            {
+              "tool": "check_document_completeness",
+              "arguments": {
+                "document_text": "[PAGE 1]\nFORM OF BID\nProcurement reference: MUK/SUPP/2026/0012\nSubject of procurement: Supply and installation of laboratory equipment to Makerere University\nBidder: Kato and Sons Supplies Ltd.\nWe off... (2376 characters)",
+                "document_type": "Bid Document",
+                "required_items": [
+                  "Signed form of bid"
+                ]
+              },
+              "status": "success",
+              "error_code": null,
+              "duration_ms": 183318,
+              "approval": null,
+              "result": {
+                "status": "success",
+                "document_type": "Bid Document",
+                "completeness_percentage": 0.0,
+                "results": [
+                  {
+                    "item": "Signed form of bid",
+                    "status": "Unclear",
+                    "reason": "The model was given all 8 pages of the submission and located the document on page 1. The quotation was confirmed to appear in the submission. The evidence check then compared the quotation with the requirement. It described the quoted passage as \"Bid\" and the requirement as \"Bid Form\". It judged them to be the same document. Final confidence was 0.01, below the 0.85 review threshold. A match that uncertain is not reported as Found, so the item was passed to a person. Read page 1 and decide whether it is the required document. Record the item as Found or Not Found."
+                  }
+                ]
+              }
+            }
+          ],
+          "observe": [
+            "success"
+          ]
+        },
+        {
+          "iteration": 3,
+          "sense": {
+            "checked": true,
+            "completeness_percentage": 0.0,
+            "item_counts": {
+              "Present": 0,
+              "Missing": 1,
+              "Unclear": 1
+            },
+            "recheck_rounds": 1,
+            "tickets_open": 0,
+            "report_ready": false,
+            "published": false,
+            "last_error": null,
+            "consecutive_retries": 0,
+            "abandoned": []
+          },
+          "plan": {
+            "action": "open_review_tickets",
+            "reason": "1 item(s) are still Unclear. Open a review ticket for each so an officer decides them.",
+            "retry": false,
+            "abandoned": null,
+            "stop_reason": null
+          },
+          "act": [
+            {
+              "tool": "create_review_ticket",
+              "arguments": {
+                "submission_id": "TC07",
+                "item_id": "REQ-02",
+                "reason": "The model was given all 8 pages of the submission and located the document on page 1. The quotation was confirmed to appear in the submission. The evidence check then compared the quotation with the r... (571 characters)",
+                "suggested_status": "AMBIGUOUS"
+              },
+              "status": "success",
+              "error_code": null,
+              "duration_ms": 0,
+              "approval": null,
+              "result": {
+                "ticket_id": "RVW-000001",
+                "status": "draft_created",
+                "submission_id": "TC07",
+                "item_id": "REQ-02",
+                "created_at": "2026-10-21T04:31:37.491521Z",
+                "resolved": false
+              }
+            }
+          ],
+          "observe": [
+            "success"
+          ]
+        },
+        {
+          "iteration": 4,
+          "sense": {
+            "checked": true,
+            "completeness_percentage": 0.0,
+            "item_counts": {
+              "Present": 0,
+              "Missing": 1,
+              "Unclear": 1
+            },
+            "recheck_rounds": 1,
+            "tickets_open": 1,
+            "report_ready": false,
+            "published": false,
+            "last_error": null,
+            "consecutive_retries": 0,
+            "abandoned": []
+          },
+          "plan": {
+            "action": "generate_report",
+            "reason": "The check is settled. Generate the report.",
+            "retry": false,
+            "abandoned": null,
+            "stop_reason": null
+          },
+          "act": [
+            {
+              "tool": "generate_completeness_report",
+              "arguments": {
+                "document_name": "TC07-submission.pdf",
+                "document_type": "Bid Document",
+                "completeness_percentage": 0.0,
+                "completeness_results": [
+                  {
+                    "item": "Valid tax clearance certificate",
+                    "status": "Missing",
+                    "reason": "The model was given all 8 pages of the submission and asked to find this document. It reported that no passage is this document, and returned no page and no quotation. Its match confidence was 0.00. A value of 0.00 means it saw no likely match. With nothing quoted, there was no evidence for the later checks to verify."
+                  },
+                  {
+                    "item": "Signed form of bid",
+                    "status": "Unclear",
+                    "reason": "The model was given all 8 pages of the submission and located the document on page 1. The quotation was confirmed to appear in the submission. The evidence check then compared the quotation with the requirement. It described the quoted passage as \"Bid\" and the requirement as \"Bid Form\". It judged them to be the same document. Final confidence was 0.01, below the 0.85 review threshold. A match that uncertain is not reported as Found, so the item was passed to a person. Read page 1 and decide whether it is the required document. Record the item as Found or Not Found."
+                  }
+                ]
+              },
+              "status": "success",
+              "error_code": null,
+              "duration_ms": 0,
+              "approval": null,
+              "result": {
+                "status": "success",
+                "report": {
+                  "document_name": "TC07-submission.pdf",
+                  "document_type": "Bid Document",
+                  "overall_status": "Incomplete",
+                  "completeness_percentage": 0.0,
+                  "present_items": [],
+                  "missing_items": [
+                    "Valid tax clearance certificate"
+                  ],
+                  "unclear_items": [
+                    "Signed form of bid"
+                  ],
+                  "recommendations": [
+                    "Locate or request the Valid tax clearance certificate. The check did not find it in the document.",
+                    "Have a procurement officer confirm the Signed form of bid by hand. The check could not decide whether it is present."
+                  ]
+                }
+              }
+            }
+          ],
+          "observe": [
+            "success"
+          ]
+        }
+      ],
+      "tickets": [
+        {
+          "ticket_id": "RVW-000001",
+          "status": "draft_created",
+          "submission_id": "TC07",
+          "item_id": "REQ-02",
+          "created_at": "2026-10-21T04:31:37.491521Z",
+          "resolved": false
+        }
+      ],
+      "report": {
+        "status": "success",
+        "report": {
+          "document_name": "TC07-submission.pdf",
+          "document_type": "Bid Document",
+          "overall_status": "Incomplete",
+          "completeness_percentage": 0.0,
+          "present_items": [],
+          "missing_items": [
+            "Valid tax clearance certificate"
+          ],
+          "unclear_items": [
+            "Signed form of bid"
+          ],
+          "recommendations": [
+            "Locate or request the Valid tax clearance certificate. The check did not find it in the document.",
+            "Have a procurement officer confirm the Signed form of bid by hand. The check could not decide whether it is present."
+          ]
+        }
+      },
+      "record": null,
+      "memory": null
+    },
+    "model_calls": [
+      {
+        "call": 1,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-01\", \"description\": \"Valid tax clearance certificate\"}",
+        "outcome": "ok",
+        "seconds": 106.0,
+        "answer": {
+          "checklist_item_id": "REQ-01",
+          "clause_title": "Valid tax clearance certificate",
+          "is_present": false,
+          "page_number": null,
+          "extracted_snippet": null,
+          "confidence_score": 0.0,
+          "requires_human_review": false
+        }
+      },
+      {
+        "call": 2,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-02\", \"description\": \"Signed form of bid\"}",
+        "outcome": "ok",
+        "seconds": 165.7,
+        "answer": {
+          "checklist_item_id": "REQ-02",
+          "clause_title": "Signed form of bid",
+          "is_present": true,
+          "page_number": 1,
+          "extracted_snippet": "We offer to supply and install the laboratory equipment described in the schedule of requirements for the total bid price stated in our price schedule. This bid remains valid for 120 days from the bid submission deadline of 12 March 2026. Signed: Grace Atim, Managing Director Date: 10 March 2026",
+          "confidence_score": 0.95,
+          "requires_human_review": false
+        }
+      },
+      {
+        "call": 3,
+        "schema": "EvidenceAdjudication",
+        "item": "evidence check",
+        "outcome": "ok",
+        "seconds": 39.6,
+        "answer": {
+          "required_document": "Bid Form",
+          "quoted_document": "Bid",
+          "same_document": true,
+          "both_required_separately": false,
+          "match_confidence": 0.01
+        }
+      },
+      {
+        "call": 4,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-01\", \"description\": \"Signed form of bid\"}",
+        "outcome": "ok",
+        "seconds": 152.2,
+        "answer": {
+          "checklist_item_id": "REQ-01",
+          "clause_title": "Signed form of bid",
+          "is_present": true,
+          "page_number": 1,
+          "extracted_snippet": "We offer to supply and install the laboratory equipment described in the schedule of requirements for the total bid price stated in our price schedule. This bid remains valid for 120 days from the bid submission deadline of 12 March 2026. Signed: Grace Atim, Managing Director Date: 10 March 2026",
+          "confidence_score": 0.95,
+          "requires_human_review": false
+        }
+      },
+      {
+        "call": 5,
+        "schema": "EvidenceAdjudication",
+        "item": "evidence check",
+        "outcome": "ok",
+        "seconds": 31.2,
+        "answer": {
+          "required_document": "Bid Form",
+          "quoted_document": "Bid",
+          "same_document": true,
+          "both_required_separately": false,
+          "match_confidence": 0.01
+        }
+      }
+    ],
+    "grounding": [],
+    "submission": "inputs/TC07-submission.pdf",
+    "checklist": "inputs/TC07-checklist.txt"
+  }
+}

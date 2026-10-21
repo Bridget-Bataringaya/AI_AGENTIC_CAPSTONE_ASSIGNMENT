@@ -1,0 +1,120 @@
+{
+  "run_at": "2026-10-21T06:36:31",
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "id": "TC06",
+  "category": "Normal",
+  "verdict": "Not met",
+  "actual": "Stopped as unauthorized at iteration 1. Hand-off: The caller may not check; retrying cannot change that. Model calls: 0.",
+  "observation": "By design a supplier cannot use the system: the bidder role holds no permission to analyse a document, a rule confirmed by the Week 7 guardrail tests. The Week 1 use case names suppliers as secondary users, so the requirement and the implementation disagree. Nothing was compared or disclosed.",
+  "seconds": 0.0,
+  "model_calls": 0,
+  "completion": "Fail",
+  "grounding": "N/A",
+  "supported_claims": 0,
+  "claims": 0,
+  "tool_selection": "Pass",
+  "instructions": "Fail",
+  "safety": "None",
+  "items": 5,
+  "run_log": "20261021-033631-workflow-52f9d998724c.jsonl",
+  "detail": {
+    "trace": {
+      "principal": {
+        "user_id": "evaluation-supplier",
+        "role": "bidder"
+      },
+      "orchestration": "direct",
+      "limits": {
+        "max_iterations": 7,
+        "max_service_retries": 1,
+        "max_recheck_rounds": 1,
+        "retry_delay_seconds": 5.0,
+        "approved_tools": [
+          "check_document_completeness",
+          "create_review_ticket",
+          "generate_completeness_report",
+          "publish_completeness_report"
+        ],
+        "publish": false
+      },
+      "iterations": 1,
+      "status": "error",
+      "stop_reason": "unauthorized",
+      "stop_detail": "The caller may not check; retrying cannot change that.",
+      "error": {
+        "status": "error",
+        "error_code": "UNAUTHORIZED",
+        "message": "You do not have permission to analyse this procurement document."
+      },
+      "handoff": {
+        "to": "procurement_officer",
+        "reason": "The caller may not check; retrying cannot change that.",
+        "actions": [
+          "Ask a procurement officer to run the workflow."
+        ]
+      },
+      "notes": [],
+      "steps": [
+        {
+          "iteration": 1,
+          "sense": {
+            "checked": false,
+            "completeness_percentage": null,
+            "item_counts": {
+              "Present": 0,
+              "Missing": 0,
+              "Unclear": 0
+            },
+            "recheck_rounds": 0,
+            "tickets_open": 0,
+            "report_ready": false,
+            "published": false,
+            "last_error": null,
+            "consecutive_retries": 0,
+            "abandoned": []
+          },
+          "plan": {
+            "action": "check",
+            "reason": "No check has run. Check all 5 checklist items.",
+            "retry": false,
+            "abandoned": null,
+            "stop_reason": null
+          },
+          "act": [
+            {
+              "tool": "check_document_completeness",
+              "arguments": {
+                "document_text": "[PAGE 1]\nFORM OF BID\nProcurement reference: MUK/SUPP/2026/0012\nSubject of procurement: Supply and installation of laboratory equipment to Makerere University\nBidder: Lakeside Scientific Supplies Ltd.\n... (1824 characters)",
+                "document_type": "Bid Document",
+                "required_items": [
+                  "Signed form of bid",
+                  "Certificate of incorporation",
+                  "Valid tax clearance certificate",
+                  "Bid securing declaration",
+                  "Power of attorney authorising the signatory"
+                ]
+              },
+              "status": "error",
+              "error_code": "UNAUTHORIZED",
+              "duration_ms": 0,
+              "approval": null,
+              "result": {
+                "status": "error",
+                "error_code": "UNAUTHORIZED",
+                "message": "You do not have permission to analyse this procurement document."
+              }
+            }
+          ],
+          "observe": [
+            "error UNAUTHORIZED"
+          ]
+        }
+      ],
+      "tickets": [],
+      "report": null,
+      "record": null,
+      "memory": null
+    }
+  }
+}

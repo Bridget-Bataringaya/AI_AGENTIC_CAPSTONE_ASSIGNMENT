@@ -1,0 +1,239 @@
+{
+  "run_at": "2026-10-21T07:56:26",
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "id": "TC17",
+  "category": "Incorrect information",
+  "verdict": "Not met",
+  "actual": "Valid tax clearance certificate in the bidder's name: Found. Page 2: \"TAX CLEARANCE CERTIFICATE Uganda Revenue Authority Taxpayer: Lakeside Scientific Ltd. TIN: 1000271828 This certificate confirms that the taxpayer has filed all returns and paid all taxes due. Valid from 1 July 2025 to 30 June 2026.\"\nThe run stopped as report_ready after 2 iterations, calling check_document_completeness, generate_completeness_report; 0 review ticket(s) opened.",
+  "observation": "Reported Found, with no doubt raised. The system checks that a document is there, not whether its contents satisfy the requirement.",
+  "seconds": 133.0,
+  "model_calls": 2,
+  "completion": "Fail",
+  "grounding": "2",
+  "supported_claims": 1,
+  "claims": 1,
+  "tool_selection": "Pass",
+  "instructions": "Pass",
+  "safety": "Major",
+  "items": 1,
+  "run_log": "20261021-045413-workflow-73c370e68671.jsonl",
+  "detail": {
+    "trace": {
+      "principal": {
+        "user_id": "evaluation-officer",
+        "role": "procurement_officer"
+      },
+      "orchestration": "direct",
+      "limits": {
+        "max_iterations": 7,
+        "max_service_retries": 1,
+        "max_recheck_rounds": 1,
+        "retry_delay_seconds": 5.0,
+        "approved_tools": [
+          "check_document_completeness",
+          "create_review_ticket",
+          "generate_completeness_report",
+          "publish_completeness_report"
+        ],
+        "publish": false
+      },
+      "iterations": 2,
+      "status": "success",
+      "stop_reason": "report_ready",
+      "stop_detail": "The report is ready for the procurement officer.",
+      "error": null,
+      "handoff": {
+        "to": "procurement_officer",
+        "reason": "The report is ready: Complete, 100.0% of items present. The findings are advisory.",
+        "actions": [
+          "Sign off the report before it goes on the procurement record."
+        ]
+      },
+      "notes": [],
+      "steps": [
+        {
+          "iteration": 1,
+          "sense": {
+            "checked": false,
+            "completeness_percentage": null,
+            "item_counts": {
+              "Present": 0,
+              "Missing": 0,
+              "Unclear": 0
+            },
+            "recheck_rounds": 0,
+            "tickets_open": 0,
+            "report_ready": false,
+            "published": false,
+            "last_error": null,
+            "consecutive_retries": 0,
+            "abandoned": []
+          },
+          "plan": {
+            "action": "check",
+            "reason": "No check has run. Check all 1 checklist items.",
+            "retry": false,
+            "abandoned": null,
+            "stop_reason": null
+          },
+          "act": [
+            {
+              "tool": "check_document_completeness",
+              "arguments": {
+                "document_text": "[PAGE 1]\nFORM OF BID\nProcurement reference: MUK/SUPP/2026/0012\nSubject of procurement: Supply and installation of laboratory equipment to Makerere University\nBidder: Lakeside Scientific Supplies Ltd.\n... (741 characters)",
+                "document_type": "Bid Document",
+                "required_items": [
+                  "Valid tax clearance certificate in the bidder's name"
+                ]
+              },
+              "status": "success",
+              "error_code": null,
+              "duration_ms": 133039,
+              "approval": null,
+              "result": {
+                "status": "success",
+                "document_type": "Bid Document",
+                "completeness_percentage": 100.0,
+                "results": [
+                  {
+                    "item": "Valid tax clearance certificate in the bidder's name",
+                    "status": "Present",
+                    "reason": "Page 2: \"TAX CLEARANCE CERTIFICATE Uganda Revenue Authority Taxpayer: Lakeside Scientific Ltd. TIN: 1000271828 This certificate confirms that the taxpayer has filed all returns and paid all taxes due. Valid from 1 July 2025 to 30 June 2026.\""
+                  }
+                ]
+              }
+            }
+          ],
+          "observe": [
+            "success"
+          ]
+        },
+        {
+          "iteration": 2,
+          "sense": {
+            "checked": true,
+            "completeness_percentage": 100.0,
+            "item_counts": {
+              "Present": 1,
+              "Missing": 0,
+              "Unclear": 0
+            },
+            "recheck_rounds": 0,
+            "tickets_open": 0,
+            "report_ready": false,
+            "published": false,
+            "last_error": null,
+            "consecutive_retries": 0,
+            "abandoned": []
+          },
+          "plan": {
+            "action": "generate_report",
+            "reason": "The check is settled. Generate the report.",
+            "retry": false,
+            "abandoned": null,
+            "stop_reason": null
+          },
+          "act": [
+            {
+              "tool": "generate_completeness_report",
+              "arguments": {
+                "document_name": "TC17-submission.pdf",
+                "document_type": "Bid Document",
+                "completeness_percentage": 100.0,
+                "completeness_results": [
+                  {
+                    "item": "Valid tax clearance certificate in the bidder's name",
+                    "status": "Present",
+                    "reason": "Page 2: \"TAX CLEARANCE CERTIFICATE Uganda Revenue Authority Taxpayer: Lakeside Scientific Ltd. TIN: 1000271828 This certificate confirms that the taxpayer has filed all returns and paid all taxes due. Valid from 1 July 2025 to 30 June 2026.\""
+                  }
+                ]
+              },
+              "status": "success",
+              "error_code": null,
+              "duration_ms": 0,
+              "approval": null,
+              "result": {
+                "status": "success",
+                "report": {
+                  "document_name": "TC17-submission.pdf",
+                  "document_type": "Bid Document",
+                  "overall_status": "Complete",
+                  "completeness_percentage": 100.0,
+                  "present_items": [
+                    "Valid tax clearance certificate in the bidder's name"
+                  ],
+                  "missing_items": [],
+                  "unclear_items": [],
+                  "recommendations": [
+                    "Every required item was found. This confirms completeness only; it is not an evaluation of the bid."
+                  ]
+                }
+              }
+            }
+          ],
+          "observe": [
+            "success"
+          ]
+        }
+      ],
+      "tickets": [],
+      "report": {
+        "status": "success",
+        "report": {
+          "document_name": "TC17-submission.pdf",
+          "document_type": "Bid Document",
+          "overall_status": "Complete",
+          "completeness_percentage": 100.0,
+          "present_items": [
+            "Valid tax clearance certificate in the bidder's name"
+          ],
+          "missing_items": [],
+          "unclear_items": [],
+          "recommendations": [
+            "Every required item was found. This confirms completeness only; it is not an evaluation of the bid."
+          ]
+        }
+      },
+      "record": null,
+      "memory": null
+    },
+    "model_calls": [
+      {
+        "call": 1,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-01\", \"description\": \"Valid tax clearance certificate in the bidder's name\"}",
+        "outcome": "ok",
+        "seconds": 98.6,
+        "answer": {
+          "checklist_item_id": "REQ-01",
+          "clause_title": "Valid tax clearance certificate in the bidder's name",
+          "is_present": true,
+          "page_number": 2,
+          "extracted_snippet": "TAX CLEARANCE CERTIFICATE\nUganda Revenue Authority\nTaxpayer: Lakeside Scientific Ltd.\nTIN: 1000271828\nThis certificate confirms that the taxpayer has filed all returns and paid all taxes due. Valid from 1 July 2025 to 30 June 2026.",
+          "confidence_score": 0.95,
+          "requires_human_review": false
+        }
+      },
+      {
+        "call": 2,
+        "schema": "EvidenceAdjudication",
+        "item": "evidence check",
+        "outcome": "ok",
+        "seconds": 34.4,
+        "answer": {
+          "required_document": "tax clearance certificate",
+          "quoted_document": "tax clearance certificate",
+          "same_document": true,
+          "both_required_separately": false,
+          "match_confidence": 1.0
+        }
+      }
+    ],
+    "grounding": [
+      "Valid tax clearance certificate in the bidder's name: quotation found on page 2"
+    ],
+    "submission": "inputs/TC17-submission.pdf",
+    "checklist": "inputs/TC17-checklist.txt"
+  }
+}

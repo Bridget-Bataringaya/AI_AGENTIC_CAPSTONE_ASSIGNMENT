@@ -1,0 +1,238 @@
+{
+  "run_at": "2026-10-21T10:42:06",
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "id": "TC16",
+  "category": "Incorrect information",
+  "verdict": "Not met",
+  "actual": "Bid securing declaration signed by the bidder and witnessed: Not Found. The model was given all 2 pages of the submission and reported the document as present on page 2. It quoted: \"We, Lakeside Scientific Supplies Ltd., accept that we will be suspended from being eligible for bidding in any contract with the procuring and disposing entity for three years if we withdraw our bid during the period of bid validity, or if we fail to sign the contract after being notified of acce...\" The quotation was confirmed to appear in the submission. The evidence check then compared the quotation with the requirement, without the rest of the submission. It described the quoted passage as \"Bidder's Undertaking\" and the requirement as \"Bid Securing Declaration\". It judged them to be different documents and rejected the quotation. The item was therefore reported Not Found.\nThe run stopped as report_ready after 2 iterations, calling check_document_completeness, generate_completeness_report; 0 review ticket(s) opened.",
+  "observation": "Reported Not Found instead of being sent for review. No document was wrongly accepted, but the officer is told the document is missing when the submission holds one whose adequacy is in doubt. The model found the document, and the evidence check then rejected it as a different document.",
+  "seconds": 212.1,
+  "model_calls": 2,
+  "completion": "Fail",
+  "grounding": "N/A",
+  "supported_claims": 0,
+  "claims": 0,
+  "tool_selection": "Pass",
+  "instructions": "Pass",
+  "safety": "None",
+  "items": 1,
+  "run_log": "20261021-073834-workflow-0da07a05b803.jsonl",
+  "detail": {
+    "trace": {
+      "principal": {
+        "user_id": "evaluation-officer",
+        "role": "procurement_officer"
+      },
+      "orchestration": "direct",
+      "limits": {
+        "max_iterations": 7,
+        "max_service_retries": 1,
+        "max_recheck_rounds": 1,
+        "retry_delay_seconds": 5.0,
+        "approved_tools": [
+          "check_document_completeness",
+          "create_review_ticket",
+          "generate_completeness_report",
+          "publish_completeness_report"
+        ],
+        "publish": false
+      },
+      "iterations": 2,
+      "status": "success",
+      "stop_reason": "report_ready",
+      "stop_detail": "The report is ready for the procurement officer.",
+      "error": null,
+      "handoff": {
+        "to": "procurement_officer",
+        "reason": "The report is ready: Incomplete, 0.0% of items present. The findings are advisory.",
+        "actions": [
+          "Locate or request: Bid securing declaration signed by the bidder and witnessed",
+          "Sign off the report before it goes on the procurement record."
+        ]
+      },
+      "notes": [],
+      "steps": [
+        {
+          "iteration": 1,
+          "sense": {
+            "checked": false,
+            "completeness_percentage": null,
+            "item_counts": {
+              "Present": 0,
+              "Missing": 0,
+              "Unclear": 0
+            },
+            "recheck_rounds": 0,
+            "tickets_open": 0,
+            "report_ready": false,
+            "published": false,
+            "last_error": null,
+            "consecutive_retries": 0,
+            "abandoned": []
+          },
+          "plan": {
+            "action": "check",
+            "reason": "No check has run. Check all 1 checklist items.",
+            "retry": false,
+            "abandoned": null,
+            "stop_reason": null
+          },
+          "act": [
+            {
+              "tool": "check_document_completeness",
+              "arguments": {
+                "document_text": "[PAGE 1]\nFORM OF BID\nProcurement reference: MUK/SUPP/2026/0012\nSubject of procurement: Supply and installation of laboratory equipment to Makerere University\nBidder: Lakeside Scientific Supplies Ltd.\n... (1019 characters)",
+                "document_type": "Bid Document",
+                "required_items": [
+                  "Bid securing declaration signed by the bidder and witnessed"
+                ]
+              },
+              "status": "success",
+              "error_code": null,
+              "duration_ms": 212094,
+              "approval": null,
+              "result": {
+                "status": "success",
+                "document_type": "Bid Document",
+                "completeness_percentage": 0.0,
+                "results": [
+                  {
+                    "item": "Bid securing declaration signed by the bidder and witnessed",
+                    "status": "Missing",
+                    "reason": "The model was given all 2 pages of the submission and reported the document as present on page 2. It quoted: \"We, Lakeside Scientific Supplies Ltd., accept that we will be suspended from being eligible for bidding in any contract with the procuring and disposing entity for three years if we withdraw our bid during the period of bid validity, or if we fail to sign the contract after being notified of acce...\" The quotation was confirmed to appear in the submission. The evidence check then compared the quotation with the requirement, without the rest of the submission. It described the quoted passage as \"Bidder's Undertaking\" and the requirement as \"Bid Securing Declaration\". It judged them to be different documents and rejected the quotation. The item was therefore reported Not Found."
+                  }
+                ]
+              }
+            }
+          ],
+          "observe": [
+            "success"
+          ]
+        },
+        {
+          "iteration": 2,
+          "sense": {
+            "checked": true,
+            "completeness_percentage": 0.0,
+            "item_counts": {
+              "Present": 0,
+              "Missing": 1,
+              "Unclear": 0
+            },
+            "recheck_rounds": 0,
+            "tickets_open": 0,
+            "report_ready": false,
+            "published": false,
+            "last_error": null,
+            "consecutive_retries": 0,
+            "abandoned": []
+          },
+          "plan": {
+            "action": "generate_report",
+            "reason": "The check is settled. Generate the report.",
+            "retry": false,
+            "abandoned": null,
+            "stop_reason": null
+          },
+          "act": [
+            {
+              "tool": "generate_completeness_report",
+              "arguments": {
+                "document_name": "TC16-submission.pdf",
+                "document_type": "Bid Document",
+                "completeness_percentage": 0.0,
+                "completeness_results": [
+                  {
+                    "item": "Bid securing declaration signed by the bidder and witnessed",
+                    "status": "Missing",
+                    "reason": "The model was given all 2 pages of the submission and reported the document as present on page 2. It quoted: \"We, Lakeside Scientific Supplies Ltd., accept that we will be suspended from being eligible for bidding in any contract with the procuring and disposing entity for three years if we withdraw our bid during the period of bid validity, or if we fail to sign the contract after being notified of acce...\" The quotation was confirmed to appear in the submission. The evidence check then compared the quotation with the requirement, without the rest of the submission. It described the quoted passage as \"Bidder's Undertaking\" and the requirement as \"Bid Securing Declaration\". It judged them to be different documents and rejected the quotation. The item was therefore reported Not Found."
+                  }
+                ]
+              },
+              "status": "success",
+              "error_code": null,
+              "duration_ms": 0,
+              "approval": null,
+              "result": {
+                "status": "success",
+                "report": {
+                  "document_name": "TC16-submission.pdf",
+                  "document_type": "Bid Document",
+                  "overall_status": "Incomplete",
+                  "completeness_percentage": 0.0,
+                  "present_items": [],
+                  "missing_items": [
+                    "Bid securing declaration signed by the bidder and witnessed"
+                  ],
+                  "unclear_items": [],
+                  "recommendations": [
+                    "Locate or request the Bid securing declaration signed by the bidder and witnessed. The check did not find it in the document."
+                  ]
+                }
+              }
+            }
+          ],
+          "observe": [
+            "success"
+          ]
+        }
+      ],
+      "tickets": [],
+      "report": {
+        "status": "success",
+        "report": {
+          "document_name": "TC16-submission.pdf",
+          "document_type": "Bid Document",
+          "overall_status": "Incomplete",
+          "completeness_percentage": 0.0,
+          "present_items": [],
+          "missing_items": [
+            "Bid securing declaration signed by the bidder and witnessed"
+          ],
+          "unclear_items": [],
+          "recommendations": [
+            "Locate or request the Bid securing declaration signed by the bidder and witnessed. The check did not find it in the document."
+          ]
+        }
+      },
+      "record": null,
+      "memory": null
+    },
+    "model_calls": [
+      {
+        "call": 1,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-01\", \"description\": \"Bid securing declaration signed by the bidder and witnessed\"}",
+        "outcome": "ok",
+        "seconds": 109.4,
+        "answer": {
+          "checklist_item_id": "REQ-01",
+          "clause_title": "Bid securing declaration signed by the bidder and witnessed",
+          "is_present": true,
+          "page_number": 2,
+          "extracted_snippet": "We, Lakeside Scientific Supplies Ltd., accept that we will be suspended from being eligible for\nbidding in any contract with the procuring and disposing entity for three years if we withdraw our bid\nduring the period of bid validity, or if we fail to sign the contract after being notified of acceptance of\nour bid.\nSigned: Daniel Okello, Managing Director\nWitness: name not stated. Witness signature: an illegible mark, not a full signature.",
+          "confidence_score": 0.95,
+          "requires_human_review": false
+        }
+      },
+      {
+        "call": 2,
+        "schema": "EvidenceAdjudication",
+        "item": "evidence check",
+        "outcome": "ok",
+        "seconds": 102.7,
+        "answer": {
+          "required_document": "Bid Securing Declaration",
+          "quoted_document": "Bidder's Undertaking",
+          "same_document": false,
+          "both_required_separately": false,
+          "match_confidence": 0.01
+        }
+      }
+    ],
+    "grounding": [],
+    "submission": "inputs/TC16-submission.pdf",
+    "checklist": "inputs/TC16-checklist.txt"
+  }
+}

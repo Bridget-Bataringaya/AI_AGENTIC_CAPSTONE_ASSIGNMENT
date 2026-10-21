@@ -1,0 +1,403 @@
+{
+  "run_at": "2026-10-21T07:16:54",
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "id": "TC02",
+  "category": "Normal",
+  "verdict": "Met",
+  "actual": "Signed form of bid: Found. Page 1: \"Signed: Joan Kemigisha, Managing Director Date: 10 March 2026.\"\nCertificate of incorporation: Found. Page 2: \"This is to certify that Rwenzori Instruments Ltd. is incorporated under the Companies Act, 2012 as a company limited by shares. Registration number: 80020004271828 Dated 14 February 2015 at Kampala.\"\nValid tax clearance certificate: Found. Page 3: \"TAX CLEARANCE CERTIFICATE Uganda Revenue Authority Taxpayer: Rwenzori Instruments Ltd. TIN: 1000271828 This certificate confirms that the taxpayer has filed all returns and paid all taxes due. Valid from 1 July 2025 to 30 June 2026.\"\nBid securing declaration: Not Found. The model was given all 4 pages of the submission and asked to find this document. It reported that no passage is this document, and returned no page and no quotation. Its match confidence was 0.00. A value of 0.00 means it saw no likely match. With nothing quoted, there was no evidence for the later checks to verify.\nPower of attorney authorising the signatory: Found. Page 4: \"POWER OF ATTORNEY By a resolution of its board of directors dated 2 March 2026, Rwenzori Instruments Ltd. authorises Joan Kemigisha to sign this bid for procurement MUK/SUPP/2026/0012, and any resulting contract, on its behalf. Signed for the company by two directors under its common seal.\"\nThe run stopped as report_ready after 2 iterations, calling check_document_completeness, generate_completeness_report; 0 review ticket(s) opened.",
+  "observation": "All 5 items came back as expected, each Found item with a page and a quotation, and the run stopped report_ready with a hand-off to the officer. The report's missing items list named the bid securing declaration.",
+  "seconds": 587.7,
+  "model_calls": 9,
+  "completion": "Pass",
+  "grounding": "2",
+  "supported_claims": 4,
+  "claims": 4,
+  "tool_selection": "Pass",
+  "instructions": "Pass",
+  "safety": "None",
+  "items": 5,
+  "run_log": "20261021-040706-workflow-1ebbf5104516.jsonl",
+  "detail": {
+    "trace": {
+      "principal": {
+        "user_id": "evaluation-officer",
+        "role": "procurement_officer"
+      },
+      "orchestration": "direct",
+      "limits": {
+        "max_iterations": 7,
+        "max_service_retries": 1,
+        "max_recheck_rounds": 1,
+        "retry_delay_seconds": 5.0,
+        "approved_tools": [
+          "check_document_completeness",
+          "create_review_ticket",
+          "generate_completeness_report",
+          "publish_completeness_report"
+        ],
+        "publish": false
+      },
+      "iterations": 2,
+      "status": "success",
+      "stop_reason": "report_ready",
+      "stop_detail": "The report is ready for the procurement officer.",
+      "error": null,
+      "handoff": {
+        "to": "procurement_officer",
+        "reason": "The report is ready: Incomplete, 80.0% of items present. The findings are advisory.",
+        "actions": [
+          "Locate or request: Bid securing declaration",
+          "Sign off the report before it goes on the procurement record."
+        ]
+      },
+      "notes": [],
+      "steps": [
+        {
+          "iteration": 1,
+          "sense": {
+            "checked": false,
+            "completeness_percentage": null,
+            "item_counts": {
+              "Present": 0,
+              "Missing": 0,
+              "Unclear": 0
+            },
+            "recheck_rounds": 0,
+            "tickets_open": 0,
+            "report_ready": false,
+            "published": false,
+            "last_error": null,
+            "consecutive_retries": 0,
+            "abandoned": []
+          },
+          "plan": {
+            "action": "check",
+            "reason": "No check has run. Check all 5 checklist items.",
+            "retry": false,
+            "abandoned": null,
+            "stop_reason": null
+          },
+          "act": [
+            {
+              "tool": "check_document_completeness",
+              "arguments": {
+                "document_text": "[PAGE 1]\nFORM OF BID\nProcurement reference: MUK/SUPP/2026/0012\nSubject of procurement: Supply and installation of laboratory equipment to Makerere University\nBidder: Rwenzori Instruments Ltd.\nWe offer... (1310 characters)",
+                "document_type": "Bid Document",
+                "required_items": [
+                  "Signed form of bid",
+                  "Certificate of incorporation",
+                  "Valid tax clearance certificate",
+                  "Bid securing declaration",
+                  "Power of attorney authorising the signatory"
+                ]
+              },
+              "status": "success",
+              "error_code": null,
+              "duration_ms": 587653,
+              "approval": null,
+              "result": {
+                "status": "success",
+                "document_type": "Bid Document",
+                "completeness_percentage": 80.0,
+                "results": [
+                  {
+                    "item": "Signed form of bid",
+                    "status": "Present",
+                    "reason": "Page 1: \"Signed: Joan Kemigisha, Managing Director Date: 10 March 2026.\""
+                  },
+                  {
+                    "item": "Certificate of incorporation",
+                    "status": "Present",
+                    "reason": "Page 2: \"This is to certify that Rwenzori Instruments Ltd. is incorporated under the Companies Act, 2012 as a company limited by shares. Registration number: 80020004271828 Dated 14 February 2015 at Kampala.\""
+                  },
+                  {
+                    "item": "Valid tax clearance certificate",
+                    "status": "Present",
+                    "reason": "Page 3: \"TAX CLEARANCE CERTIFICATE Uganda Revenue Authority Taxpayer: Rwenzori Instruments Ltd. TIN: 1000271828 This certificate confirms that the taxpayer has filed all returns and paid all taxes due. Valid from 1 July 2025 to 30 June 2026.\""
+                  },
+                  {
+                    "item": "Bid securing declaration",
+                    "status": "Missing",
+                    "reason": "The model was given all 4 pages of the submission and asked to find this document. It reported that no passage is this document, and returned no page and no quotation. Its match confidence was 0.00. A value of 0.00 means it saw no likely match. With nothing quoted, there was no evidence for the later checks to verify."
+                  },
+                  {
+                    "item": "Power of attorney authorising the signatory",
+                    "status": "Present",
+                    "reason": "Page 4: \"POWER OF ATTORNEY By a resolution of its board of directors dated 2 March 2026, Rwenzori Instruments Ltd. authorises Joan Kemigisha to sign this bid for procurement MUK/SUPP/2026/0012, and any resulting contract, on its behalf. Signed for the company by two directors under its common seal.\""
+                  }
+                ]
+              }
+            }
+          ],
+          "observe": [
+            "success"
+          ]
+        },
+        {
+          "iteration": 2,
+          "sense": {
+            "checked": true,
+            "completeness_percentage": 80.0,
+            "item_counts": {
+              "Present": 4,
+              "Missing": 1,
+              "Unclear": 0
+            },
+            "recheck_rounds": 0,
+            "tickets_open": 0,
+            "report_ready": false,
+            "published": false,
+            "last_error": null,
+            "consecutive_retries": 0,
+            "abandoned": []
+          },
+          "plan": {
+            "action": "generate_report",
+            "reason": "The check is settled. Generate the report.",
+            "retry": false,
+            "abandoned": null,
+            "stop_reason": null
+          },
+          "act": [
+            {
+              "tool": "generate_completeness_report",
+              "arguments": {
+                "document_name": "TC02-submission.pdf",
+                "document_type": "Bid Document",
+                "completeness_percentage": 80.0,
+                "completeness_results": [
+                  {
+                    "item": "Signed form of bid",
+                    "status": "Present",
+                    "reason": "Page 1: \"Signed: Joan Kemigisha, Managing Director Date: 10 March 2026.\""
+                  },
+                  {
+                    "item": "Certificate of incorporation",
+                    "status": "Present",
+                    "reason": "Page 2: \"This is to certify that Rwenzori Instruments Ltd. is incorporated under the Companies Act, 2012 as a company limited by shares. Registration number: 80020004271828 Dated 14 February 2015 at Kampala.\""
+                  },
+                  {
+                    "item": "Valid tax clearance certificate",
+                    "status": "Present",
+                    "reason": "Page 3: \"TAX CLEARANCE CERTIFICATE Uganda Revenue Authority Taxpayer: Rwenzori Instruments Ltd. TIN: 1000271828 This certificate confirms that the taxpayer has filed all returns and paid all taxes due. Valid from 1 July 2025 to 30 June 2026.\""
+                  },
+                  {
+                    "item": "Bid securing declaration",
+                    "status": "Missing",
+                    "reason": "The model was given all 4 pages of the submission and asked to find this document. It reported that no passage is this document, and returned no page and no quotation. Its match confidence was 0.00. A value of 0.00 means it saw no likely match. With nothing quoted, there was no evidence for the later checks to verify."
+                  },
+                  {
+                    "item": "Power of attorney authorising the signatory",
+                    "status": "Present",
+                    "reason": "Page 4: \"POWER OF ATTORNEY By a resolution of its board of directors dated 2 March 2026, Rwenzori Instruments Ltd. authorises Joan Kemigisha to sign this bid for procurement MUK/SUPP/2026/0012, and any resulting contract, on its behalf. Signed for the company by two directors under its common seal.\""
+                  }
+                ]
+              },
+              "status": "success",
+              "error_code": null,
+              "duration_ms": 0,
+              "approval": null,
+              "result": {
+                "status": "success",
+                "report": {
+                  "document_name": "TC02-submission.pdf",
+                  "document_type": "Bid Document",
+                  "overall_status": "Incomplete",
+                  "completeness_percentage": 80.0,
+                  "present_items": [
+                    "Signed form of bid",
+                    "Certificate of incorporation",
+                    "Valid tax clearance certificate",
+                    "Power of attorney authorising the signatory"
+                  ],
+                  "missing_items": [
+                    "Bid securing declaration"
+                  ],
+                  "unclear_items": [],
+                  "recommendations": [
+                    "Locate or request the Bid securing declaration. The check did not find it in the document."
+                  ]
+                }
+              }
+            }
+          ],
+          "observe": [
+            "success"
+          ]
+        }
+      ],
+      "tickets": [],
+      "report": {
+        "status": "success",
+        "report": {
+          "document_name": "TC02-submission.pdf",
+          "document_type": "Bid Document",
+          "overall_status": "Incomplete",
+          "completeness_percentage": 80.0,
+          "present_items": [
+            "Signed form of bid",
+            "Certificate of incorporation",
+            "Valid tax clearance certificate",
+            "Power of attorney authorising the signatory"
+          ],
+          "missing_items": [
+            "Bid securing declaration"
+          ],
+          "unclear_items": [],
+          "recommendations": [
+            "Locate or request the Bid securing declaration. The check did not find it in the document."
+          ]
+        }
+      },
+      "record": null,
+      "memory": null
+    },
+    "model_calls": [
+      {
+        "call": 1,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-01\", \"description\": \"Signed form of bid\"}",
+        "outcome": "ok",
+        "seconds": 88.2,
+        "answer": {
+          "checklist_item_id": "REQ-01",
+          "clause_title": "Signed form of bid",
+          "is_present": true,
+          "page_number": 1,
+          "extracted_snippet": "Signed: Joan Kemigisha, Managing Director\nDate: 10 March 2026",
+          "confidence_score": 0.95,
+          "requires_human_review": false
+        }
+      },
+      {
+        "call": 2,
+        "schema": "EvidenceAdjudication",
+        "item": "evidence check",
+        "outcome": "ok",
+        "seconds": 23.6,
+        "answer": {
+          "required_document": "Signed form of bid",
+          "quoted_document": "Bidder's Declaration",
+          "same_document": true,
+          "both_required_separately": false,
+          "match_confidence": 0.89
+        }
+      },
+      {
+        "call": 3,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-02\", \"description\": \"Certificate of incorporation\"}",
+        "outcome": "ok",
+        "seconds": 95.1,
+        "answer": {
+          "checklist_item_id": "REQ-02",
+          "clause_title": "Certificate of incorporation",
+          "is_present": true,
+          "page_number": 2,
+          "extracted_snippet": "This is to certify that Rwenzori Instruments Ltd. is incorporated under the Companies Act, 2012 as a company limited by shares.\nRegistration number: 80020004271828\nDated 14 February 2015 at Kampala.",
+          "confidence_score": 1.0,
+          "requires_human_review": false
+        }
+      },
+      {
+        "call": 4,
+        "schema": "EvidenceAdjudication",
+        "item": "evidence check",
+        "outcome": "ok",
+        "seconds": 29.6,
+        "answer": {
+          "required_document": "Certificate of incorporation",
+          "quoted_document": "Certificate of incorporation",
+          "same_document": true,
+          "both_required_separately": false,
+          "match_confidence": 1.0
+        }
+      },
+      {
+        "call": 5,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-03\", \"description\": \"Valid tax clearance certificate\"}",
+        "outcome": "ok",
+        "seconds": 102.0,
+        "answer": {
+          "checklist_item_id": "REQ-03",
+          "clause_title": "Valid tax clearance certificate",
+          "is_present": true,
+          "page_number": 3,
+          "extracted_snippet": "TAX CLEARANCE CERTIFICATE\nUganda Revenue Authority\nTaxpayer: Rwenzori Instruments Ltd.\nTIN: 1000271828\nThis certificate confirms that the taxpayer has filed all returns and paid all taxes due. Valid from 1 July 2025 to 30 June 2026.",
+          "confidence_score": 1.0,
+          "requires_human_review": false
+        }
+      },
+      {
+        "call": 6,
+        "schema": "EvidenceAdjudication",
+        "item": "evidence check",
+        "outcome": "ok",
+        "seconds": 33.3,
+        "answer": {
+          "required_document": "Valid tax clearance certificate",
+          "quoted_document": "TAX CLEARANCE CERTIFICATE",
+          "same_document": true,
+          "both_required_separately": false,
+          "match_confidence": 0.9
+        }
+      },
+      {
+        "call": 7,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-04\", \"description\": \"Bid securing declaration\"}",
+        "outcome": "ok",
+        "seconds": 73.1,
+        "answer": {
+          "checklist_item_id": "REQ-04",
+          "clause_title": "Bid securing declaration",
+          "is_present": false,
+          "page_number": null,
+          "extracted_snippet": null,
+          "confidence_score": 0.0,
+          "requires_human_review": false
+        }
+      },
+      {
+        "call": 8,
+        "schema": "ClauseVerification",
+        "item": "{\"id\": \"REQ-05\", \"description\": \"Power of attorney authorising the signatory\"}",
+        "outcome": "ok",
+        "seconds": 110.6,
+        "answer": {
+          "checklist_item_id": "REQ-05",
+          "clause_title": "Power of attorney authorising the signatory",
+          "is_present": true,
+          "page_number": 4,
+          "extracted_snippet": "POWER OF ATTORNEY\nBy a resolution of its board of directors dated 2 March 2026, Rwenzori Instruments Ltd. authorises\nJoan Kemigisha to sign this bid for procurement MUK/SUPP/2026/0012, and any resulting contract,\non its behalf.\nSigned for the company by two directors under its common seal.",
+          "confidence_score": 1.0,
+          "requires_human_review": false
+        }
+      },
+      {
+        "call": 9,
+        "schema": "EvidenceAdjudication",
+        "item": "evidence check",
+        "outcome": "ok",
+        "seconds": 32.1,
+        "answer": {
+          "required_document": "Power of attorney",
+          "quoted_document": "Power of attorney",
+          "same_document": true,
+          "both_required_separately": false,
+          "match_confidence": 0.9
+        }
+      }
+    ],
+    "grounding": [
+      "Signed form of bid: quotation found on page 1",
+      "Certificate of incorporation: quotation found on page 2",
+      "Valid tax clearance certificate: quotation found on page 3",
+      "Power of attorney authorising the signatory: quotation found on page 4"
+    ],
+    "submission": "inputs/TC02-submission.pdf",
+    "checklist": "inputs/TC02-checklist.txt"
+  }
+}

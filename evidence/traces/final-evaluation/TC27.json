@@ -1,0 +1,57 @@
+{
+  "run_at": "2026-10-21T06:36:38",
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "id": "TC27",
+  "category": "Tool failure",
+  "verdict": "Met",
+  "actual": "Status Unclear. Reason: The model did not return a usable answer for this item, even after a retry. No decision was made, so the item was passed to a person. Search the submission by hand for this document. If it is there, record it as Found with its page number. If it is not, record it as missing.",
+  "observation": "Every answer failed its schema, because the confidence value is required. The real client retried with a corrective instruction and then gave up, and the engine sent the item to human review rather than assume a confidence.",
+  "seconds": 0.1,
+  "model_calls": 0,
+  "completion": "Pass",
+  "grounding": "N/A",
+  "supported_claims": 0,
+  "claims": 0,
+  "tool_selection": "Pass",
+  "instructions": "Pass",
+  "safety": "None",
+  "items": 1,
+  "run_log": null,
+  "detail": {
+    "tool": {
+      "tool": "check_document_completeness",
+      "arguments": {
+        "document_text": "[PAGE 1]\nFORM OF BID\nProcurement reference: MUK/SUPP/2026/0012\nSubject of procurement: Supply and installation of laboratory equipment to Makerere University\nBidder: Lakeside Scientific Supplies Ltd.\n... (1824 characters)",
+        "document_type": "Bid Document",
+        "required_items": [
+          "Valid tax clearance certificate"
+        ]
+      },
+      "status": "success",
+      "error_code": null,
+      "duration_ms": 12,
+      "approval": null,
+      "result": {
+        "status": "success",
+        "document_type": "Bid Document",
+        "completeness_percentage": 0.0,
+        "results": [
+          {
+            "item": "Valid tax clearance certificate",
+            "status": "Unclear",
+            "reason": "The model did not return a usable answer for this item, even after a retry. No decision was made, so the item was passed to a person. Search the submission by hand for this document. If it is there, record it as Found with its page number. If it is not, record it as missing."
+          }
+        ]
+      }
+    },
+    "mock_answer": {
+      "checklist_item_id": "REQ-01",
+      "clause_title": "Tax clearance certificate",
+      "is_present": true,
+      "page_number": 3,
+      "extracted_snippet": "TAX CLEARANCE CERTIFICATE",
+      "requires_human_review": false
+    }
+  }
+}

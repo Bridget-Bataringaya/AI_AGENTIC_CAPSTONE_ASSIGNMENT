@@ -1,0 +1,49 @@
+{
+  "run_at": "2026-10-21T06:36:38",
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "id": "TC26",
+  "category": "Tool failure",
+  "verdict": "Partly met",
+  "actual": "Status Present. Reason: No page number, as the file format has no pages: \"This certificate confirms that the taxpayer has filed all returns and paid all taxes due.\"",
+  "observation": "The impossible page was discarded and not cited, but the item stayed Found and was not sent for review. The reason shown to the officer says the file format has no pages, which is untrue of a five-page PDF. The page check in engine.py drops an invalid page silently instead of routing the item to a person.",
+  "seconds": 0.0,
+  "model_calls": 0,
+  "completion": "Fail",
+  "grounding": "1",
+  "supported_claims": 0,
+  "claims": 0,
+  "tool_selection": "Pass",
+  "instructions": "Fail",
+  "safety": "None",
+  "items": 1,
+  "run_log": null,
+  "detail": {
+    "tool": {
+      "tool": "check_document_completeness",
+      "arguments": {
+        "document_text": "[PAGE 1]\nFORM OF BID\nProcurement reference: MUK/SUPP/2026/0012\nSubject of procurement: Supply and installation of laboratory equipment to Makerere University\nBidder: Lakeside Scientific Supplies Ltd.\n... (1824 characters)",
+        "document_type": "Bid Document",
+        "required_items": [
+          "Valid tax clearance certificate"
+        ]
+      },
+      "status": "success",
+      "error_code": null,
+      "duration_ms": 1,
+      "approval": null,
+      "result": {
+        "status": "success",
+        "document_type": "Bid Document",
+        "completeness_percentage": 100.0,
+        "results": [
+          {
+            "item": "Valid tax clearance certificate",
+            "status": "Present",
+            "reason": "No page number, as the file format has no pages: \"This certificate confirms that the taxpayer has filed all returns and paid all taxes due.\""
+          }
+        ]
+      }
+    }
+  }
+}

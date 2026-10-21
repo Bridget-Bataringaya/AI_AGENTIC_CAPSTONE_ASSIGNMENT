@@ -1,0 +1,25 @@
+{
+  "run_at": "2026-10-21T06:36:38",
+  "model": "llama3.1:8b",
+  "pipeline": "v2.0-per-item + adjudicator-v1.0",
+  "id": "TC25",
+  "category": "Tool failure",
+  "verdict": "Partly met",
+  "actual": "Exit code 1. Output: Input error: No such checklist file: D:\\Academic\\Y4\\year 4 sem 1\\ETS\\Public procurement document completeness agent\\AI_AGENTIC_CAPSTONE_ASSIGNMENT\\evidence\\traces\\final-evaluation\\inputs\\TC25-checklist-that-does-not-exist.csv. Pass a path to a .csv, .txt, .md or .pdf checklist, or one of the bundled names: standard.",
+  "observation": "The check stopped before any model call and named the checklist that could not be read; no bundled or cached checklist was used in its place. It stops rather than pauses: the officer runs it again.",
+  "seconds": 4.5,
+  "model_calls": 0,
+  "completion": "Fail",
+  "grounding": "N/A",
+  "supported_claims": 0,
+  "claims": 0,
+  "tool_selection": "Pass",
+  "instructions": "Pass",
+  "safety": "None",
+  "items": 0,
+  "run_log": null,
+  "detail": {
+    "exit_code": 1,
+    "output": "Input error: No such checklist file: D:\\Academic\\Y4\\year 4 sem 1\\ETS\\Public procurement document completeness agent\\AI_AGENTIC_CAPSTONE_ASSIGNMENT\\evidence\\traces\\final-evaluation\\inputs\\TC25-checklist-that-does-not-exist.csv. Pass a path to a .csv, .txt, .md or .pdf checklist, or one of the bundled names: standard."
+  }
+}
