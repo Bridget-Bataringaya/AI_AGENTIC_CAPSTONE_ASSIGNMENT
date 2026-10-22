@@ -132,7 +132,10 @@ def _save_upload(upload: UploadFile, directory: Path) -> Path:
         raise HTTPException(
             HTTP_TOO_LARGE, f"The uploaded file is larger than {MAX_UPLOAD_BYTES // (1024 * 1024)} MB."
         )
-    destination = directory / Path(upload.filename).name
+    # A checklist and submission can share a basename. Keep their bytes
+    # independent while retaining the filename used for parsing and case IDs.
+    upload_directory = Path(tempfile.mkdtemp(dir=directory))
+    destination = upload_directory / Path(upload.filename).name
     destination.write_bytes(content)
     return destination
 

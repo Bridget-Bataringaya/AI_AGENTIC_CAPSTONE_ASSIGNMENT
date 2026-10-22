@@ -20,6 +20,7 @@ import math
 import sys
 from collections import Counter
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
@@ -86,9 +87,20 @@ def read_log(path: Path) -> RunLog:
 
 
 def load_logs(directory: Path, last: Optional[int] = None) -> List[RunLog]:
-    """Newest first. File names start with the run's time, so they sort by it."""
+    """Newest first, using event time rather than the filename's random suffix."""
     paths = sorted(directory.glob(f"*{LOG_SUFFIX}"), reverse=True) if directory.is_dir() else []
-    return [read_log(path) for path in (paths if last is None else paths[:last])]
+    logs = [read_log(path) for path in paths]
+
+    def started(log: RunLog) -> tuple:
+        modified = log.path.stat().st_mtime_ns
+        try:
+            timestamp = datetime.fromisoformat(log.first(RUN_STARTED)["at"]).timestamp()
+        except (KeyError, TypeError, ValueError, OverflowError):
+            timestamp = modified / 1_000_000_000
+        return timestamp, modified, log.path.name
+
+    logs.sort(key=started, reverse=True)
+    return logs if last is None else logs[:last]
 
 
 def percentile(values: Sequence[float], fraction: float) -> Optional[float]:
