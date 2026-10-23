@@ -30,6 +30,8 @@ Markdown conventions understood here:
     ## 1.1 Scope
     <!-- Table: caption -->   caption for the table directly below
     | a | b |
+    [[FIGURE: path | caption]]  an image, full text width, with its caption
+                              below it; the path is relative to the .md file
     - bullet, 1. numbered item, **bold**, *italic*
 """
 
@@ -58,6 +60,8 @@ LINE_SPACING = 1.5
 HEADING_SIZES = {1: Pt(16), 2: Pt(14), 3: Pt(13)}
 NUMBERED = re.compile(r"^\d+(\.\d+)*\.?\s")
 INLINE = re.compile(r"(\*\*[^*]+\*\*|\*[^*]+\*)")
+FIGURE = re.compile(r"^\[\[FIGURE:\s*(?P<path>[^|\]]+?)\s*\|\s*(?P<caption>[^\]]+?)\s*\]\]$")
+FIGURE_WIDTH = Inches(6.2)
 
 PLACEHOLDERS = {
     "[[TOC]]": ("Table of Contents", 'TOC \\o "1-3" \\h \\z \\u', None),
@@ -208,6 +212,25 @@ def _table(document, rows: List[List[str]], caption: str) -> None:
     document.add_paragraph().paragraph_format.space_after = Pt(0)
 
 
+def _figure(document, image: Path, caption: str) -> None:
+    """The image centred at text width, then its numbered caption below it."""
+    if not image.is_file():
+        raise FileNotFoundError(f"Figure not found: {image}")
+    picture = document.add_paragraph()
+    picture.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    picture.paragraph_format.keep_with_next = True
+    picture.add_run().add_picture(str(image), width=FIGURE_WIDTH)
+    paragraph = document.add_paragraph(style="Caption")
+    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    paragraph.add_run("Figure ").bold = True
+    _field(paragraph, "SEQ Figure \\* ARABIC", "1")
+    paragraph.runs[-1].bold = True
+    paragraph.add_run(": ").bold = True
+    paragraph.add_run(caption)
+    for run in paragraph.runs:
+        _fonts(run)
+
+
 def _title_page(document, block: dict) -> None:
     for _ in range(6):
         document.add_paragraph()
@@ -240,6 +263,7 @@ def _parse_title(lines: List[str]) -> Tuple[dict, List[str]]:
 
 def build(source: Path, destination: Path) -> Path:
     title, lines = _parse_title(source.read_text(encoding="utf-8").splitlines())
+    has_figures = any(FIGURE.match(line.strip()) for line in lines)
     document = Document()
     _configure(document)
     first = document.sections[0]
@@ -267,10 +291,13 @@ def build(source: Path, destination: Path) -> Path:
             _table(document, block, caption)
             caption = ""
             continue
+        elif FIGURE.match(stripped):
+            match = FIGURE.match(stripped)
+            _figure(document, source.parent / match.group("path"), match.group("caption"))
         elif stripped in PLACEHOLDERS:
             heading, instruction, note = PLACEHOLDERS[stripped]
             document.add_paragraph(heading, style="Contents Heading")
-            if note:
+            if note and not (stripped == "[[FIGURES]]" and has_figures):
                 _runs(document.add_paragraph(), note)
             else:
                 _field(document.add_paragraph(), instruction, "Right-click and choose Update Field.")
