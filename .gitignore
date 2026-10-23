@@ -5,10 +5,17 @@ venv/
 env/
 .env
 .pytest_cache/
+.ruff_cache/
 .coverage
 htmlcov/
 *.egg-info/
 .DS_Store
+
+# Runtime database files. Case history lives under data/memory/ and is
+# also covered below; these globs catch stray copies in the working tree.
+*.sqlite
+*.db
+*.sqlite3
 
 # Partial evaluation output from --no-model runs, not a deliverable
 docs/evaluation/*.partial.*

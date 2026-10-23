@@ -2,6 +2,7 @@
 
 One line per version, newest first. The version is printed by `python run.py --version`, written into every workflow trace and served by the API.
 
+- 1.0.0: Week 8 final release. Invalid page citations are routed to human review; uploaded inputs are isolated; run logs are listed in chronological order. Version locked at 1.0.0 with a one-command verification script (`scripts/verify_release.sh`), Docker image, and release notes. The completeness workflow's decisions are unchanged.
 - 0.6.2: Isaac Mwesigwa's branch merged: user stories, AI boundary matrix, context construction and trace specification, and retrieval and grounding failure analysis. Documentation only.
 - 0.6.1: Makmot Johnson's branch merged: his Week 1 report, Week 1 task and Week 2 prompt iteration documents. Documentation only.
 - 0.6.0: Bataringaya Bridget's branch merged: the legacy routes POST /check and POST /checklist/parse now require an API key and the document:analyse permission (401 without a valid key, 403 for a role without it, 500 if the key setting is broken), with guardrail contract tests; her Weeks 1 to 7 documents and the corpus archive.

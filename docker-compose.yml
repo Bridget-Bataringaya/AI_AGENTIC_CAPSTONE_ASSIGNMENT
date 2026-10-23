@@ -1,0 +1,4 @@
+services:
+  procurecheck:
+    build: .
+    image: procurecheck:v1.0.0

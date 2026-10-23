@@ -1,3 +1,6 @@
+# Runtime and test dependencies for procurecheck 1.0.0.
+# Install with: pip install -r requirements.txt && pip install -e .
+# Python 3.11 or later. Lower bounds match pyproject.toml.
 fastapi>=0.115
 uvicorn[standard]>=0.30
 pydantic>=2.8

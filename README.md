@@ -1,10 +1,13 @@
 # Public Procurement Document-Completeness Agent
 
-BSE4104 AI-Native & Agentic Engineering Capstone. Group-H (Evening), Makerere University.
+**Release v1.0.0** (23 October 2026). BSE4104 AI-Native & Agentic Engineering Capstone. Group H (Evening), Makerere University.
 
-Checks a tender submission against a published procurement checklist and reports which
-required items are present, missing, or need human review, with a page number and a
-verbatim quotation as evidence for every item it claims to have found.
+Checks a sample tender submission against a published procurement checklist, locates
+required clauses with page and chunk citations, and produces an auditable missing-item
+report. Every item it claims to have found carries a page number and a verbatim quotation.
+
+Authors: Mwesigwa Isaac (23/U/12539/PS), Bataringaya Bridget (23/U/07471/EVE),
+Jonathan Katongole (23/U/27072/EVE), Makmot Johnson Kabira (23/U/26794/EVE).
 
 ## How it decides
 
@@ -36,8 +39,10 @@ the confidence threshold is routed to a human rather than reported as found.
 The safety boundary is enforced in code, not only in the prompt. The system refuses to
 score, grade or rate a submission; to rank or compare bidders; to comment on the legal
 validity of a clause; or to recommend awarding, rejecting or disqualifying a bid. These
-determinations belong to the Evaluation Committee. See `docs/requirements/` for the
-AI Boundary Matrix and User Stories AC6 to AC9.
+determinations belong to the Evaluation Committee. A completeness report cannot reach
+the procurement record without a `procurement_officer` signing off
+(`publish_completeness_report` is held by the executor until that happens). See
+`docs/requirements/` for the AI Boundary Matrix and User Stories AC6 to AC9.
 
 ## Layout
 
@@ -55,15 +60,18 @@ AI Boundary Matrix and User Stories AC6 to AC9.
 | `knowledge/index/` | The retrieval index, built locally and not committed |
 | `data/memory/` | The case history store, written locally and not committed |
 | `data/logs/` | The run logs, written locally and not committed |
-| `evidence/` | Screenshots, traces, demo recordings |
+| `evidence/` | Screenshots, traces, demo recordings. `evidence/traces/` holds captured live and scripted runs |
 | `tests/` | Test suite |
+| `scripts/verify_release.sh` | One-command v1.0.0 verification (pytest + scripted checks, no model) |
 
 ## Setup
 
-Requires Python 3.10 or later and [Ollama](https://ollama.com).
+Requires Python 3.11 or later. A live check also needs [Ollama](https://ollama.com).
+The release verification in the next section does not.
 
 ```bash
-pip install -r requirements.txt
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt && pip install -e .
 ollama pull llama3.1:8b
 ollama pull nomic-embed-text
 ollama serve
@@ -73,7 +81,63 @@ ollama serve
 falls back to keywords and says so.
 
 Copy `.env.example` to `.env` and adjust if needed. Every setting has a working default,
-so the agent runs with no configuration at all.
+so the agent runs with no configuration at all. The application reads
+`PROCURECHECK_BASE_URL` (default `http://localhost:11434`, the same endpoint Ollama
+documents as `OLLAMA_HOST`) and writes case history to
+`data/memory/case-history.sqlite3`.
+
+## Reproducible Release Verification (`v1.0.0`)
+
+Three ways to confirm this tag. Option A and Option C need no GPU and no Ollama.
+
+### Option A — One-Command Local Verification (No Ollama/GPU, <30s)
+
+```bash
+git clone --branch v1.0.0 https://github.com/Bridget-Bataringaya/AI_AGENTIC_CAPSTONE_ASSIGNMENT.git
+cd AI_AGENTIC_CAPSTONE_ASSIGNMENT
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt && pip install -e .
+bash scripts/verify_release.sh
+```
+
+The script prints the Python and package versions (procurecheck 1.0.0), runs the
+full pytest suite, then the scripted memory demonstration
+(`python tests/evaluation/run_memory_demonstration.py --scripted`). That demonstration
+re-runs one submission three times (memory off, truthful memory, false memory) and
+fails if memory changes a decision. The approval gate
+(`tests/test_approval.py`) and the Unclear re-check branch (`tests/test_workflow.py`)
+are in the pytest suite. `python run.py verify --quick` is the last step: five
+deterministic checks, no model.
+
+### Option B — Live Model Run (Meta Llama 3.1 8B via Ollama)
+
+```bash
+ollama pull llama3.1:8b
+ollama serve
+python run.py health
+python run.py check --submission knowledge/samples/synthetic-submission.pdf
+python tests/evaluation/run_memory_demonstration.py
+python run.py workflow --submission knowledge/samples/synthetic-submission.pdf --publish
+```
+
+`health` confirms the backend. `check` runs a live tender completeness audit against
+the synthetic sample. The memory demonstration (without `--scripted`) repeats the
+three-arm comparison against the real model. `workflow --publish` exercises the
+interactive approval gate: a `procurement_officer` must type APPROVE at the terminal
+before `publish_completeness_report` runs. Piped input is never treated as sign-off.
+
+A live check on CPU-only hardware takes several minutes per item. Measured workflow
+runs of three items have taken about 500 to 680 seconds.
+
+### Option C — Docker
+
+```bash
+docker build -t procurecheck:v1.0.0 .
+docker run --rm procurecheck:v1.0.0
+```
+
+The image installs the package and runs `scripts/verify_release.sh` as its default
+command. No Ollama server is started inside the container.
 
 ## Running a check
 
@@ -441,6 +505,16 @@ roughly 128 KB per token, so a full 128,000-token window needs about 16 GB of me
 top of the weights. 16,384 tokens costs about 2 GB and holds roughly 45 pages. Raise
 `PROCURECHECK_CONTEXT_TOKENS` on a machine with more memory. Input above the configured
 budget is refused with a clear error rather than silently truncated.
+
+## Known limitations at v1.0.0
+
+These match the Week 6 and Week 7 reports and the architecture notes.
+
+- **CPU inference latency.** A median model call on the development laptop took 168.2 seconds. A live workflow check of three items has taken about 680 seconds. The Week 7 latency target (95th percentile of 10 seconds) cannot be met on that hardware.
+- **Unencrypted local stores.** Case history is a local SQLite file with no encryption. Trace files and reports retain verbatim quotations from the submission and are not deleted when a case is forgotten. Both remain pending legal review under the Data Protection and Privacy Act 2019 before real bids are checked.
+- **Role-level access control.** Any procurement officer can read any case. There is no per-submission access control.
+- **Unclear re-check.** The re-check of Unclear items and the review-ticket step are covered by scripted tests (`tests/test_workflow.py`). Live traces against Llama 3.1 8B did not produce an Unclear item, so those branches have not been captured on the real model.
+- **Completeness percentage.** The report still states a percentage of items present. Week 1 ruled out scores; this conflict is recorded as an open point in the Week 7 report (scenario TC22).
 
 ## Contributing
 
