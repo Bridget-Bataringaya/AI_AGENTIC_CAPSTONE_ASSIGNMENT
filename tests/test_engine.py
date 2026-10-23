@@ -142,6 +142,14 @@ def test_a_fabricated_snippet_is_not_reported_as_found() -> None:
 def test_an_invalid_page_number_is_discarded() -> None:
     result = run(make(page_number=99))
     assert result.page_number is None
+    assert result.status is ItemStatus.REQUIRES_HUMAN_REVIEW
+    assert "page" in result.adjudication_note.lower()
+
+
+def test_invalid_page_still_needs_review_without_adjudication() -> None:
+    result = run(make(page_number=400), adjudicate=False)
+    assert result.page_number is None
+    assert result.requires_human_review
 
 
 def test_an_absent_item_is_reported_missing_without_review() -> None:

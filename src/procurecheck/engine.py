@@ -190,7 +190,8 @@ def _post_process(
         snippet = snippet[: settings.snippet_max_chars].rstrip() + "..."
 
     page_number = verification.page_number
-    if page_number is not None and page_number not in _page_numbers(submission):
+    invalid_page = page_number is not None and page_number not in _page_numbers(submission)
+    if invalid_page:
         page_number = None
     claimed_present = verification.is_present
     is_present = claimed_present and grounded
@@ -202,6 +203,7 @@ def _post_process(
             verification.requires_human_review
             or verification.confidence_score < settings.human_review_threshold
             or not grounded
+            or invalid_page
         )
     else:
         # Nothing was claimed present, so there is no evidence to doubt. A low
@@ -217,6 +219,9 @@ def _post_process(
         confidence_score=verification.confidence_score,
         requires_human_review=needs_review,
         adjudication_note=(
+            "The cited page does not exist in the submission; confirm the evidence by hand."
+            if invalid_page and claimed_present
+            else
             None
             if grounded or not claimed_present
             else (
@@ -263,7 +268,9 @@ def _apply_adjudication(
                     or confidence < settings.human_review_threshold
                 ),
                 "adjudication": adjudication,
-                "adjudication_note": adjudication.note,
+                "adjudication_note": " ".join(
+                    note for note in (clause.adjudication_note, adjudication.note) if note
+                ),
                 "evidence_check": "accepted",
             }
         )
